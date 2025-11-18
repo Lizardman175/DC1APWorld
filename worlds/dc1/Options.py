@@ -27,14 +27,12 @@ class BetterStartingWeapons(Toggle):
     default = 1
 
 class MiracleSanity(Toggle):
-    """Add miracle chests to the item pool."""
+    """Currently doesn't do anything but change item classification for certain items. Only added for now to begin logic coding for MCs.
+    Don't use if you find this!!"""
     display_name = "Chest Sanity"
     default = 0
-
-class ShuffleSundewChest(Toggle):
-    """If Miracle Chests are shuffled, this will shuffle the sundew chest in the mushroom house.4"""
-    display_name = "Shuffle Sundew Chest"
-    default = 0
+    # TODO make visible with MC shuffle update
+    visibility = Visibility.none
 
 class AbsMultiplier(Choice):
     """Adjust the ABS gained from enemies."""
@@ -70,7 +68,6 @@ class DarkCloudOptions(PerGameCommonOptions):
     all_bosses: AllBosses
     open_dungeon: OpenDungeon
     starter_weapons: BetterStartingWeapons
-    miracle_sanity: MiracleSanity
-    sundew_chest: ShuffleSundewChest
     abs_multiplier: AbsMultiplier
     auto_build: AutoBuild
+
