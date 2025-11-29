@@ -27,7 +27,6 @@ cathedral_ids = ["Progressive Cathedral", "Progressive Cathedral", "Progressive 
 joker_ids = ["Progressive Joker's House", "Progressive Joker's House",
              "Progressive Joker's House", "Progressive Joker's House", "Progressive Joker's House"]
 
-# Note for MCs: Ruty has an ice gem in the middle fish cart
 ruty_ids = ["Progressive Ruty's Store", "Progressive Ruty's Store",
             "Progressive Ruty's Store", "Progressive Ruty's Store"]
 suzy_ids = ["Progressive Suzy's Store", "Progressive Suzy's Store", "Progressive Suzy's Store"]
@@ -47,7 +46,6 @@ tower_ids = ["Progressive Leaning Tower", "Progressive Leaning Tower"]
 other_ids = ["Queens Trees", "Queens Trees", "Queens Road", "Queens Road",
              "Queens Road", "Queens Road", "Queens Road", "Queens Road"]
 
-# TODO split these lists into 2 based on items that spawn from the first half of a dungeon or the second
 # Atla that give MCs by content quality (unless handled otherwise). If MC shuffle is on, these all need to be required
 # Sheriff completion is required for Joker's house access inside, yielding a fruit o eden
 mc_useful = ["Progressive Suzy's Store", "Progressive Suzy's Store", "Progressive Lana's Store",
@@ -66,9 +64,9 @@ def create_queens_atla(options: DarkCloudOptions, player: int) -> list["DarkClou
     """Create atla items for Norune Village based on option settings."""
     items = []
 
-    queens_required = required
-    queens_useful = useful
-    queens_filler = filler
+    queens_required = required.copy()
+    queens_useful = useful.copy()
+    queens_filler = filler.copy()
 
     if options.boss_goal == 3 or options.all_bosses:
         queens_required.extend(["Progressive Divining House", "Progressive Divining House", "Progressive Divining House", "Progressive Divining House"])

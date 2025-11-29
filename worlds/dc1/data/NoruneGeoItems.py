@@ -1,7 +1,3 @@
-# TODO for miracle chests, split out only necessary items to be required rather than the whole building.
-#      Ex lamps don't yield miracle chests, but a cabin addition might
-# Grouping of item IDs per building for Norune Village
-
 from BaseClasses import ItemClassification
 from worlds.dc1.Items import DarkCloudItem
 from worlds.dc1.Options import DarkCloudOptions
@@ -19,7 +15,7 @@ ids = {
     "Progressive Windmill 1": 971110109,
     "Progressive Windmill 2": 971110110,
     "Progressive Windmill 3": 971110111,
-    "Pond": 971110112,
+    "Norune Pond": 971110112,
     "Norune Trees": 971110113,
     "Norune Road": 971110114,
     "Norune River": 971110115,
@@ -49,7 +45,7 @@ laura_house_ids = ["Progressive Laura's House", "Progressive Laura's House", "Pr
 
 # Paige MCs: Just house, all minors.  Cabin doesn't have chests Paige's house does give the pocket though!
 paige_house_ids = ["Progressive Paige's House", "Progressive Paige's House",
-                   "Progressive Paige's House", "Progressive Paige's House", "Progressive Paige's House"]
+                   "Progressive Paige's House", "Progressive Paige's House"]
 # House + cabin
 claude_house_ids = ["Progressive Claude's House", "Progressive Claude's House", "Progressive Claude's House"]
 
@@ -67,7 +63,6 @@ windmill_ids = ["Progressive Windmill 1", "Progressive Windmill 1", "Progressive
 other_ids = ["Norune Trees", "Norune Trees", "Norune Bridge", "Norune Road", "Norune Road", "Norune Road",
              "Norune Road", "Norune Road", "Norune River", "Norune River", "Norune River", "Norune River"]
 
-# TODO split these lists into 2 based on items that spawn from the first half of a dungeon or the second
 # Atla that give MCs by content quality (unless handled otherwise). If MC shuffle is on, these all need to be required
 mc_useful = []
 mc_filler = ["Progressive Macho's House", "Progressive Macho's House", "Progressive Claude's House",
@@ -76,10 +71,10 @@ mc_filler = ["Progressive Macho's House", "Progressive Macho's House", "Progress
 mc_useful_2 = ["Progressive Laura's House", "Progressive Hag's House", "Progressive Hag's House",
                "Progressive Alnet's House"]
 mc_filler_2 = ["Progressive Laura's House", "Progressive Hag's House", "Progressive Alnet's House",
-               "Progressive Alnet's House"]
+               "Progressive Alnet's House", "Progressive Paige's House"]
 
 # Defense for now, might add some gourd/eden to guarantee the player has some hp boosts by certain points as well
-stat_upgrades = ["Pond", "Progressive Dran's Windmill"]
+stat_upgrades = ["Norune Pond", "Progressive Dran's Windmill"]
 
 # Always required/useful/filler items
 required = stat_upgrades + player_house_ids + gaffer_buggy_ids
@@ -91,9 +86,9 @@ def create_norune_atla(options: DarkCloudOptions, player: int) -> list["DarkClou
     """Create atla items for Norune Village based on option settings."""
     items = []
 
-    norune_progression = required
-    norune_useful = useful
-    norune_filler = filler
+    norune_progression = required.copy()
+    norune_useful = useful.copy()
+    norune_filler = filler.copy()
 
     # Dran's windmill is only full required if Dran is required
     if options.all_bosses:
