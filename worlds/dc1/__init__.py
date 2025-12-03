@@ -76,7 +76,7 @@ class DarkCloudWorld(World):
 
     for i in mc_data:
         for j in i:
-            location_name_to_id.update({str(j.get_name()): int(j.get_ap_id())})
+            location_name_to_id.update({str(j.name): int(j.ap_id)})
     location_name_to_id.update({"Mushroom House inside chest (sundew)": 971112075})
 
     origin_region_name = "Norune"
