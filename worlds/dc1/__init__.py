@@ -1,7 +1,7 @@
 import json
 import pkgutil
 import typing
-from typing import Mapping, Any, Optional, Dict
+from typing import Mapping, Any, Optional
 
 from BaseClasses import Region, LocationProgressType, Item, CollectionState, ItemClassification
 from worlds.AutoWorld import World, WebWorld
@@ -19,13 +19,6 @@ geo_funcs = [NoruneGeoItems.create_norune_atla, MatatakiGeoItems.create_matataki
              QueensGeoItems.create_queens_atla, MuskaGeoItems.create_muska_atla,
              FactoryGeoItems.create_factory_atla, DHCGeoItems.create_castle_atla]
 geo_class = [NoruneGeoItems, MatatakiGeoItems, QueensGeoItems, MuskaGeoItems, FactoryGeoItems, DHCGeoItems]
-
-# Parse in the miracle chest data
-mc_data = [[], [], [], [], []]
-reader = pkgutil.get_data(__name__, "data/miracle_locations.csv").decode().splitlines()
-for line in reader:
-    row = line.split(",")
-    mc_data[int(row[2])].append(MiracleChest(row[0], row[1], row[2], row[3], row[4]))
 
 dungeon_locations = json.loads(pkgutil.get_data(__name__, "data/atla_locations.json").decode())
 
@@ -73,6 +66,18 @@ class DarkCloudWorld(World):
 
     for i in dungeon_locations:
         location_name_to_id.update(i)
+
+    # Parse in the miracle chest data
+    mc_data = [[], [], [], [], []]
+    reader = pkgutil.get_data(__name__, "data/miracle_locations.csv").decode().splitlines()
+    for line in reader:
+        row = line.split(",")
+        mc_data[int(row[2])].append(MiracleChest(row[0], row[1], row[2], row[3], row[4]))
+
+    for i in mc_data:
+        for j in i:
+            location_name_to_id.update({str(j.get_name()): int(j.get_ap_id())})
+    location_name_to_id.update({"Mushroom House inside chest (sundew)": 971112075})
 
     origin_region_name = "Norune"
 
@@ -150,10 +155,11 @@ class DarkCloudWorld(World):
 
         if self.options.miracle_sanity:
             for i in range(min(5, int(self.options.boss_goal))):
-                mcs = mc_data[i]
-                t = towns[i]
-                for key in mcs:
-                    t.locations.append(key.to_location(player=self.player, town=t))
+                mcs = self.mc_data[i]
+                for chest in mcs:
+                    loc = DarkCloudLocation(self.player, str(chest.name), int(chest.ap_id), LocationProgressType.DEFAULT, towns[i])
+                    loc.access_rule = lambda state, a=chest.req_char, b=chest.req_geo: Rules.chest_test(state, self.player, a, b)
+                    towns[i].locations.append(loc)
             # Location for the sundew chest
             if self.options.sundew_chest:
                 loc = DarkCloudLocation(self.player, "Mushroom House inside chest (sundew)", 971112075,
@@ -226,7 +232,6 @@ class DarkCloudWorld(World):
                  lambda state: Rules.got_accessible(state, self.player))
 
         # Set up completion goal
-        # TODO put the options logic in the rule for each boss instead
         match self.options.boss_goal:
             case 2:
                 if self.options.all_bosses:
@@ -319,10 +324,6 @@ class DarkCloudWorld(World):
                                                                                                              self.player,
                                                                                                              self.options)
 
-    # TODO: ??
-    def connect_entrances(self) -> None:
-        pass
-
     def fill_slot_data(self) -> Mapping[str, Any]:
         slot_data = {
             "options": {
@@ -337,8 +338,4 @@ class DarkCloudWorld(World):
             },
         }
 
-        return slot_data
-
-    @staticmethod
-    def interpret_slot_data(slot_data: Dict[str, Any]) -> Dict[str, Any]:
         return slot_data
