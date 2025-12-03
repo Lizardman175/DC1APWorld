@@ -13,7 +13,7 @@ ids = {
     "Progressive Basker's Store": 971110307,
     "Progressive King's Hideout": 971110308,
     "Progressive Sheriff's Office": 971110309,
-    "Progressive Fountain": 971110310,
+    "Progressive Queens Fountain": 971110310,
     "Progressive Leaning Tower": 971110311,
     "Queens Trees": 971110312,
     "Queens Road": 971110313
@@ -40,7 +40,7 @@ basker_ids = ["Progressive Basker's Store",
 sheriff_ids = ["Progressive Sheriff's Office", "Progressive Sheriff's Office",
                "Progressive Sheriff's Office", "Progressive Sheriff's Office", "Progressive Sheriff's Office",
                "Progressive Sheriff's Office"]
-fountain_ids = ["Progressive Fountain", "Progressive Fountain", "Progressive Fountain"]
+fountain_ids = ["Progressive Queens Fountain", "Progressive Queens Fountain", "Progressive Queens Fountain"]
 tower_ids = ["Progressive Leaning Tower", "Progressive Leaning Tower"]
 
 other_ids = ["Queens Trees", "Queens Trees", "Queens Road", "Queens Road",
@@ -50,7 +50,7 @@ other_ids = ["Queens Trees", "Queens Trees", "Queens Road", "Queens Road",
 # Sheriff completion is required for Joker's house access inside, yielding a fruit o eden
 mc_useful = ["Progressive Suzy's Store", "Progressive Suzy's Store", "Progressive Lana's Store",
              "Progressive Lana's Store", "Progressive Sheriff's Office", "Progressive Basker's Store",
-             "Progressive Fountain", "Progressive Leaning Tower", ] + sheriff_ids + joker_ids
+             "Progressive Queens Fountain", "Progressive Leaning Tower", ] + sheriff_ids + joker_ids
 mc_filler = ["Progressive Ruty's Store", "Progressive Suzy's Store", "Progressive Lana's Store","Progressive Basker's Store", ]
 
 # Always required/useful/filler items
