@@ -274,11 +274,13 @@ class DarkCloudWorld(World):
                 "open_dungeon": self.options.open_dungeon.value,
                 "starter_weapons": self.options.starter_weapons.value,
                 "abs_multiplier": self.options.abs_multiplier.value,
-                "auto_build": self.options.auto_build.value
+                "auto_build": self.options.auto_build.value,
+                "skip_ungaga_name": self.options.skip_ungaga_name
             },
             "seed": self.multiworld.seed_name,
         }
 
         return slot_data
+
 
 
