@@ -61,11 +61,6 @@ class AutoBuild(Choice):
     option_muska_robot_only = 5
     default = 2
 
-class SkipUngagaName(Toggle):
-    """Removes the Moon Orb from the player's inventory so they can skip the Ungaga naming cutscene."""
-    display_name = "Skip Ungaga Name"
-    default = 0
-
 # TODO death link.
 # class DeathLink(DeathLink):
 
@@ -79,5 +74,4 @@ class DarkCloudOptions(PerGameCommonOptions):
     sundew_chest: ShuffleSundewChest
     abs_multiplier: AbsMultiplier
     auto_build: AutoBuild
-    skip_ungaga_name: SkipUngagaName
 

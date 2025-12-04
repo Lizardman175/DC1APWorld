@@ -335,7 +335,6 @@ class DarkCloudWorld(World):
                 "auto_build": self.options.auto_build.value,
                 "miracle_sanity": self.options.miracle_sanity.value,
                 "sundew_chest": self.options.sundew_chest.value,
-                "skip_ungaga_name": self.options.skip_ungaga_name
             },
         }
 
