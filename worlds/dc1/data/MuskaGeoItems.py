@@ -31,8 +31,8 @@ chief_ids = ["Progressive Chief's House", "Progressive Chief's House",
              "Progressive Chief's House", "Progressive Chief's House"]
 zabo_ids = ["Progressive Zabo's House", "Progressive Zabo's House", "Progressive Zabo's House",
             "Progressive Zabo's House", "Progressive Zabo's House"]
-enga_ids = ["Progressive Enga's House", "Progressive Enga's House", "Progressive Enga's House",
-            "Progressive Enga's House", "Progressive Enga's House", "Progressive Enga's House"]
+enga_ids = ["Progressive Enga's House", "Progressive Enga's House",
+            "Progressive Enga's House", "Progressive Enga's House"]
 
 jibubu_ids = ["Progressive Jibubu's House", "Progressive Jibubu's House",
               "Progressive Jibubu's House", "Progressive Jibubu's House"]
@@ -50,7 +50,8 @@ misc_ids = ["Muska Lacka Trees", "Muska Lacka Trees", "Muska Lacka Road", "Muska
             "Muska Lacka Road", "Muska Lacka Road", "Muska Lacka Road"]
 
 
-mc_required = ["Progressive Chief's House", "Progressive Enga's House", "Progressive Toto's House"]
+mc_required = ["Progressive Chief's House", "Progressive Toto's House",
+               "Progressive Enga's House", "Progressive Enga's House", "Progressive Enga's House"]
 mc_useful = ["Progressive Jibubu's House", "Progressive Jibubu's House", "Progressive Brooke's House",
              "Progressive Prisoner Cabin", "Progressive Oasis"]
 mc_filler = ["Progressive Totem Pole A", "Progressive Totem Pole B", "Progressive Totem Pole C"]
@@ -64,9 +65,9 @@ filler = prisoner_ids + oasis_ids + totem_ids + misc_ids
 def create_muska_atla(options: DarkCloudOptions, player: int) -> List["DarkCloudItem"]:
     items = []
 
-    muska_required = required + mc_required
-    muska_useful = useful
-    muska_filler = filler
+    muska_required = required.copy() + mc_required.copy()
+    muska_useful = useful.copy()
+    muska_filler = filler.copy()
 
     if options.boss_goal == 4 or options.all_bosses:
         muska_required.extend(chief_ids + zabo_ids + enga_ids + ["Progressive Zabo's House"])

@@ -42,11 +42,13 @@ things_ids = ["Progressive Things Lost", "Progressive Things Lost",
 departure_ids = ["Progressive Departure", "Progressive Departure", "Progressive Departure",
                  "Progressive Departure", "Progressive Departure"]
 
+
+# Unused options param for consistency since these files are all done in a loop with func pointers
 def create_castle_atla(options: DarkCloudOptions, player: int) -> List["DarkCloudItem"]:
     """Create atla items for Dark Heaven Castle."""
     items = []
     required = (cday_ids + ceremony_ids + reunion_ids + campaign_ids + menace_ids + deal_ids + power_ids +
-                assassin_ids + prot_ids + demon_ids + things_ids + departure_ids)
+                    assassin_ids + prot_ids + demon_ids + things_ids + departure_ids)
 
     # All castle atla are required for the genie fight
     for i in required:
