@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from Options import Choice, Toggle, PerGameCommonOptions, Range, Visibility
+from Options import Choice, Toggle, PerGameCommonOptions, Range
 
 
 class Goal(Range):

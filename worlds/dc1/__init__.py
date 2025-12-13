@@ -90,7 +90,8 @@ class DarkCloudWorld(World):
                 for item in self.item_data[i]:
                     self.multiworld.itempool.extend(item.to_items(self.player))
             if self.options.sundew_chest:
-                self.multiworld.itempool.append(DarkCloudItem("Sundew", ItemClassification.progression, 971111225, self.player))
+                self.multiworld.itempool.append(DarkCloudItem("Sundew", ItemClassification.progression,
+                                                              971111225, self.player))
 
     # Set up progressive items
     def collect_item(self, state: "CollectionState", item: "Item", remove: bool = False) -> Optional[str]:
