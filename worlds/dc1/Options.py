@@ -31,11 +31,6 @@ class MiracleSanity(Toggle):
     display_name = "Chest Sanity"
     default = 0
 
-class ShuffleSundewChest(Toggle):
-    """If Miracle Chests are shuffled, this will shuffle the sundew chest in the mushroom house."""
-    display_name = "Shuffle Sundew Chest"
-    default = 0
-
 class AbsMultiplier(Choice):
     """Adjust the ABS gained from enemies."""
     display_name = "ABS Multiplier"
@@ -71,7 +66,6 @@ class DarkCloudOptions(PerGameCommonOptions):
     open_dungeon: OpenDungeon
     starter_weapons: BetterStartingWeapons
     miracle_sanity: MiracleSanity
-    sundew_chest: ShuffleSundewChest
     abs_multiplier: AbsMultiplier
     auto_build: AutoBuild
 

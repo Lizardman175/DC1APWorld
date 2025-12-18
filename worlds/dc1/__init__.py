@@ -89,9 +89,6 @@ class DarkCloudWorld(World):
             for i in range(min(5, int(self.options.boss_goal))):
                 for item in self.item_data[i]:
                     self.multiworld.itempool.extend(item.to_items(self.player))
-            if self.options.sundew_chest:
-                self.multiworld.itempool.append(DarkCloudItem("Sundew", ItemClassification.progression,
-                                                              971111225, self.player))
 
     # Set up progressive items
     def collect_item(self, state: "CollectionState", item: "Item", remove: bool = False) -> Optional[str]:
@@ -161,12 +158,6 @@ class DarkCloudWorld(World):
                     loc = DarkCloudLocation(self.player, str(chest.name), int(chest.ap_id), LocationProgressType.DEFAULT, towns[i])
                     loc.access_rule = lambda state, a=chest.req_char, b=chest.req_geo: Rules.chest_test(state, self.player, a, b)
                     towns[i].locations.append(loc)
-            # Location for the sundew chest
-            if self.options.sundew_chest:
-                loc = DarkCloudLocation(self.player, "Mushroom House inside chest (sundew)", 971112075,
-                                  LocationProgressType.DEFAULT, matataki)
-                loc.access_rule = lambda state: Rules.chest_test(state, self.player, "goro", ["Mushroom House"])
-                matataki.locations.append(loc)
 
         # Connect Regions
         def create_connection(from_region: str, to_region: str):
@@ -335,7 +326,6 @@ class DarkCloudWorld(World):
                 "abs_multiplier": self.options.abs_multiplier.value,
                 "auto_build": self.options.auto_build.value,
                 "miracle_sanity": self.options.miracle_sanity.value,
-                "sundew_chest": self.options.sundew_chest.value,
             },
         }
 

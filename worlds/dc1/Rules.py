@@ -23,10 +23,10 @@ def utan_accessible(state: CollectionState, player: int, options: DarkCloudOptio
     r = state.has("Mushroom Balcony", player) and goro_available(state, player)
 
     if r and options.miracle_sanity:
-        r = state.has("Fluffy Doughnut", player, 2) and state.has("Fish Candy", player, 2) and\
-            state.has("Grass Cake", player, 1) and state.has("Fruit of Eden", player, 5)
-        if r and options.sundew_chest:
-            r = state.has("Sundew", player)
+        r = state.has("Sundew", player) and state.has("Fluffy Doughnut", player, 2) and \
+            state.has("Fish Candy", player, 2) and state.has("Grass Cake", player, 1) and\
+            state.has("Fruit of Eden", player, 5)
+
 
     return r
 
