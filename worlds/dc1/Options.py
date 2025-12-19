@@ -42,6 +42,22 @@ class AbsMultiplier(Choice):
     option_triple = 5
     default = 3
 
+class AttachmentMultiplierConfig(Choice):
+    """Enable attachment multiplier for all attachments, only those from MW, or no attachments."""
+    display_name = "Attachment Multiplier Config"
+    option_none = 1
+    option_mw_only = 2
+    option_all = 3
+    default = 3
+
+class AttachmentMultiplierValue(Choice):
+    """Adjust the value of attachments. Does not affect attack/speed/magic/endurance received normally in game."""
+    display_name = "Attachment Multiplier"
+    option_normal = 1
+    option_one_and_half = 2
+    option_double = 3
+    default = 2
+
 class AutoBuild(Choice):
     """Automatically places building pieces as received.
     Hundo places buildings for 100% town completion.
@@ -67,5 +83,7 @@ class DarkCloudOptions(PerGameCommonOptions):
     starter_weapons: BetterStartingWeapons
     miracle_sanity: MiracleSanity
     abs_multiplier: AbsMultiplier
+    attach_multiplier: AttachmentMultiplierValue
+    attach_mult_config: AttachmentMultiplierConfig
     auto_build: AutoBuild
 

@@ -324,6 +324,8 @@ class DarkCloudWorld(World):
                 "open_dungeon": self.options.open_dungeon.value,
                 "starter_weapons": self.options.starter_weapons.value,
                 "abs_multiplier": self.options.abs_multiplier.value,
+                "attach_multiplier": self.options.attach_multiplier.value,
+                "attach_mult_config": self.options.attach_mult_config.value,
                 "auto_build": self.options.auto_build.value,
                 "miracle_sanity": self.options.miracle_sanity.value,
             },
