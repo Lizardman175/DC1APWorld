@@ -19,6 +19,21 @@ ids = {
     "Progressive Departure": 971110611,
   }
 
+classifications = {
+    "Progressive Crowning Day": ItemClassification.progression,
+    "Progressive Ceremony": ItemClassification.progression,
+    "Progressive Reunion": ItemClassification.progression,
+    "Progressive Campaign": ItemClassification.progression,
+    "Progressive Menace": ItemClassification.progression,
+    "Progressive The Deal": ItemClassification.progression,
+    "Progressive Dark Power": ItemClassification.progression,
+    "Progressive Assassin": ItemClassification.progression,
+    "Progressive Protected": ItemClassification.progression,
+    "Progressive Demon": ItemClassification.progression,
+    "Progressive Things Lost": ItemClassification.progression,
+    "Progressive Departure": ItemClassification.progression,
+}
+
 cday_ids = ["Progressive Crowning Day", "Progressive Crowning Day",
             "Progressive Crowning Day", "Progressive Crowning Day"]
 ceremony_ids = ["Progressive Ceremony", "Progressive Ceremony", "Progressive Ceremony",

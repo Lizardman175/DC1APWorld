@@ -21,6 +21,23 @@ ids = {
     "Muska Lacka Road": 971110413
   }
 
+classifications = {
+    "Progressive Chief's House": ItemClassification.progression | ItemClassification.useful | ItemClassification.filler,
+    "Progressive Jibubu's House": ItemClassification.progression | ItemClassification.useful,
+    "Progressive Zabo's House": ItemClassification.progression | ItemClassification.useful,
+    "Progressive 3 Sisters' House": ItemClassification.progression,
+    "Progressive Brooke's House": ItemClassification.progression | ItemClassification.useful,
+    "Progressive Enga's House": ItemClassification.progression | ItemClassification.useful,
+    "Progressive Prisoner Cabin": ItemClassification.progression | ItemClassification.useful | ItemClassification.filler,
+    "Progressive Toto's House": ItemClassification.progression | ItemClassification.useful,
+    "Progressive Totem Pole A": ItemClassification.progression | ItemClassification.filler,
+    "Progressive Totem Pole B": ItemClassification.progression | ItemClassification.filler,
+    "Progressive Totem Pole C": ItemClassification.progression | ItemClassification.filler,
+    "Progressive Oasis": ItemClassification.useful | ItemClassification.filler,
+    "Muska Lacka Trees": ItemClassification.filler,
+    "Muska Lacka Road": ItemClassification.filler
+}
+
 # Required for Ungaga
 sister_ids = ["Progressive 3 Sisters' House", "Progressive 3 Sisters' House", "Progressive 3 Sisters' House",
               "Progressive 3 Sisters' House", "Progressive 3 Sisters' House", "Progressive 3 Sisters' House",

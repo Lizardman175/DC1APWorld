@@ -25,6 +25,29 @@ ids = {
     "Earth B": 971110219,
   }
 
+classifications = {
+    "Progressive Pao's House": ItemClassification.progression | ItemClassification.useful,
+    "Progressive Cacao's House": ItemClassification.progression,
+    "Progressive Bunbuku's House": ItemClassification.progression | ItemClassification.useful | ItemClassification.filler,
+    "Progressive Kye's House": ItemClassification.progression | ItemClassification.useful | ItemClassification.filler,
+    "Progressive Baron's House": ItemClassification.progression | ItemClassification.useful,
+    "Progressive Couscous's House": ItemClassification.progression | ItemClassification.useful | ItemClassification.filler,
+    "Progressive Gob's House": ItemClassification.progression | ItemClassification.useful,
+    "Progressive Mushroom House": ItemClassification.progression,
+    "Progressive Well 1": ItemClassification.filler,
+    "Progressive Well 2": ItemClassification.filler,
+    "Progressive Well 3": ItemClassification.filler,
+    "Progressive Watermill 1": ItemClassification.progression | ItemClassification.useful | ItemClassification.filler,
+    "Progressive Watermill 2": ItemClassification.progression | ItemClassification.useful | ItemClassification.filler,
+    "Progressive Watermill 3": ItemClassification.progression | ItemClassification.useful | ItemClassification.filler,
+    "Progressive Owl Shop": ItemClassification.progression | ItemClassification.useful,
+    "Matataki Trees": ItemClassification.filler,
+    "Progressive Matataki River": ItemClassification.progression,
+    "Matataki Bridge": ItemClassification.filler,
+    "Earth A": ItemClassification.filler,
+    "Earth B": ItemClassification.filler,
+}
+
 cacao_ids = ["Progressive Cacao's House", "Progressive Cacao's House", "Progressive Cacao's House",
              "Progressive Cacao's House", "Progressive Cacao's House", "Progressive Cacao's House",
              "Progressive Cacao's House"]
@@ -40,7 +63,7 @@ pao_ids = ["Progressive Pao's House",
 baron_ids = ["Progressive Baron's House", "Progressive Baron's House", "Progressive Baron's House",
              "Progressive Baron's House", "Progressive Baron's House"]
 
-bunbuku_ids = ["Progressive Bunbuku's House", "Progressive Bunbuku's House",
+bunbuku_ids = ["Progressive Bunbuku's House", "Progressive Bunbuku's House", "Progressive Bunbuku's House",
                "Progressive Bunbuku's House", "Progressive Bunbuku's House"]
 
 kye_ids = ["Progressive Kye's House", "Progressive Kye's House", "Progressive Kye's House", "Progressive Kye's House"]
@@ -71,14 +94,14 @@ other_ids = ["Matataki Trees", "Matataki Trees", "Matataki Bridge"]
 
 # Atla that give MCs by content quality (unless handled otherwise). If MC shuffle is on, these all need to be required
 mc_useful = ["Progressive Owl Shop", "Progressive Owl Shop",
-             "Progressive Bunbuku's House",
+             "Progressive Bunbuku's House", "Progressive Bunbuku's House",
              "Progressive Baron's House", "Progressive Pao's House", "Progressive Pao's House", ]
-mc_filler = ["Progressive Watermill 1", "Progressive Bunbuku's House", ]
+mc_filler = ["Progressive Watermill 1", ]
 
 mc_useful_2 = ["Progressive Kye's House", "Progressive Kye's House", "Progressive Kye's House",
                "Progressive Couscous's House", "Progressive Gob's House",
                "Progressive Watermill 2", "Progressive Watermill 3", ]
-mc_filler_2 = ["Progressive Bunbuku's House",]
+# mc_filler_2 = [,]  Bunbuku's chest accessed by the cabin is not shuffled right now
 
 # Always required/useful/filler items
 required = river_ids + cacao_ids
@@ -113,12 +136,12 @@ def create_matataki_atla(options: DarkCloudOptions, player: int) -> list["DarkCl
         matataki_progression.extend(mc_useful)
         matataki_progression.extend(mc_useful_2)
         matataki_progression.extend(mc_filler)
-        matataki_progression.extend(mc_filler_2)
+        # matataki_progression.extend(mc_filler_2)
     else:
         matataki_useful.extend(mc_useful)
         matataki_useful.extend(mc_useful_2)
         matataki_filler.extend(mc_filler)
-        matataki_filler.extend(mc_filler_2)
+        # matataki_filler.extend(mc_filler_2)
 
     for i in matataki_progression:
         items.append(DarkCloudItem(i, ItemClassification.progression, ids[i], player))

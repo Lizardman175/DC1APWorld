@@ -21,6 +21,23 @@ ids = {
     "Progressive Lookout": 971110513,
 }
 
+classifications = {
+    "Progressive Parts HD": ItemClassification.progression | ItemClassification.useful,
+    "Progressive Parts AMR": ItemClassification.progression | ItemClassification.filler,
+    "Progressive Parts AML": ItemClassification.progression | ItemClassification.filler,
+    "Progressive Parts HGR": ItemClassification.progression | ItemClassification.filler,
+    "Progressive Parts HGL": ItemClassification.progression | ItemClassification.filler,
+    "Progressive Parts HGR2": ItemClassification.progression | ItemClassification.filler,
+    "Progressive Parts HGL2": ItemClassification.progression | ItemClassification.filler,
+    "Progressive Parts CT": ItemClassification.progression | ItemClassification.useful | ItemClassification.filler,
+    "Progressive Parts WT": ItemClassification.progression | ItemClassification.filler,
+    "Progressive Parts TIR": ItemClassification.progression | ItemClassification.filler,
+    "Progressive Parts TIL": ItemClassification.progression | ItemClassification.filler,
+    "Progressive Parts FTR": ItemClassification.progression | ItemClassification.filler,
+    "Progressive Parts FTL": ItemClassification.progression | ItemClassification.filler,
+    "Progressive Lookout": ItemClassification.progression | ItemClassification.filler,
+}
+
 # Head is required to fight Joe
 head_ids = ["Progressive Parts HD", "Progressive Parts HD"]
 
@@ -42,7 +59,7 @@ ftl_ids = ["Progressive Parts FTL", "Progressive Parts FTL", "Progressive Parts 
 mc_filler = ["Progressive Lookout", "Progressive Lookout", "Progressive Parts AMR", "Progressive Parts AML",
              "Progressive Parts HGR", "Progressive Parts HGL", "Progressive Parts HGR2", "Progressive Parts HGL2",
              "Progressive Parts TIR", "Progressive Parts TIL", "Progressive Parts FTR", "Progressive Parts FTL"]
-mc_useful = ["Progressive Lookout", "Progressive Lookout", "Progressive Parts CT", "Progressive Parts WT"]
+mc_useful = ["Progressive Parts CT"]
 
 filler = (aml_ids + amr_ids + hgr_ids + hgl_ids + hg2_ids + chest_ids + waist_ids +
               tir_ids + til_ids + ftr_ids + ftl_ids)
@@ -51,7 +68,7 @@ filler = (aml_ids + amr_ids + hgr_ids + hgl_ids + hg2_ids + chest_ids + waist_id
 def create_factory_atla(options: DarkCloudOptions, player: int) -> List["DarkCloudItem"]:
     items = []
 
-    factory_required = []
+    factory_required = ["Progressive Lookout", "Progressive Lookout", "Progressive Parts WT"]
     factory_useful = []
     factory_filler = filler.copy()
 

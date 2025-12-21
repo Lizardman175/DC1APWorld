@@ -22,6 +22,26 @@ ids = {
     "Norune Bridge": 971110116,
 }
 
+classifications = {
+    "Progressive Player's House": ItemClassification.progression,
+    "Progressive Macho's House": ItemClassification.progression | ItemClassification.filler,
+    "Progressive Laura's House": ItemClassification.progression | ItemClassification.useful | ItemClassification.filler,
+    "Progressive Paige's House": ItemClassification.progression,
+    "Progressive Claude's House": ItemClassification.progression | ItemClassification.useful | ItemClassification.filler,
+    "Progressive Hag's House": ItemClassification.progression | ItemClassification.useful,
+    "Progressive Alnet's House": ItemClassification.progression | ItemClassification.useful | ItemClassification.filler,
+    "Progressive Gaffer's Buggy": ItemClassification.progression,
+    "Progressive Dran's Windmill": ItemClassification.progression | ItemClassification.useful,
+    "Progressive Windmill 1": ItemClassification.filler,
+    "Progressive Windmill 2": ItemClassification.filler,
+    "Progressive Windmill 3": ItemClassification.filler,
+    "Norune Pond": ItemClassification.progression,
+    "Norune Trees": ItemClassification.filler,
+    "Norune Road": ItemClassification.filler,
+    "Norune River": ItemClassification.filler,
+    "Norune Bridge": ItemClassification.filler,
+}
+
 player_house_ids = ["Progressive Player's House", "Progressive Player's House", "Progressive Player's House",
                     "Progressive Player's House", "Progressive Player's House", "Progressive Player's House",
                     "Progressive Player's House"]
@@ -43,8 +63,8 @@ macho_house_ids = ["Progressive Macho's House", "Progressive Macho's House", "Pr
 laura_house_ids = ["Progressive Laura's House", "Progressive Laura's House", "Progressive Laura's House",
                    "Progressive Laura's House", "Progressive Laura's House"]
 
-# Paige MCs: Just house, all minors.  Cabin doesn't have chests Paige's house does give the pocket though!
-paige_house_ids = ["Progressive Paige's House", "Progressive Paige's House",
+# Paige gives a pocket
+paige_house_ids = ["Progressive Paige's House", "Progressive Paige's House", "Progressive Paige's House",
                    "Progressive Paige's House", "Progressive Paige's House"]
 # House + cabin
 claude_house_ids = ["Progressive Claude's House", "Progressive Claude's House", "Progressive Claude's House"]
@@ -69,16 +89,13 @@ mc_filler = ["Progressive Macho's House", "Progressive Macho's House", "Progress
              "Progressive Claude's House", "Progressive Claude's House", "Progressive Claude's House",]
 # Pieces that only give MCs in the second half of a dungeon
 mc_useful_2 = ["Progressive Laura's House", "Progressive Hag's House", "Progressive Hag's House",
-               "Progressive Alnet's House"]
-mc_filler_2 = ["Progressive Laura's House", "Progressive Hag's House", "Progressive Alnet's House",
-               "Progressive Alnet's House", "Progressive Paige's House"]
-
-# Defense for now, might add some gourd/eden to guarantee the player has some hp boosts by certain points as well
-stat_upgrades = ["Norune Pond", "Progressive Dran's Windmill"]
+               "Progressive Hag's House", "Progressive Alnet's House"]
+mc_filler_2 = ["Progressive Laura's House", "Progressive Alnet's House",
+               "Progressive Alnet's House" ]
 
 # Always required/useful/filler items
-required = stat_upgrades + player_house_ids + gaffer_buggy_ids
-useful = hag_house_ids + paige_house_ids
+required = player_house_ids + gaffer_buggy_ids + paige_house_ids + ["Norune Pond", "Progressive Dran's Windmill"]
+useful = hag_house_ids
 filler = windmill_ids + other_ids + alnet_house_ids + claude_house_ids + laura_house_ids + macho_house_ids
 
 
