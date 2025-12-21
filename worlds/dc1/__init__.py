@@ -5,9 +5,10 @@ from typing import Mapping, Any, Optional
 
 from BaseClasses import Region, LocationProgressType, Item, CollectionState, ItemClassification
 from worlds.AutoWorld import World, WebWorld
-from worlds.dc1.data import (NoruneGeoItems, MatatakiGeoItems, QueensGeoItems,
-                             MuskaGeoItems, FactoryGeoItems, DHCGeoItems)
 from worlds.generic.Rules import set_rule
+
+from .data import (NoruneGeoItems, MatatakiGeoItems, QueensGeoItems,
+                   MuskaGeoItems, FactoryGeoItems, DHCGeoItems)
 from . import Rules
 from .Items import DarkCloudItem, ItemData
 from .Location import DarkCloudLocation
@@ -34,13 +35,15 @@ class DarkCloudWorld(World):
     """
     game = dc1_name
     required_client_version = (0, 6, 1)
-    options_dataclass = DarkCloudOptions
-    options: DarkCloudOptions
+    options_dataclass = Options.DarkCloudOptions
+    options: Options.DarkCloudOptions
     topology_present = True
     web = DarkCloudWeb()
 
     item_name_to_id = {}
     location_name_to_id = {}
+    item_name_to_classification = {}
+    filler_item_names = []
 
     # Parse inventory item data
     item_data = [[],[],[],[],[]]
@@ -48,21 +51,21 @@ class DarkCloudWorld(World):
     for line in reader:
         row = line.split(",")
         item_name_to_id.update({row[0]: int(row[1])})
-        # TODO cleaner way to do this
+        classification = ItemClassification(int(row[2]))
+        if classification == ItemClassification.filler:
+            filler_item_names.append(row[0])
+
         # [3]-[7] are counts if an item should be added for a given town 0-5.
-        if row[3]:
-            item_data[0].append(ItemData(row[0], int(row[1]), int(row[2]), int(row[3])))
-        if row[4]:
-            item_data[1].append(ItemData(row[0], int(row[1]), int(row[2]), int(row[4])))
-        if row[5]:
-            item_data[2].append(ItemData(row[0], int(row[1]), int(row[2]), int(row[5])))
-        if row[6]:
-            item_data[3].append(ItemData(row[0], int(row[1]), int(row[2]), int(row[6])))
-        if row[7]:
-            item_data[4].append(ItemData(row[0], int(row[1]), int(row[2]), int(row[7])))
+        for i in range(3, 8):
+            if row[i]:
+                item_data[0].append(ItemData(row[0], int(row[1]), classification, int(row[i])))
+
+        item_name_to_classification[row[0]] = classification
+
 
     for i in geo_class:
         item_name_to_id.update(i.ids)
+        item_name_to_classification.update(i.classifications)
 
     for i in dungeon_locations:
         location_name_to_id.update(i)
@@ -192,129 +195,116 @@ class DarkCloudWorld(World):
     def set_rules(self):
 
         set_rule(self.multiworld.get_entrance("Norune -> DBC1", self.player), lambda state: True)
-        set_rule(self.multiworld.get_entrance("Norune -> DBC2", self.player),
-                 lambda state: Rules.xiao_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Norune -> Matataki", self.player),
-                 lambda state: Rules.xiao_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Matataki -> WOF1", self.player),
-                 lambda state: Rules.xiao_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Matataki -> WOF2", self.player),
-                 lambda state: Rules.goro_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Norune -> Queens", self.player),
-                 lambda state: Rules.goro_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Queens -> SR1", self.player),
-                 lambda state: Rules.goro_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Queens -> SR2", self.player),
-                 lambda state: Rules.ruby_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Norune -> Muska", self.player),
-                 lambda state: Rules.ruby_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Muska -> SMT1", self.player),
-                 lambda state: Rules.ruby_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Muska -> SMT2", self.player),
-                 lambda state: Rules.ungaga_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Norune -> Factory", self.player),
-                 lambda state: Rules.ungaga_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Factory -> MS1", self.player),
-                 lambda state: Rules.ungaga_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Factory -> MS2", self.player),
-                 lambda state: Rules.osmond_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Norune -> DHC", self.player),
-                 lambda state: Rules.got_accessible(state, self.player))
-        set_rule(self.multiworld.get_entrance("DHC -> GOT", self.player),
-                 lambda state: Rules.got_accessible(state, self.player))
+
+        if hasattr(self.multiworld, "generation_is_fake"):  # UT doesn't need the shop for its logic
+            set_rule(self.multiworld.get_entrance("Norune -> DBC2", self.player),
+                     lambda state: Rules.xiao_available_ut(state, self.player))
+            set_rule(self.multiworld.get_entrance("Norune -> Matataki", self.player),
+                     lambda state: Rules.xiao_available_ut(state, self.player))
+            set_rule(self.multiworld.get_entrance("Matataki -> WOF1", self.player),
+                     lambda state: Rules.xiao_available_ut(state, self.player))
+        else:
+            set_rule(self.multiworld.get_entrance("Norune -> DBC2", self.player),
+                     lambda state: Rules.xiao_available(state, self.player))
+            set_rule(self.multiworld.get_entrance("Norune -> Matataki", self.player),
+                     lambda state: Rules.xiao_available(state, self.player))
+            set_rule(self.multiworld.get_entrance("Matataki -> WOF1", self.player),
+                     lambda state: Rules.xiao_available(state, self.player))
+
+        if self.options.miracle_sanity and not hasattr(self.multiworld, "generation_is_fake"):
+            set_rule(self.multiworld.get_entrance("Matataki -> WOF2", self.player),
+                     lambda state: Rules.goro_available_items(state, self.player))
+            set_rule(self.multiworld.get_entrance("Norune -> Queens", self.player),
+                     lambda state: Rules.goro_available_items(state, self.player))
+            set_rule(self.multiworld.get_entrance("Queens -> SR1", self.player),
+                     lambda state: Rules.goro_available_items(state, self.player))
+            set_rule(self.multiworld.get_entrance("Queens -> SR2", self.player),
+                     lambda state: Rules.ruby_available_items(state, self.player))
+            set_rule(self.multiworld.get_entrance("Norune -> Muska", self.player),
+                     lambda state: Rules.ruby_available_items(state, self.player))
+            set_rule(self.multiworld.get_entrance("Muska -> SMT1", self.player),
+                     lambda state: Rules.ruby_available_items(state, self.player))
+            set_rule(self.multiworld.get_entrance("Muska -> SMT2", self.player),
+                     lambda state: Rules.ungaga_available_items(state, self.player))
+            set_rule(self.multiworld.get_entrance("Norune -> Factory", self.player),
+                     lambda state: Rules.ungaga_available_items(state, self.player))
+            set_rule(self.multiworld.get_entrance("Factory -> MS1", self.player),
+                     lambda state: Rules.ungaga_available_items(state, self.player))
+            set_rule(self.multiworld.get_entrance("Factory -> MS2", self.player),
+                     lambda state: Rules.osmond_available_items(state, self.player))
+            set_rule(self.multiworld.get_entrance("Norune -> DHC", self.player),
+                     lambda state: Rules.got_accessible_items(state, self.player))
+            set_rule(self.multiworld.get_entrance("DHC -> GOT", self.player),
+                     lambda state: Rules.got_accessible_items(state, self.player))
+        else:
+            set_rule(self.multiworld.get_entrance("Matataki -> WOF2", self.player),
+                     lambda state: Rules.goro_available(state, self.player))
+            set_rule(self.multiworld.get_entrance("Norune -> Queens", self.player),
+                     lambda state: Rules.goro_available(state, self.player))
+            set_rule(self.multiworld.get_entrance("Queens -> SR1", self.player),
+                     lambda state: Rules.goro_available(state, self.player))
+            set_rule(self.multiworld.get_entrance("Queens -> SR2", self.player),
+                     lambda state: Rules.ruby_available(state, self.player))
+            set_rule(self.multiworld.get_entrance("Norune -> Muska", self.player),
+                     lambda state: Rules.ruby_available(state, self.player))
+            set_rule(self.multiworld.get_entrance("Muska -> SMT1", self.player),
+                     lambda state: Rules.ruby_available(state, self.player))
+            set_rule(self.multiworld.get_entrance("Muska -> SMT2", self.player),
+                     lambda state: Rules.ungaga_available(state, self.player))
+            set_rule(self.multiworld.get_entrance("Norune -> Factory", self.player),
+                     lambda state: Rules.ungaga_available(state, self.player))
+            set_rule(self.multiworld.get_entrance("Factory -> MS1", self.player),
+                     lambda state: Rules.ungaga_available(state, self.player))
+            set_rule(self.multiworld.get_entrance("Factory -> MS2", self.player),
+                     lambda state: Rules.osmond_available(state, self.player))
+            set_rule(self.multiworld.get_entrance("Norune -> DHC", self.player),
+                     lambda state: Rules.got_accessible(state, self.player))
+            set_rule(self.multiworld.get_entrance("DHC -> GOT", self.player),
+                     lambda state: Rules.got_accessible(state, self.player))
 
         # Set up completion goal
         match self.options.boss_goal:
             case 2:
                 if self.options.all_bosses:
-                    self.multiworld.completion_condition[self.player] = lambda state: Rules.utan_accessible(state,
-                                                                                                            self.player,
-                                                                                                            self.options) and \
-                                                                                      Rules.dran_accessible(state,
-                                                                                                            self.player,
-                                                                                                            self.options)
+                    self.multiworld.completion_condition[self.player] = lambda state: Rules.two_bosses(state,
+                                                                                                       self.player)
                 else:
-                    self.multiworld.completion_condition[self.player] = lambda state: Rules.utan_accessible(state,
-                                                                                                            self.player,
-                                                                                                            self.options)
+                    self.multiworld.completion_condition[self.player] = lambda state: Rules.utan_access(state,
+                                                                                                        self.player)
             case 3:
                 if self.options.all_bosses:
-                    self.multiworld.completion_condition[self.player] = lambda state: Rules.saia_accessible(state,
-                                                                                                            self.player,
-                                                                                                            self.options) and \
-                                                                                      Rules.utan_accessible(state,
-                                                                                                            self.player,
-                                                                                                            self.options) and \
-                                                                                      Rules.dran_accessible(state,
-                                                                                                            self.player,
-                                                                                                            self.options)
+                    self.multiworld.completion_condition[self.player] = lambda state: Rules.three_bosses(state,
+                                                                                                         self.player)
                 else:
-                    self.multiworld.completion_condition[self.player] = lambda state: Rules.saia_accessible(state,
-                                                                                                            self.player,
-                                                                                                            self.options)
+                    self.multiworld.completion_condition[self.player] = lambda state: Rules.saia_access(state,
+                                                                                                        self.player)
             case 4:
                 if self.options.all_bosses:
-                    self.multiworld.completion_condition[self.player] = lambda state: Rules.curse_accessible(state,
-                                                                                                             self.player,
-                                                                                                            self.options) and \
-                                                                                      Rules.saia_accessible(state,
-                                                                                                            self.player,
-                                                                                                            self.options) and \
-                                                                                      Rules.utan_accessible(state,
-                                                                                                            self.player,
-                                                                                                            self.options) and \
-                                                                                      Rules.dran_accessible(state,
-                                                                                                            self.player,
-                                                                                                            self.options)
+                    self.multiworld.completion_condition[self.player] = lambda state: Rules.four_bosses(state,
+                                                                                                        self.player)
                 else:
-                    self.multiworld.completion_condition[self.player] = lambda state: Rules.curse_accessible(state,
-                                                                                                             self.player,
-                                                                                                            self.options)
+                    self.multiworld.completion_condition[self.player] = lambda state: Rules.curse_access(state,
+                                                                                                         self.player)
             case 5:
                 if self.options.all_bosses:
-                    self.multiworld.completion_condition[self.player] = lambda state: Rules.joe_accessible(state,
-                                                                                                           self.player,
-                                                                                                            self.options) and \
-                                                                                      Rules.curse_accessible(state,
-                                                                                                             self.player,
-                                                                                                            self.options) and \
-                                                                                      Rules.saia_accessible(state,
-                                                                                                            self.player,
-                                                                                                            self.options) and \
-                                                                                      Rules.utan_accessible(state,
-                                                                                                            self.player,
-                                                                                                            self.options) and \
-                                                                                      Rules.dran_accessible(state,
-                                                                                                            self.player,
-                                                                                                            self.options)
+                    self.multiworld.completion_condition[self.player] = lambda state: Rules.five_bosses(state,
+                                                                                                        self.player)
                 else:
-                    self.multiworld.completion_condition[self.player] = lambda state: Rules.joe_accessible(state,
-                                                                                                           self.player,
-                                                                                                            self.options)
+                    self.multiworld.completion_condition[self.player] = lambda state: Rules.joe_access(state,
+                                                                                                       self.player)
             case 6:
                 if self.options.all_bosses:
-                    self.multiworld.completion_condition[self.player] = lambda state: Rules.genie_accessible(state,
-                                                                                                             self.player,
-                                                                                                            self.options) and \
-                                                                                      Rules.joe_accessible(state,
-                                                                                                           self.player,
-                                                                                                            self.options) and \
-                                                                                      Rules.curse_accessible(state,
-                                                                                                             self.player,
-                                                                                                            self.options) and \
-                                                                                      Rules.saia_accessible(state,
-                                                                                                            self.player,
-                                                                                                            self.options) and \
-                                                                                      Rules.utan_accessible(state,
-                                                                                                            self.player,
-                                                                                                            self.options) and \
-                                                                                      Rules.dran_accessible(state,
-                                                                                                            self.player,
-                                                                                                            self.options)
+                    self.multiworld.completion_condition[self.player] = lambda state: Rules.six_bosses(state,
+                                                                                                       self.player)
                 else:
-                    self.multiworld.completion_condition[self.player] = lambda state: Rules.genie_accessible(state,
-                                                                                                             self.player,
-                                                                                                             self.options)
+                    self.multiworld.completion_condition[self.player] = lambda state: Rules.genie_access(state,
+                                                                                                         self.player)
+    def create_item(self, name:str) -> DarkCloudItem:
+        classification = self.item_name_to_classification[name]
+        return DarkCloudItem(name, classification, self.item_name_to_id[name], self.player)
+
+    def get_filler_item_name(self) -> str:
+        return self.filler_item_names[self.random.randint(0, len(self.filler_item_names) - 1)]
 
     def fill_slot_data(self) -> Mapping[str, Any]:
         slot_data = {
