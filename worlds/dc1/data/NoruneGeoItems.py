@@ -1,6 +1,6 @@
 from BaseClasses import ItemClassification
-from worlds.dc1.Items import DarkCloudItem
-from worlds.dc1.Options import DarkCloudOptions
+from ..Items import DarkCloudItem
+from ..Options import DarkCloudOptions
 
 ids = {
     "Progressive Player's House": 971110100,
@@ -51,7 +51,7 @@ gaffer_buggy_ids = ["Progressive Paige's House", "Progressive Paige's House", "P
                     "Progressive Gaffer's Buggy", "Progressive Gaffer's Buggy", "Progressive Gaffer's Buggy",
                     "Progressive Gaffer's Buggy"]
 
-# Just windmill (majors! make windmill always progressive (and required by dran/goro?))
+# Defense chests always required.  Otherwise, only required if Dran is
 d_windmill_ids = ["Progressive Dran's Windmill", "Progressive Dran's Windmill", "Progressive Dran's Windmill",
                   "Progressive Dran's Windmill"]
 
@@ -86,12 +86,11 @@ other_ids = ["Norune Trees", "Norune Trees", "Norune Bridge", "Norune Road", "No
 # Atla that give MCs by content quality (unless handled otherwise). If MC shuffle is on, these all need to be required
 mc_useful = []
 mc_filler = ["Progressive Macho's House", "Progressive Macho's House", "Progressive Claude's House",
-             "Progressive Claude's House", "Progressive Claude's House", "Progressive Claude's House",]
+             "Progressive Claude's House", "Progressive Claude's House", "Progressive Claude's House", ]
 # Pieces that only give MCs in the second half of a dungeon
 mc_useful_2 = ["Progressive Laura's House", "Progressive Hag's House", "Progressive Hag's House",
                "Progressive Hag's House", "Progressive Alnet's House"]
-mc_filler_2 = ["Progressive Laura's House", "Progressive Alnet's House",
-               "Progressive Alnet's House" ]
+mc_filler_2 = ["Progressive Laura's House", "Progressive Alnet's House", "Progressive Alnet's House"]
 
 # Always required/useful/filler items
 required = player_house_ids + gaffer_buggy_ids + paige_house_ids + ["Norune Pond", "Progressive Dran's Windmill"]
@@ -107,8 +106,8 @@ def create_norune_atla(options: DarkCloudOptions, player: int) -> list["DarkClou
     norune_useful = useful.copy()
     norune_filler = filler.copy()
 
-    # Dran's windmill is only full required if Dran is required
-    if options.all_bosses:
+    # Dran's windmill is only full required if Dran is required or the key chest is available
+    if options.all_bosses or options.miracle_sanity:
         norune_progression.extend(d_windmill_ids)
     else:
         norune_useful.extend(d_windmill_ids)
@@ -120,8 +119,8 @@ def create_norune_atla(options: DarkCloudOptions, player: int) -> list["DarkClou
         norune_progression.extend(mc_filler)
         norune_progression.extend(mc_filler_2)
     else:
-        norune_useful.extend(mc_useful_2)
         norune_useful.extend(mc_useful)
+        norune_useful.extend(mc_useful_2)
         norune_filler.extend(mc_filler)
         norune_filler.extend(mc_filler_2)
 

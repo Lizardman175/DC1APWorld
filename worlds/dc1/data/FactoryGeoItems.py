@@ -1,8 +1,8 @@
 from typing import List
 
 from BaseClasses import ItemClassification
-from worlds.dc1.Items import DarkCloudItem
-from worlds.dc1.Options import DarkCloudOptions
+from ..Items import DarkCloudItem
+from ..Options import DarkCloudOptions
 
 ids = {
     "Progressive Parts HD": 971110500,
@@ -62,7 +62,7 @@ mc_filler = ["Progressive Lookout", "Progressive Lookout", "Progressive Parts AM
 mc_useful = ["Progressive Parts CT"]
 
 filler = (aml_ids + amr_ids + hgr_ids + hgl_ids + hg2_ids + chest_ids + waist_ids +
-              tir_ids + til_ids + ftr_ids + ftl_ids)
+          tir_ids + til_ids + ftr_ids + ftl_ids)
 
 
 def create_factory_atla(options: DarkCloudOptions, player: int) -> List["DarkCloudItem"]:

@@ -1,8 +1,8 @@
 from typing import List
 
 from BaseClasses import ItemClassification
-from worlds.dc1.Items import DarkCloudItem
-from worlds.dc1.Options import DarkCloudOptions
+from ..Items import DarkCloudItem
+from ..Options import DarkCloudOptions
 
 ids = {
     "Progressive Crowning Day": 971110600,
@@ -17,7 +17,7 @@ ids = {
     "Progressive Demon": 971110609,
     "Progressive Things Lost": 971110610,
     "Progressive Departure": 971110611,
-  }
+}
 
 classifications = {
     "Progressive Crowning Day": ItemClassification.progression,
@@ -41,9 +41,9 @@ ceremony_ids = ["Progressive Ceremony", "Progressive Ceremony", "Progressive Cer
 reunion_ids = ["Progressive Reunion", "Progressive Reunion", "Progressive Reunion",
                "Progressive Reunion", "Progressive Reunion"]
 campaign_ids = ["Progressive Campaign", "Progressive Campaign", "Progressive Campaign",
-                "Progressive Campaign", "Progressive Campaign", "Progressive Campaign",]
+                "Progressive Campaign", "Progressive Campaign", "Progressive Campaign", ]
 menace_ids = ["Progressive Menace", "Progressive Menace", "Progressive Menace",
-              "Progressive Menace", "Progressive Menace", "Progressive Menace",]
+              "Progressive Menace", "Progressive Menace", "Progressive Menace", ]
 deal_ids = ["Progressive The Deal", "Progressive The Deal", "Progressive The Deal",
             "Progressive The Deal", "Progressive The Deal"]
 power_ids = ["Progressive Dark Power", "Progressive Dark Power", "Progressive Dark Power",
@@ -63,7 +63,7 @@ def create_castle_atla(options: DarkCloudOptions, player: int) -> List["DarkClou
     """Create atla items for Dark Heaven Castle."""
     items = []
     required = (cday_ids + ceremony_ids + reunion_ids + campaign_ids + menace_ids + deal_ids + power_ids +
-                    assassin_ids + prot_ids + demon_ids + things_ids + departure_ids)
+                assassin_ids + prot_ids + demon_ids + things_ids + departure_ids)
 
     # All castle atla are required for the genie fight
     for i in required:

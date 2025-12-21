@@ -1,8 +1,8 @@
 from typing import List
 
 from BaseClasses import ItemClassification
-from worlds.dc1.Items import DarkCloudItem
-from worlds.dc1.Options import DarkCloudOptions
+from ..Items import DarkCloudItem
+from ..Options import DarkCloudOptions
 
 ids = {
     "Progressive Chief's House": 971110400,
@@ -19,7 +19,7 @@ ids = {
     "Progressive Oasis": 971110411,
     "Muska Lacka Trees": 971110412,
     "Muska Lacka Road": 971110413
-  }
+}
 
 classifications = {
     "Progressive Chief's House": ItemClassification.progression | ItemClassification.useful | ItemClassification.filler,
@@ -78,6 +78,7 @@ required = sister_ids
 # Jibubu gives fruit of eden, Brooke runs a shop, Toto gives a nice sword
 useful = jibubu_ids + brooke_ids + toto_ids
 filler = prisoner_ids + oasis_ids + totem_ids + misc_ids
+
 
 def create_muska_atla(options: DarkCloudOptions, player: int) -> List["DarkCloudItem"]:
     items = []

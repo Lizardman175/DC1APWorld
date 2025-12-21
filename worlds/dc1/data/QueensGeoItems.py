@@ -1,6 +1,6 @@
 from BaseClasses import ItemClassification
-from worlds.dc1.Items import DarkCloudItem
-from worlds.dc1.Options import DarkCloudOptions
+from ..Items import DarkCloudItem
+from ..Options import DarkCloudOptions
 
 ids = {
     "Progressive Ruty's Store": 971110300,
@@ -17,7 +17,7 @@ ids = {
     "Progressive Leaning Tower": 971110311,
     "Queens Trees": 971110312,
     "Queens Road": 971110313
-  }
+}
 
 classifications = {
     "Progressive Ruty's Store": ItemClassification.progression | ItemClassification.useful,
@@ -49,7 +49,7 @@ ruty_ids = ["Progressive Ruty's Store", "Progressive Ruty's Store",
 suzy_ids = ["Progressive Suzy's Store", "Progressive Suzy's Store", "Progressive Suzy's Store"]
 lana_ids = ["Progressive Lana's Store", "Progressive Lana's Store"]
 jack_ids = ["Progressive Jack's Store",
-            "Progressive Jack's Store","Progressive Jack's Store", "Progressive Jack's Store",
+            "Progressive Jack's Store", "Progressive Jack's Store", "Progressive Jack's Store",
             "Progressive Jack's Store"]
 basker_ids = ["Progressive Basker's Store",
               "Progressive Basker's Store", "Progressive Basker's Store", "Progressive Basker's Store",
@@ -88,7 +88,9 @@ def create_queens_atla(options: DarkCloudOptions, player: int) -> list["DarkClou
     queens_filler = filler.copy()
 
     if options.boss_goal == 3 or options.all_bosses:
-        queens_required.extend(["Progressive Divining House", "Progressive Divining House", "Progressive Divining House", "Progressive Divining House"])
+        queens_required.extend(
+            ["Progressive Divining House", "Progressive Divining House", "Progressive Divining House",
+             "Progressive Divining House"])
     else:
         if options.miracle_sanity:
             queens_required.extend(["Progressive Divining House", "Progressive Divining House"])
@@ -120,4 +122,3 @@ def create_queens_atla(options: DarkCloudOptions, player: int) -> list["DarkClou
     # print(len(items))
     # print (items)
     return items
-

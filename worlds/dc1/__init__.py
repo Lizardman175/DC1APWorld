@@ -56,9 +56,14 @@ class DarkCloudWorld(World):
             filler_item_names.append(row[0])
 
         # [3]-[7] are counts if an item should be added for a given town 0-5.
+        counts = []
         for i in range(3, 8):
             if row[i]:
-                item_data[0].append(ItemData(row[0], int(row[1]), classification, int(row[i])))
+                counts.append(int(row[i]))
+            else:
+                counts.append(0)
+
+        item_data[0].append(ItemData(row[0], int(row[1]), classification, counts))
 
         item_name_to_classification[row[0]] = classification
 
@@ -80,7 +85,6 @@ class DarkCloudWorld(World):
     for i in mc_data:
         for j in i:
             location_name_to_id.update({str(j.name): int(j.ap_id)})
-    location_name_to_id.update({"Mushroom House inside chest (sundew)": 971112075})
 
     origin_region_name = "Norune"
 
@@ -91,7 +95,7 @@ class DarkCloudWorld(World):
         if self.options.miracle_sanity:
             for i in range(min(5, int(self.options.boss_goal))):
                 for item in self.item_data[i]:
-                    self.multiworld.itempool.extend(item.to_items(self.player))
+                    self.multiworld.itempool.extend(item.to_items(self.player, self))
 
     # Set up progressive items
     def collect_item(self, state: "CollectionState", item: "Item", remove: bool = False) -> Optional[str]:
@@ -158,9 +162,7 @@ class DarkCloudWorld(World):
             for i in range(min(5, int(self.options.boss_goal))):
                 mcs = self.mc_data[i]
                 for chest in mcs:
-                    loc = DarkCloudLocation(self.player, str(chest.name), int(chest.ap_id), LocationProgressType.DEFAULT, towns[i])
-                    loc.access_rule = lambda state, a=chest.req_char, b=chest.req_geo: Rules.chest_test(state, self.player, a, b)
-                    towns[i].locations.append(loc)
+                    towns[i].locations.append(chest.to_location(self.player, towns[i]))
 
         # Connect Regions
         def create_connection(from_region: str, to_region: str):
@@ -266,39 +268,94 @@ class DarkCloudWorld(World):
         match self.options.boss_goal:
             case 2:
                 if self.options.all_bosses:
-                    self.multiworld.completion_condition[self.player] = lambda state: Rules.two_bosses(state,
-                                                                                                       self.player)
+                    if self.options.miracle_sanity:
+                        self.multiworld.completion_condition[self.player] = lambda state: Rules.two_bosses_items(state,
+                                                                                                           self.player)
+                    else:
+                        self.multiworld.completion_condition[self.player] = lambda state: Rules.two_bosses(state,
+                                                                                                           self.player)
                 else:
-                    self.multiworld.completion_condition[self.player] = lambda state: Rules.utan_access(state,
-                                                                                                        self.player)
+                    if self.options.miracle_sanity:
+                        self.multiworld.completion_condition[self.player] = lambda state: Rules.utan_access(state,
+                                                                                                            self.player)\
+                            and Rules.goro_available_items(state, self.player)
+                    else:
+                        self.multiworld.completion_condition[self.player] = lambda state: Rules.utan_access(state,
+                                                                                                            self.player)\
+                            and Rules.goro_available(state, self.player)
             case 3:
                 if self.options.all_bosses:
-                    self.multiworld.completion_condition[self.player] = lambda state: Rules.three_bosses(state,
-                                                                                                         self.player)
+                    if self.options.miracle_sanity:
+                        self.multiworld.completion_condition[self.player] = lambda state: Rules.three_bosses_items(state,
+                                                                                                             self.player)
+                    else:
+                        self.multiworld.completion_condition[self.player] = lambda state: Rules.three_bosses(state,
+                                                                                                             self.player)
                 else:
-                    self.multiworld.completion_condition[self.player] = lambda state: Rules.saia_access(state,
-                                                                                                        self.player)
+                    if self.options.miracle_sanity:
+                        self.multiworld.completion_condition[self.player] = lambda state: Rules.saia_access(state,
+                                                                                                            self.player)\
+                                                        and Rules.ruby_available_items(state, self.player)
+                    else:
+                        self.multiworld.completion_condition[self.player] = lambda state: Rules.saia_access(state,
+                                                                                                            self.player)\
+                                                        and Rules.ruby_available(state, self.player)
             case 4:
                 if self.options.all_bosses:
-                    self.multiworld.completion_condition[self.player] = lambda state: Rules.four_bosses(state,
-                                                                                                        self.player)
+                    if self.options.miracle_sanity:
+                        self.multiworld.completion_condition[self.player] = lambda state: Rules.four_bosses_items(state,
+                                                                                                            self.player)
+                    else:
+                        self.multiworld.completion_condition[self.player] = lambda state: Rules.four_bosses(state,
+                                                                                                            self.player)
                 else:
-                    self.multiworld.completion_condition[self.player] = lambda state: Rules.curse_access(state,
-                                                                                                         self.player)
+                    if self.options.miracle_sanity:
+                        self.multiworld.completion_condition[self.player] = lambda state: Rules.curse_access(state,
+                                                                                                             self.player)\
+                                                and Rules.ungaga_available_items(state, self.player)
+                    else:
+                        self.multiworld.completion_condition[self.player] = lambda state: Rules.curse_access(state,
+                                                                                                             self.player)\
+                                                and Rules.ungaga_available(state, self.player)
             case 5:
                 if self.options.all_bosses:
-                    self.multiworld.completion_condition[self.player] = lambda state: Rules.five_bosses(state,
+                    if self.options.miracle_sanity:
+                        self.multiworld.completion_condition[self.player] = lambda state: Rules.five_bosses_items(state,
+                                                                                                            self.player)
+                    else:
+
+                        self.multiworld.completion_condition[self.player] = lambda state: Rules.five_bosses(state,
                                                                                                         self.player)
                 else:
-                    self.multiworld.completion_condition[self.player] = lambda state: Rules.joe_access(state,
-                                                                                                       self.player)
+                    if self.options.miracle_sanity:
+                        self.multiworld.completion_condition[self.player] = lambda state: Rules.joe_access(state,
+                                                                                                       self.player)\
+                                                                                          and Rules.osmond_available_items(
+                            state, self.player)
+                    else:
+                        self.multiworld.completion_condition[self.player] = lambda state: Rules.joe_access(state,
+                                                                                                       self.player)\
+                                                                                          and Rules.osmond_available(
+                            state, self.player)
             case 6:
                 if self.options.all_bosses:
-                    self.multiworld.completion_condition[self.player] = lambda state: Rules.six_bosses(state,
-                                                                                                       self.player)
+                    if self.options.miracle_sanity:
+                        self.multiworld.completion_condition[self.player] = lambda state: Rules.six_bosses_items(state,
+                                                                                                           self.player)
+                    else:
+                        self.multiworld.completion_condition[self.player] = lambda state: Rules.six_bosses(state,
+                                                                                                           self.player)
                 else:
-                    self.multiworld.completion_condition[self.player] = lambda state: Rules.genie_access(state,
-                                                                                                         self.player)
+                    if self.options.miracle_sanity:
+                        self.multiworld.completion_condition[self.player] = lambda state: Rules.genie_access(state,
+                                                                                                         self.player) \
+                                                                                      and Rules.osmond_available_items(
+                                                                                                state, self.player)
+                    else:
+                        self.multiworld.completion_condition[self.player] = lambda state: Rules.genie_access(state,
+                                                                                                         self.player) \
+                                                                                      and Rules.osmond_available(
+                                                                                                state, self.player)
     def create_item(self, name:str) -> DarkCloudItem:
         classification = self.item_name_to_classification[name]
         return DarkCloudItem(name, classification, self.item_name_to_id[name], self.player)

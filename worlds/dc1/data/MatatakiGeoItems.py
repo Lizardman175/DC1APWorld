@@ -1,6 +1,6 @@
-from worlds.dc1.Options import DarkCloudOptions
 from BaseClasses import ItemClassification
-from worlds.dc1.Items import DarkCloudItem
+from ..Items import DarkCloudItem
+from ..Options import DarkCloudOptions
 
 ids = {
     "Progressive Pao's House": 971110200,
@@ -23,7 +23,7 @@ ids = {
     "Matataki Bridge": 971110217,
     "Earth A": 971110218,
     "Earth B": 971110219,
-  }
+}
 
 classifications = {
     "Progressive Pao's House": ItemClassification.progression | ItemClassification.useful,
@@ -78,17 +78,21 @@ gob_ids = ["Progressive Gob's House", "Progressive Gob's House",
 
 # Inside has a gourd, so first 2 pieces are minimum useful.  Reward is a shop so the rest useful
 owl_ids = ["Progressive Owl Shop", "Progressive Owl Shop", "Progressive Owl Shop", "Progressive Owl Shop"]
-well_ids = ["Progressive Well 1","Progressive Well 1", "Progressive Well 1", "Progressive Well 1", "Progressive Well 1",
-            "Progressive Well 2","Progressive Well 2", "Progressive Well 2", "Progressive Well 2", "Progressive Well 2",
-            "Progressive Well 3","Progressive Well 3", "Progressive Well 3", "Progressive Well 3", "Progressive Well 3"]
+well_ids = ["Progressive Well 1", "Progressive Well 1", "Progressive Well 1", "Progressive Well 1",
+            "Progressive Well 1",
+            "Progressive Well 2", "Progressive Well 2", "Progressive Well 2", "Progressive Well 2",
+            "Progressive Well 2",
+            "Progressive Well 3", "Progressive Well 3", "Progressive Well 3", "Progressive Well 3",
+            "Progressive Well 3"]
 
 # Each watermill has MCs, 2 have gourds
 watermill_ids = ["Progressive Watermill 1", "Progressive Watermill 1", "Progressive Watermill 2",
-                 "Progressive Watermill 2", "Progressive Watermill 3", "Progressive Watermill 3",]
+                 "Progressive Watermill 2", "Progressive Watermill 3", "Progressive Watermill 3", ]
 
 # Only 5 are required for progression, could take 3 out as useful?
-river_ids = ["Progressive Matataki River", "Progressive Matataki River", "Progressive Matataki River", "Progressive Matataki River",
-             "Progressive Matataki River", "Progressive Matataki River", "Progressive Matataki River", "Progressive Matataki River"]
+river_ids = ["Progressive Matataki River", "Progressive Matataki River", "Progressive Matataki River",
+             "Progressive Matataki River", "Progressive Matataki River", "Progressive Matataki River",
+             "Progressive Matataki River", "Progressive Matataki River"]
 other_ids = ["Matataki Trees", "Matataki Trees", "Matataki Bridge"]
 
 

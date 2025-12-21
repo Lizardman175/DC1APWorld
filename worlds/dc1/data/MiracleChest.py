@@ -1,5 +1,5 @@
 from BaseClasses import LocationProgressType, Region
-from worlds.dc1 import DarkCloudLocation, Rules
+from .. import DarkCloudLocation, Rules
 
 
 class MiracleChest:
@@ -8,8 +8,6 @@ class MiracleChest:
     town_id = 0
     req_char = None
     req_geo = None
-    # Byte = 0
-    # Bit = 0
 
     def __init__(self, name, ap_id, town_id, req_char, req_geo):
         self.name = name
