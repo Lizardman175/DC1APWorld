@@ -14,31 +14,19 @@ for prog_item in prog_map:
     progressive_item_list[progressiveName].append(prog_item)
 
 class DarkCloudItem(Item):
-    game: str = dc1_name
-
-    def __init__(self, name: str,
-                 classification: ItemClassification,
-                 code: int | None,
-                 player: int):
-        super().__init__(name, classification, code, player)
-        self.game = dc1_name
+    game = dc1_name
 
 class ItemData:
-    classification = ItemClassification.trap
+    classification = ItemClassification.trap # Should never see a Trap currently
     name = None
     ap_id = 0
     count = 0
 
-    def __init__(self, name: str, ap_id: int, classification: int, count: int):
+    def __init__(self, name: str, ap_id: int, classification: ItemClassification, count: int):
         self.name = name
         self.ap_id = ap_id
         self.count = count
-        if classification == 0:
-            self.classification = ItemClassification.filler
-        elif classification == 1:
-            self.classification = ItemClassification.useful
-        elif classification == 2:
-            self.classification = ItemClassification.progression
+        self.classification = classification
 
     def to_items(self, player: int) -> list[DarkCloudItem]:
         items = []
