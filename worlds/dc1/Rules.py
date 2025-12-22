@@ -177,7 +177,8 @@ def chest_test(state: CollectionState, player: int, character: str = None, geo: 
             if not r:
                 break
 
-    # Use _only methods when pairing item logic with region logic
+    # Use _only methods when pairing item logic with region logic. Those methods don't account for items since
+    # MCs aren't dangerous to get
     if r and character:
         if character == "xiao":
             r = xiao_available(state, player)
