@@ -162,7 +162,12 @@ class DarkCloudWorld(World):
             for i in range(min(5, int(self.options.boss_goal))):
                 mcs = self.mc_data[i]
                 for chest in mcs:
-                    towns[i].locations.append(chest.to_location(self.player, towns[i]))
+                    loc = DarkCloudLocation(self.player, str(chest.name), int(chest.ap_id),
+                                            LocationProgressType.DEFAULT, towns[i])
+                    loc.access_rule = lambda state, a=chest.req_char, b=chest.req_geo: Rules.chest_test(state,
+                                                                                                        self.player, a,
+                                                                                                        b)
+                    towns[i].locations.append(loc)
 
         # Connect Regions
         def create_connection(from_region: str, to_region: str):
