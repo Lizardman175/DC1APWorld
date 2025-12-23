@@ -1,7 +1,7 @@
 {
   "Player's House": "Progressive Player's House",
-  "Player's Storage": "Progressive Player's House",
   "Player's Keg": "Progressive Player's House",
+  "Player's Storage": "Progressive Player's House",
   "Renee":  "Progressive Player's House",
   "Player's Llama": "Progressive Player's House",
   "Player's Chimney": "Progressive Player's House",
@@ -50,8 +50,8 @@
   "Alnet's House": "Progressive Alnet's House",
   "Alnet's Stairway": "Progressive Alnet's House",
   "Alnet's Cabin": "Progressive Alnet's House",
-  "Alnet": "Progressive Alnet's House",
   "Carl": "Progressive Alnet's House",
+  "Alnet": "Progressive Alnet's House",
   "Alnet's Llama": "Progressive Alnet's House",
   "Alnet's Lamp": "Progressive Alnet's House",
 
@@ -132,8 +132,8 @@
 
   "Mushroom House": "Progressive Mushroom House",
   "Mushroom Second Floor": "Progressive Mushroom House",
-  "Ro": "Progressive Mushroom House",
   "Annie": "Progressive Mushroom House",
+  "Ro": "Progressive Mushroom House",
   "Mushroom Torch": "Progressive Mushroom House",
   "Mushroom Sign": "Progressive Mushroom House",
   "Mushroom Balcony": "Progressive Mushroom House",
@@ -231,9 +231,9 @@
 
   "Basker's Store": "Progressive Basker's Store",
   "Basker's Second Floor": "Progressive Basker's Store",
+  "Basker": "Progressive Basker's Store",
   "Basker's Chimney": "Progressive Basker's Store",
   "Basker's Sunshade": "Progressive Basker's Store",
-  "Basker": "Progressive Basker's Store",
   "Basker's Sign": "Progressive Basker's Store",
   "Basker's Lamp": "Progressive Basker's Store",
 
@@ -241,8 +241,8 @@
   "King's Sunshade": "Progressive King's Hideout",
   "King's Car": "Progressive King's Hideout",
   "Jake": "Progressive King's Hideout",
-  "Stu": "Progressive King's Hideout",
   "King": "Progressive King's Hideout",
+  "Stu": "Progressive King's Hideout",
   "King's Lamp": "Progressive King's Hideout",
 
   "Sheriff's Office": "Progressive Sheriff's Office",
