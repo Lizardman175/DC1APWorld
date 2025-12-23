@@ -51,7 +51,7 @@ lana_ids = ["Progressive Lana's Store"]
 jack_ids = ["Progressive Jack's Store",
             "Progressive Jack's Store", "Progressive Jack's Store", "Progressive Jack's Store",
             "Progressive Jack's Store"]
-basker_ids = ["Progressive Basker's Store", "Progressive Basker's Store",
+basker_ids = ["Progressive Basker's Store", "Progressive Basker's Store", "Progressive Basker's Store",
               "Progressive Basker's Store", "Progressive Basker's Store"]
 sheriff_ids = ["Progressive Sheriff's Office", "Progressive Sheriff's Office", "Progressive Sheriff's Office",
                "Progressive Sheriff's Office", "Progressive Sheriff's Office", "Progressive Sheriff's Office",
@@ -69,7 +69,7 @@ mc_useful = (["Progressive Suzy's Store", "Progressive Suzy's Store", "Progressi
              "Progressive Basker's Store", "Progressive Queens Fountain", "Progressive Leaning Tower", ] +
              sheriff_ids + joker_ids)
 mc_filler = ["Progressive Ruty's Store", "Progressive Lana's Store",
-             "Progressive Lana's Store", "Progressive Basker's Store", "Progressive Basker's Store"]
+             "Progressive Lana's Store", "Progressive Basker's Store"]
 
 # Always required/useful/filler items
 # Jack's Store has a parfait
