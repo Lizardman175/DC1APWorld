@@ -16,7 +16,8 @@ def goro_available_only(state: CollectionState, player: int) -> bool:
 
 def goro_available_items(state: CollectionState, player: int) -> bool:
     return (goro_available(state, player) and state.has("Fluffy Doughnut", player, 1) and
-            state.has("Fish Candy", player, 1) and state.has("Fruit of Eden", player, 2))
+            state.has("Fish Candy", player, 1) and state.has("Fruit of Eden", player, 2) and
+            state.has("Pocket", player, 1))
 
 def ruby_available(state: CollectionState, player: int) -> bool:
     return state.has("King's Lamp", player) and goro_available(state, player)
@@ -28,7 +29,7 @@ def ruby_available_only(state: CollectionState, player: int) -> bool:
 def ruby_available_items(state: CollectionState, player: int) -> bool:
     return (ruby_available(state, player) and state.has("Fluffy Doughnut", player,2) and
             state.has("Fish Candy", player, 2) and state.has("Grass Cake", player, 1) and
-            state.has("Fruit of Eden", player, 6))
+            state.has("Fruit of Eden", player, 6) and state.has("Pocket", player, 2))
 
 def ungaga_available(state: CollectionState, player: int) -> bool:
     return state.has("Sisters' Odds & Ends", player) and ruby_available(state, player)
@@ -40,7 +41,8 @@ def ungaga_available_only(state: CollectionState, player: int) -> bool:
 def ungaga_available_items(state: CollectionState, player: int) -> bool:
     return (ungaga_available(state, player) and state.has("Fluffy Doughnut", player,3) and
             state.has("Fish Candy", player, 3) and state.has("Grass Cake", player, 2) and
-            state.has("Witch Parfait", player, 1) and state.has("Fruit of Eden", player, 10))
+            state.has("Witch Parfait", player, 1) and state.has("Fruit of Eden", player, 10) and
+            state.has("Pocket", player, 3))
 
 def osmond_available(state: CollectionState, player: int) -> bool:
     return ungaga_available(state, player)
