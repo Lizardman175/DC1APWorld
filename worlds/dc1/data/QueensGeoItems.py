@@ -46,14 +46,13 @@ joker_ids = ["Progressive Joker's House", "Progressive Joker's House",
 
 ruty_ids = ["Progressive Ruty's Store", "Progressive Ruty's Store",
             "Progressive Ruty's Store", "Progressive Ruty's Store"]
-suzy_ids = ["Progressive Suzy's Store", "Progressive Suzy's Store", "Progressive Suzy's Store"]
-lana_ids = ["Progressive Lana's Store", "Progressive Lana's Store"]
+suzy_ids = ["Progressive Suzy's Store", "Progressive Suzy's Store"]
+lana_ids = ["Progressive Lana's Store"]
 jack_ids = ["Progressive Jack's Store",
             "Progressive Jack's Store", "Progressive Jack's Store", "Progressive Jack's Store",
             "Progressive Jack's Store"]
-basker_ids = ["Progressive Basker's Store",
-              "Progressive Basker's Store", "Progressive Basker's Store", "Progressive Basker's Store",
-              "Progressive Basker's Store"]
+basker_ids = ["Progressive Basker's Store", "Progressive Basker's Store",
+              "Progressive Basker's Store", "Progressive Basker's Store"]
 sheriff_ids = ["Progressive Sheriff's Office", "Progressive Sheriff's Office", "Progressive Sheriff's Office",
                "Progressive Sheriff's Office", "Progressive Sheriff's Office", "Progressive Sheriff's Office",
                "Progressive Sheriff's Office"]
@@ -65,11 +64,12 @@ other_ids = ["Queens Trees", "Queens Trees", "Queens Road", "Queens Road",
 
 # Atla that give MCs by content quality (unless handled otherwise). If MC shuffle is on, these all need to be required
 # Sheriff completion is required for Joker's house access inside, yielding a fruit o eden
-mc_useful = ["Progressive Suzy's Store", "Progressive Suzy's Store", "Progressive Lana's Store",
-             "Progressive Lana's Store", "Progressive Basker's Store",
-             "Progressive Queens Fountain", "Progressive Leaning Tower", ] + sheriff_ids + joker_ids
-mc_filler = ["Progressive Ruty's Store", "Progressive Suzy's Store",
-             "Progressive Lana's Store", "Progressive Basker's Store", ]
+mc_useful = (["Progressive Suzy's Store", "Progressive Suzy's Store", "Progressive Suzy's Store",
+             "Progressive Suzy's Store", "Progressive Lana's Store", "Progressive Lana's Store",
+             "Progressive Basker's Store", "Progressive Queens Fountain", "Progressive Leaning Tower", ] +
+             sheriff_ids + joker_ids)
+mc_filler = ["Progressive Ruty's Store", "Progressive Lana's Store",
+             "Progressive Lana's Store", "Progressive Basker's Store", "Progressive Basker's Store"]
 
 # Always required/useful/filler items
 # Jack's Store has a parfait

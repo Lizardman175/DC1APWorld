@@ -56,11 +56,11 @@ d_windmill_ids = ["Progressive Dran's Windmill", "Progressive Dran's Windmill", 
                   "Progressive Dran's Windmill"]
 
 # Macho: House + annex (all minors)
-macho_house_ids = ["Progressive Macho's House", "Progressive Macho's House", "Progressive Macho's House",
+macho_house_ids = ["Progressive Macho's House", "Progressive Macho's House",
                    "Progressive Macho's House", "Progressive Macho's House"]
 
 # House (gourd+fruit) + cabin (minors)
-laura_house_ids = ["Progressive Laura's House", "Progressive Laura's House", "Progressive Laura's House",
+laura_house_ids = ["Progressive Laura's House", "Progressive Laura's House",
                    "Progressive Laura's House", "Progressive Laura's House"]
 
 # Paige gives a pocket
@@ -70,12 +70,10 @@ paige_house_ids = ["Progressive Paige's House", "Progressive Paige's House", "Pr
 claude_house_ids = ["Progressive Claude's House", "Progressive Claude's House", "Progressive Claude's House"]
 
 # House + cabin (minor)
-hag_house_ids = ["Progressive Hag's House", "Progressive Hag's House",
-                 "Progressive Hag's House", "Progressive Hag's House"]
+hag_house_ids = ["Progressive Hag's House", "Progressive Hag's House", "Progressive Hag's House"]
 
 # House (fruit+gourd) + stairs (minors) + cabin (minor)
-alnet_house_ids = ["Progressive Alnet's House", "Progressive Alnet's House",
-                   "Progressive Alnet's House", "Progressive Alnet's House"]
+alnet_house_ids = ["Progressive Alnet's House", "Progressive Alnet's House", "Progressive Alnet's House"]
 
 windmill_ids = ["Progressive Windmill 1", "Progressive Windmill 1", "Progressive Windmill 1",
                 "Progressive Windmill 2", "Progressive Windmill 2", "Progressive Windmill 2",
@@ -85,12 +83,14 @@ other_ids = ["Norune Trees", "Norune Trees", "Norune Bridge", "Norune Road", "No
 
 # Atla that give MCs by content quality (unless handled otherwise). If MC shuffle is on, these all need to be required
 mc_useful = []
-mc_filler = ["Progressive Macho's House", "Progressive Macho's House", "Progressive Claude's House",
-             "Progressive Claude's House", "Progressive Claude's House", "Progressive Claude's House", ]
+mc_filler = ["Progressive Macho's House", "Progressive Macho's House", "Progressive Macho's House",
+             "Progressive Claude's House", "Progressive Claude's House",
+             "Progressive Claude's House", "Progressive Claude's House", "Progressive Alnet's House"]
 # Pieces that only give MCs in the second half of a dungeon
 mc_useful_2 = ["Progressive Laura's House", "Progressive Hag's House", "Progressive Hag's House",
-               "Progressive Hag's House", "Progressive Alnet's House"]
-mc_filler_2 = ["Progressive Laura's House", "Progressive Alnet's House", "Progressive Alnet's House"]
+               "Progressive Hag's House", "Progressive Hag's House", "Progressive Alnet's House"]
+mc_filler_2 = ["Progressive Laura's House", "Progressive Laura's House",
+               "Progressive Alnet's House", "Progressive Alnet's House"]
 
 # Always required/useful/filler items
 required = player_house_ids + gaffer_buggy_ids + paige_house_ids + ["Norune Pond", "Progressive Dran's Windmill"]
