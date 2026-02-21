@@ -381,6 +381,12 @@ class DarkCloudWorld(World):
                 "auto_build": self.options.auto_build.value,
                 "miracle_sanity": self.options.miracle_sanity.value,
                 "death_link": self.options.death_link.value,
+                "toan_name": self.options.toan_name.value,
+                "xiao_name": self.options.xiao_name.value,
+                "goro_name": self.options.goro_name.value,
+                "ruby_name": self.options.ruby_name.value,
+                "ungaga_name": self.options.ungaga_name.value,
+                "osmond_name": self.options.osmond_name.value,
             },
         }
 
