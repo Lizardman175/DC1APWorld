@@ -214,7 +214,7 @@ class DarkCloudWorld(World):
                                     ChestRules.ungaga_available_only(state, self.player) and state.has_all(geo, self.player)
                             else:
                                 loc.access_rule = lambda state: ChestRules.ungaga_available_only(state, self.player)
-                        # Some items have Osmond listed but he doesn't have any special requirements beyond the region
+                        # Some items have Osmond listed but he doesn't currently have any special requirements beyond the region
                         # so we need to handle ignoring him with these 2 cases:
                         elif chest.req_geo:
                             loc.access_rule = lambda state, geo=chest.req_geo: state.has_all(geo, self.player)
@@ -293,46 +293,45 @@ class DarkCloudWorld(World):
         match self.options.boss_goal:
             case 2:
                 if self.options.all_bosses:
-                    self.multiworld.completion_condition[self.player] = lambda state: self.boss_rules.two_bosses(state,
-                                                                                                           self.player)
+                    self.multiworld.completion_condition[self.player] =\
+                        lambda state: self.boss_rules.two_bosses(state, self.player)
                 else:
-                    self.multiworld.completion_condition[self.player] = lambda state: self.boss_rules.utan_access(state,
-                                                                                                        self.player)\
-                        and self.char_rules.goro_available(state, self.player)
+                    self.multiworld.completion_condition[self.player] =\
+                        lambda state: self.boss_rules.utan_access(state, self.player) and \
+                                      self.char_rules.goro_available(state, self.player)
             case 3:
                 if self.options.all_bosses:
-                    self.multiworld.completion_condition[self.player] = lambda state: self.boss_rules.three_bosses(state,
-                                                                                                         self.player)
+                    self.multiworld.completion_condition[self.player] =\
+                        lambda state: self.boss_rules.three_bosses(state, self.player)
                 else:
-                    self.multiworld.completion_condition[self.player] = lambda state: self.boss_rules.saia_access(state,
-                                                                                                        self.player)\
-                                                    and self.char_rules.ruby_available(state, self.player)
+                    self.multiworld.completion_condition[self.player] =\
+                        lambda state: self.boss_rules.saia_access(state, self.player) and\
+                                      self.char_rules.ruby_available(state, self.player)
             case 4:
                 if self.options.all_bosses:
-                    self.multiworld.completion_condition[self.player] = lambda state: self.boss_rules.four_bosses(state,
-                                                                                                        self.player)
+                    self.multiworld.completion_condition[self.player] =\
+                        lambda state: self.boss_rules.four_bosses(state, self.player)
                 else:
-                    self.multiworld.completion_condition[self.player] = lambda state: self.boss_rules.curse_access(state,
-                                                                                                         self.player)\
-                                            and self.char_rules.ungaga_available(state, self.player)
+                    self.multiworld.completion_condition[self.player] =\
+                        lambda state: self.boss_rules.curse_access(state, self.player) and\
+                                      self.char_rules.ungaga_available(state, self.player)
             case 5:
                 if self.options.all_bosses:
-                    self.multiworld.completion_condition[self.player] = lambda state: self.boss_rules.five_bosses(state,
-                                                                                                    self.player)
+                    self.multiworld.completion_condition[self.player] =\
+                        lambda state: self.boss_rules.five_bosses(state, self.player)
                 else:
-                    self.multiworld.completion_condition[self.player] = lambda state: self.boss_rules.joe_access(state,
-                                                                                                   self.player) and\
-                                                                                      self.char_rules.osmond_available(
-                                                                                                    state, self.player)
+                    self.multiworld.completion_condition[self.player] =\
+                        lambda state: self.boss_rules.joe_access(state, self.player) and\
+                                      self.char_rules.osmond_available(state, self.player)
             case 6:
                 if self.options.all_bosses:
-                    self.multiworld.completion_condition[self.player] = lambda state: self.boss_rules.six_bosses(state,
-                                                                                                       self.player)
+                    self.multiworld.completion_condition[self.player] =\
+                        lambda state: self.boss_rules.six_bosses(state, self.player)
                 else:
-                    self.multiworld.completion_condition[self.player] = lambda state: self.boss_rules.genie_access(state,
-                                                                                                     self.player) \
-                                                                                  and self.char_rules.osmond_available(
-                                                                                            state, self.player)
+                    self.multiworld.completion_condition[self.player] =\
+                        lambda state: self.boss_rules.genie_access(state, self.player) and\
+                                      self.char_rules.osmond_available(state, self.player)
+
     def create_item(self, name:str) -> DarkCloudItem:
         classification = self.item_name_to_classification[name]
         return DarkCloudItem(name, classification, self.item_name_to_id[name], self.player)
