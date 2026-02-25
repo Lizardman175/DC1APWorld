@@ -1,5 +1,6 @@
+import re
 from dataclasses import dataclass
-from Options import Choice, Toggle, PerGameCommonOptions, Range, DeathLink
+from Options import Choice, Toggle, PerGameCommonOptions, Range, DeathLink, FreeText
 
 
 class Goal(Range):
@@ -72,6 +73,74 @@ class AutoBuild(Choice):
     option_muska_robot_only = 5
     default = 2
 
+class ToanName(FreeText):
+    """Default name for Toan.
+    1-10 characters.  Valid Characters: A-Z, a-z, 0-9, '="!?#&+-*/%~()@|<>[]{}:,.$, space
+    Anything outside that range will fail generation.
+
+    NOTE: Must connect before hitting Start Game for Toan's name to be affected."""
+    display_name = "Toan's Default Name"
+    default = "Toan"
+
+    def __init__(self, value:str):
+        super(ToanName, self).__init__(value.strip())
+        test_char_name("Toan", self.value)
+
+class XiaoName(FreeText):
+    """Default name for Xiao.
+    1-10 characters.  Valid Characters: A-Z, a-z, 0-9, '="!?#&+-*/%~()@|<>[]{}:,.$, space
+    Cannot start with a space. Anything outside that range will fail generation."""
+    display_name = "Xiao's Default Name"
+    default = "Xiao"
+
+    def __init__(self, value:str):
+        super(XiaoName, self).__init__(value.strip())
+        test_char_name("Xiao", self.value)
+
+class GoroName(FreeText):
+    """Default name for Goro.
+    1-10 characters.  Valid Characters: A-Z, a-z, 0-9, '="!?#&+-*/%~()@|<>[]{}:,.$, space
+    Cannot start with a space. Anything outside that range will fail generation."""
+    display_name = "Goro's Default Name"
+    default = "Goro"
+
+    def __init__(self, value:str):
+        super(GoroName, self).__init__(value.strip())
+        test_char_name("Goro", self.value)
+
+class RubyName(FreeText):
+    """Default name for Ruby.
+    1-10 characters.  Valid Characters: A-Z, a-z, 0-9, '="!?#&+-*/%~()@|<>[]{}:,.$, space
+    Cannot start with a space. Anything outside that range will fail generation."""
+    display_name = "Ruby's Default Name"
+    default = "Ruby"
+
+    def __init__(self, value:str):
+        super(RubyName, self).__init__(value.strip())
+        test_char_name("Ruby", self.value)
+
+class UngagaName(FreeText):
+    """Default name for Ungaga.
+    1-10 characters.  Valid Characters: A-Z, a-z, 0-9, '="!?#&+-*/%~()@|<>[]{}:,.$, space
+    Cannot start with a space. Anything outside that range will fail generation."""
+    display_name = "Ungaga's Default Name"
+    default = "Ungaga"
+
+    def __init__(self, value:str):
+        super(UngagaName, self).__init__(value.strip())
+        test_char_name("Ungaga", self.value)
+
+class OsmondName(FreeText):
+    """Default name for Osmond.
+    1-10 characters.  Valid Characters: A-Z, a-z, 0-9, '="!?#&+-*/%~()@|<>[]{}:,.$, space
+    Cannot start with a space. Anything outside that range will fail generation."""
+    display_name = "Osmond's Default Name"
+    default = "Osmond"
+
+    def __init__(self, value:str):
+        super(OsmondName, self).__init__(value.strip())
+        test_char_name("Osmond", self.value)
+
 @dataclass
 class DarkCloudOptions(PerGameCommonOptions):
     boss_goal: Goal
@@ -84,4 +153,29 @@ class DarkCloudOptions(PerGameCommonOptions):
     attach_mult_config: AttachmentMultiplierConfig
     auto_build: AutoBuild
     death_link: DeathLink
+    toan_name: ToanName
+    xiao_name: XiaoName
+    goro_name: GoroName
+    ruby_name: RubyName
+    ungaga_name: UngagaName
+    osmond_name: OsmondName
 
+# Patterns for Name option validation
+valid_pattern = r"[a-zA-Z0-9'=\"!?#&+\-*/%~()@|<>\[\]{}:,.$][a-zA-Z0-9'=\"!?#&+\-*/%~()@|<>\[\]{}:,.$ ]*"
+len_pattern = r"[a-zA-Z0-9'=\"!?#&+\-*/%~()@|<>\[\]{}:,.$ ]{1,10}"
+
+def test_char_name(char:str, name:str) -> None:
+    if not re.fullmatch(valid_pattern, name):
+        raise NameCharException(char, name)
+    if not re.fullmatch(len_pattern, name):
+        raise NameLenException(char, name)
+
+class NameCharException(Exception):
+    def __init__(self, message:str, name:str):
+        self.message = message + "'s name contains invalid characters: " + name
+        super().__init__(self.message)
+
+class NameLenException(Exception):
+    def __init__(self, message:str, name:str):
+        self.message = message + "'s name is invalid: '" + name + "'. Must be from 1 to 10 characters."
+        super().__init__(self.message)
