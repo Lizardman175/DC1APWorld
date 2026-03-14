@@ -197,11 +197,18 @@ class DarkCloudWorld(World):
                             else:
                                 loc.access_rule = lambda state: ChestRules.xiao_available_only(state, self.player)
                         elif chest.req_char == "goro":
-                            if chest.req_geo:
-                                loc.access_rule = lambda state, geo=chest.req_geo: \
-                                    ChestRules.goro_available_only(state, self.player) and state.has_all(geo, self.player)
+                            if hasattr(self.multiworld, "generation_is_fake"):
+                                if chest.req_geo:
+                                    loc.access_rule = lambda state, geo=chest.req_geo: \
+                                        ChestRules.goro_available_only_ut(state, self.player) and state.has_all(geo, self.player)
+                                else:
+                                    loc.access_rule = lambda state: ChestRules.goro_available_only_ut(state, self.player)
                             else:
-                                loc.access_rule = lambda state: ChestRules.goro_available_only(state, self.player)
+                                if chest.req_geo:
+                                    loc.access_rule = lambda state, geo=chest.req_geo: \
+                                        ChestRules.goro_available_only(state, self.player) and state.has_all(geo, self.player)
+                                else:
+                                    loc.access_rule = lambda state: ChestRules.goro_available_only(state, self.player)
                         elif chest.req_char == "ruby":
                             if chest.req_geo:
                                 loc.access_rule = lambda state, geo=chest.req_geo: \
