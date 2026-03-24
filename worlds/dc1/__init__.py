@@ -28,6 +28,8 @@ geo_class = [NoruneGeoItems, MatatakiGeoItems, QueensGeoItems, MuskaGeoItems, Fa
 
 dungeon_locations = json.loads(pkgutil.get_data(__name__, "data/atla_locations.json").decode())
 
+dark_genie_id = 971119999
+
 # TODO webworld implementation as we get closer to completion.
 class DarkCloudWeb(WebWorld):
     theme = "jungle"
@@ -45,8 +47,8 @@ class DarkCloudWorld(World):
     topology_present = True
     web = DarkCloudWeb()
 
-    item_name_to_id = {}
-    location_name_to_id = {}
+    item_name_to_id = {"Dark Genie": 971119999, }
+    location_name_to_id = {"Dark Genie": 971119999, }
     item_name_to_classification = {}
     filler_item_names = []
 
@@ -191,11 +193,18 @@ class DarkCloudWorld(World):
                             loc.access_rule = lambda state, geo=chest.req_geo: state.has_all(geo, self.player)
                     else:
                         if chest.req_char == "xiao":
-                            if chest.req_geo:
-                                loc.access_rule = lambda state, geo=chest.req_geo: \
-                                    ChestRules.xiao_available_only(state, self.player) and state.has_all(geo, self.player)
+                            if hasattr(self.multiworld, "generation_is_fake"):
+                                if chest.req_geo:
+                                    loc.access_rule = lambda state, geo=chest.req_geo: \
+                                        ChestRules.xiao_available_only_ut(state, self.player) and state.has_all(geo, self.player)
+                                else:
+                                    loc.access_rule = lambda state: ChestRules.xiao_available_only_ut(state, self.player)
                             else:
-                                loc.access_rule = lambda state: ChestRules.xiao_available_only(state, self.player)
+                                if chest.req_geo:
+                                    loc.access_rule = lambda state, geo=chest.req_geo: \
+                                        ChestRules.xiao_available_only(state, self.player) and state.has_all(geo, self.player)
+                                else:
+                                    loc.access_rule = lambda state: ChestRules.xiao_available_only(state, self.player)
                         elif chest.req_char == "goro":
                             if hasattr(self.multiworld, "generation_is_fake"):
                                 if chest.req_geo:
@@ -229,6 +238,16 @@ class DarkCloudWorld(World):
                             loc.access_rule = lambda state: True
 
                     towns[i].locations.append(loc)
+
+        # Sometimes players kill the DG before the other bosses then have to refight the genie.  This will allow the
+        # client to acknowledge the genie kill in that situation.
+        if self.options.all_bosses and self.options.boss_goal == 6:
+            loc = DarkCloudLocation(self.player, "Dark Genie", dark_genie_id, LocationProgressType.DEFAULT,
+                                        got)
+            item = DarkCloudItem("Dark Genie", ItemClassification.progression, dark_genie_id, self.player)
+            loc.place_locked_item(item)
+            loc.access_rule = lambda state: self.boss_rules.genie_access(state, self.player)
+            got.locations.append(loc)
 
         # Connect Regions
         def create_connection(from_region: str, to_region: str):
