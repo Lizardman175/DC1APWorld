@@ -47,8 +47,8 @@ class DarkCloudWorld(World):
     topology_present = True
     web = DarkCloudWeb()
 
-    item_name_to_id = {"Dark Genie": 971119999, }
-    location_name_to_id = {"Dark Genie": 971119999, }
+    item_name_to_id = {"Dark Genie": dark_genie_id, }
+    location_name_to_id = {"Dark Genie": dark_genie_id, }
     item_name_to_classification = {}
     filler_item_names = []
 
@@ -118,6 +118,9 @@ class DarkCloudWorld(World):
             for i in range(min(5, int(self.options.boss_goal))):
                 for item in self.item_data[i]:
                     self.multiworld.itempool.extend(item.to_items(self.player, self))
+
+        # TODO temp fix for Big Async.  Replaced final Alnet's House with a garnet for now
+        self.multiworld.itempool.append(self.create_item("Garnet"))
 
     # Set up progressive items
     def collect_item(self, state: "CollectionState", item: "Item", remove: bool = False) -> Optional[str]:

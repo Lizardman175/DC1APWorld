@@ -73,7 +73,9 @@ claude_house_ids = ["Progressive Claude's House", "Progressive Claude's House", 
 hag_house_ids = ["Progressive Hag's House", "Progressive Hag's House", "Progressive Hag's House"]
 
 # House (fruit+gourd) + stairs (minors) + cabin (minor)
-alnet_house_ids = ["Progressive Alnet's House", "Progressive Alnet's House", "Progressive Alnet's House"]
+# TODO temp fix for Big Async.  Replaced final Alnet's House with a garnet for now
+#alnet_house_ids = ["Progressive Alnet's House", "Progressive Alnet's House", "Progressive Alnet's House"]
+alnet_house_ids = ["Progressive Alnet's House", "Progressive Alnet's House"]
 
 windmill_ids = ["Progressive Windmill 1", "Progressive Windmill 1", "Progressive Windmill 1",
                 "Progressive Windmill 2", "Progressive Windmill 2", "Progressive Windmill 2",
