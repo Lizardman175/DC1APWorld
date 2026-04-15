@@ -98,6 +98,12 @@ class DarkCloudWorld(World):
 
     origin_region_name = "Norune"
 
+    atla_per_floor = [[7, 3, 0, 0, 0, 0], [0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0],
+                      [1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0],
+                      [1, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+
     def generate_early(self) -> None:
         if hasattr(self.multiworld, "generation_is_fake"):
             self.char_rules = CharRulesUT()
@@ -109,6 +115,32 @@ class DarkCloudWorld(World):
         self.boss_rules = BossRules()
         self.boss_rules.set_char_rules(self.char_rules)
         # Don't add any generation actions before this line!  Need to determine rule classes first
+
+        # self.normalize_atla()
+
+    def normalize_atla(self):
+        # Atla per dungeon half.  Not doing last dungeon since the alta are already static
+        atla_count = [33, 38, 54, 40, 41, 32, 31, 34, 29, 27]
+        # atla_per_floor = [[7, 3, 0, 0, 0, 0],    [0, 0, 0, 0, 0],
+        #                   [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0],
+        #                   [1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0],
+        #                   [1, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0],
+        #                   [0, 0, 0, 0, 0, 0],    [0, 0, 0, 0, 0]]
+
+        for i in range(min(len(atla_count), self.options.boss_goal*2)):
+            count = atla_count[i]
+            ll = self.atla_per_floor[i]
+            l_index = 0
+
+            while count > 0:
+                if ll[l_index] < 8:
+                    r = self.random.randint(0, min(8 - ll[l_index], count))
+                    ll[l_index] = ll[l_index] + r
+                    count = count - r
+
+                l_index = (l_index + 1) % len(ll)
+
+            # print (ll, sum(ll))
 
     def create_items(self):
         for i in range(self.options.boss_goal):
@@ -156,8 +188,8 @@ class DarkCloudWorld(World):
         dbc2 = Region("DBC2", self.player, self.multiworld)
         wof1 = Region("WOF1", self.player, self.multiworld)
         wof2 = Region("WOF2", self.player, self.multiworld)
-        sr1 = Region("SR1", self.player, self.multiworld)
-        sr2 = Region("SR2", self.player, self.multiworld)
+        sw1 = Region("SW1", self.player, self.multiworld)
+        sw2 = Region("SW2", self.player, self.multiworld)
         smt1 = Region("SMT1", self.player, self.multiworld)
         smt2 = Region("SMT2", self.player, self.multiworld)
         ms1 = Region("MS1", self.player, self.multiworld)
@@ -165,7 +197,7 @@ class DarkCloudWorld(World):
         got = Region("GOT", self.player, self.multiworld)
 
         towns = [norune, matataki, queens, muska, factory, dhc]
-        dungeons = [dbc1, dbc2, wof1, wof2, sr1, sr2, smt1, smt2, ms1, ms2, got]
+        dungeons = [dbc1, dbc2, wof1, wof2, sw1, sw2, smt1, smt2, ms1, ms2, got]
 
         for town in towns:
             regions[town.name] = town
@@ -257,10 +289,10 @@ class DarkCloudWorld(World):
             regions[from_region].connect(regions[to_region])
 
         create_connection("Norune", "Matataki")
-        create_connection("Norune", "Queens")
-        create_connection("Norune", "Muska")
-        create_connection("Norune", "Factory")
-        create_connection("Norune", "DHC")
+        create_connection("Matataki", "Queens")
+        create_connection("Queens", "Muska")
+        create_connection("Muska", "Factory")
+        create_connection("Factory", "DHC")
 
         create_connection("Norune", "DBC1")
         create_connection("Norune", "DBC2")
@@ -268,8 +300,8 @@ class DarkCloudWorld(World):
         create_connection("Matataki", "WOF1")
         create_connection("Matataki", "WOF2")
 
-        create_connection("Queens", "SR1")
-        create_connection("Queens", "SR2")
+        create_connection("Queens", "SW1")
+        create_connection("Queens", "SW2")
 
         create_connection("Muska", "SMT1")
         create_connection("Muska", "SMT2")
@@ -291,32 +323,32 @@ class DarkCloudWorld(World):
         set_rule(self.multiworld.get_entrance("Norune -> Matataki", self.player),
                  lambda state: self.char_rules.xiao_available(state, self.player))
         set_rule(self.multiworld.get_entrance("Matataki -> WOF1", self.player),
-                 lambda state: self.char_rules.xiao_available(state, self.player))
+                lambda state: True)
 
         set_rule(self.multiworld.get_entrance("Matataki -> WOF2", self.player),
-                 lambda state: self.char_rules.goro_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Norune -> Queens", self.player),
-                 lambda state: self.char_rules.goro_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Queens -> SR1", self.player),
-                 lambda state: self.char_rules.goro_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Queens -> SR2", self.player),
-                 lambda state: self.char_rules.ruby_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Norune -> Muska", self.player),
-                 lambda state: self.char_rules.ruby_available(state, self.player))
+                 lambda state: self.char_rules.goro_available_only(state, self.player))
+        set_rule(self.multiworld.get_entrance("Matataki -> Queens", self.player),
+                 lambda state: self.char_rules.goro_available_only(state, self.player))
+        set_rule(self.multiworld.get_entrance("Queens -> SW1", self.player),
+                 lambda state: True)
+        set_rule(self.multiworld.get_entrance("Queens -> SW2", self.player),
+                 lambda state: self.char_rules.ruby_available_only(state, self.player))
+        set_rule(self.multiworld.get_entrance("Queens -> Muska", self.player),
+                 lambda state: self.char_rules.ruby_available_only(state, self.player))
         set_rule(self.multiworld.get_entrance("Muska -> SMT1", self.player),
-                 lambda state: self.char_rules.ruby_available(state, self.player))
+                 lambda state: True)
         set_rule(self.multiworld.get_entrance("Muska -> SMT2", self.player),
-                 lambda state: self.char_rules.ungaga_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Norune -> Factory", self.player),
-                 lambda state: self.char_rules.ungaga_available(state, self.player))
+                 lambda state: self.char_rules.ungaga_available_only(state, self.player))
+        set_rule(self.multiworld.get_entrance("Muska -> Factory", self.player),
+                 lambda state: self.char_rules.ungaga_available_only(state, self.player))
         set_rule(self.multiworld.get_entrance("Factory -> MS1", self.player),
-                 lambda state: self.char_rules.ungaga_available(state, self.player))
+                 lambda state: True)
         set_rule(self.multiworld.get_entrance("Factory -> MS2", self.player),
-                 lambda state: self.char_rules.osmond_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Norune -> DHC", self.player),
-                 lambda state: self.char_rules.got_accessible(state, self.player))
+                 lambda state: self.char_rules.osmond_available_only(state, self.player))
+        set_rule(self.multiworld.get_entrance("Factory -> DHC", self.player),
+                 lambda state: self.char_rules.osmond_available_only(state, self.player))
         set_rule(self.multiworld.get_entrance("DHC -> GOT", self.player),
-                 lambda state: self.char_rules.got_accessible(state, self.player))
+                 lambda state: True)
 
         # Set up completion goal
         match self.options.boss_goal:
@@ -387,6 +419,7 @@ class DarkCloudWorld(World):
                 "ruby_name": self.options.ruby_name.value,
                 "ungaga_name": self.options.ungaga_name.value,
                 "osmond_name": self.options.osmond_name.value,
+                # "apf": self.atla_per_floor,
             },
         }
 
