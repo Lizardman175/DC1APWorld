@@ -9,7 +9,15 @@ class CharRulesInterface(abc.ABC):
         pass
 
     @abc.abstractmethod
+    def goro_available_only(self, state: CollectionState, player: int) -> bool:
+        pass
+
+    @abc.abstractmethod
     def goro_available(self, state: CollectionState, player: int) -> bool:
+        pass
+
+    @abc.abstractmethod
+    def ruby_available_only(self, state: CollectionState, player: int) -> bool:
         pass
 
     @abc.abstractmethod
@@ -17,7 +25,15 @@ class CharRulesInterface(abc.ABC):
         pass
 
     @abc.abstractmethod
+    def ungaga_available_only(self, state: CollectionState, player: int) -> bool:
+        pass
+
+    @abc.abstractmethod
     def ungaga_available(self, state: CollectionState, player: int) -> bool:
+        pass
+
+    @abc.abstractmethod
+    def osmond_available_only(self, state: CollectionState, player: int) -> bool:
         pass
 
     @abc.abstractmethod
