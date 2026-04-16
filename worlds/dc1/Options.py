@@ -22,6 +22,12 @@ class OpenDungeon(Choice):
     option_closed = 0
     option_open = 1
 
+class ProgressiveCharRecruitment(Toggle):
+    """Makes all character recruitment buildings one progressive item.  Useful for long/large multiworlds.
+    All Player House pieces will be received, followed by Cacao's House starting at item 8, etc."""
+    display_name = "Progressive Char Recruitment"
+    default = 1
+
 class BetterStartingWeapons(Toggle):
     """Give each character a Tier 1 weapon in addition to their unbreakable starter."""
     display_name = "Better Starting Weapons"
@@ -146,6 +152,7 @@ class DarkCloudOptions(PerGameCommonOptions):
     boss_goal: Goal
     all_bosses: AllBosses
     open_dungeon: OpenDungeon
+    progressive_chars: ProgressiveCharRecruitment
     starter_weapons: BetterStartingWeapons
     miracle_sanity: MiracleSanity
     abs_multiplier: AbsMultiplier
