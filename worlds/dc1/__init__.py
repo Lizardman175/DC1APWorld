@@ -6,6 +6,7 @@ from typing import Mapping, Any, Optional
 from BaseClasses import Region, LocationProgressType, Item, CollectionState, ItemClassification
 from worlds.AutoWorld import World, WebWorld
 from worlds.generic.Rules import set_rule
+from .JunkDrawer import dark_genie_id, progressive_char_recruit_name, progressive_char_recruit_id
 
 from .data import (NoruneGeoItems, MatatakiGeoItems, QueensGeoItems,
                    MuskaGeoItems, FactoryGeoItems, DHCGeoItems)
@@ -13,6 +14,7 @@ from .Items import DarkCloudItem, ItemData
 from .Location import DarkCloudLocation
 from .Options import DarkCloudOptions
 from .data.MiracleChest import MiracleChest
+from .data.Progressive import all_chars, split_chars
 from .game_id import dc1_name
 from .rules import ChestRules
 from .rules.BossRules import BossRules
@@ -28,8 +30,7 @@ geo_class = [NoruneGeoItems, MatatakiGeoItems, QueensGeoItems, MuskaGeoItems, Fa
 
 dungeon_locations = json.loads(pkgutil.get_data(__name__, "data/atla_locations.json").decode())
 
-dark_genie_id = 971119999
-
+prog_map = json.loads(pkgutil.get_data(__name__, "data/progressive.json").decode())
 # TODO webworld implementation as we get closer to completion.
 class DarkCloudWeb(WebWorld):
     theme = "jungle"
@@ -55,6 +56,13 @@ class DarkCloudWorld(World):
     char_rules: CharRulesInterface = None
     boss_rules: BossRules = None
 
+    progressive_item_list = {}
+    for prog_item in prog_map:
+        progressiveName = prog_map[prog_item]
+        if progressiveName not in progressive_item_list:
+            progressive_item_list[progressiveName] = []
+        progressive_item_list[progressiveName].append(prog_item)
+
     # Parse inventory item data
     item_data = [[],[],[],[],[]]
     reader = pkgutil.get_data(__name__, "data/item_data.csv").decode().splitlines()
@@ -77,6 +85,7 @@ class DarkCloudWorld(World):
 
         item_name_to_classification[row[0]] = classification
 
+    item_name_to_id.update({progressive_char_recruit_name: progressive_char_recruit_id})
 
     for i in geo_class:
         item_name_to_id.update(i.ids)
@@ -98,11 +107,12 @@ class DarkCloudWorld(World):
 
     origin_region_name = "Norune"
 
-    atla_per_floor = [[7, 3, 0, 0, 0, 0], [0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0],
-                      [1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0],
-                      [1, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+    # Floors will at a minimum get +1 each.  -1 is used so the rare 0 atla floor is possible
+    atla_per_floor = [[6, 2, -1, -1, -1, -1], [-1, -1, -1, -1, -1],
+                      [-1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1],
+                      [0, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1],
+                      [0, -1, -1, -1, -1, -1, 0], [-1, -1, -1, -1, -1, -1, -1],
+                      [-1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1]]
 
     def generate_early(self) -> None:
         if hasattr(self.multiworld, "generation_is_fake"):
@@ -116,16 +126,22 @@ class DarkCloudWorld(World):
         self.boss_rules.set_char_rules(self.char_rules)
         # Don't add any generation actions before this line!  Need to determine rule classes first
 
-        # self.normalize_atla()
+        if self.options.progressive_chars:
+            temp_items = all_chars
+        else:
+            temp_items = split_chars
+
+        for prog_item in temp_items:
+            progressive_name = temp_items[prog_item]
+            if progressive_name not in self.progressive_item_list:
+                self.progressive_item_list[progressive_name] = []
+            self.progressive_item_list[progressive_name].append(prog_item)
+
+        self.normalize_atla()
 
     def normalize_atla(self):
         # Atla per dungeon half.  Not doing last dungeon since the alta are already static
-        atla_count = [33, 38, 54, 40, 41, 32, 31, 34, 29, 27]
-        # atla_per_floor = [[7, 3, 0, 0, 0, 0],    [0, 0, 0, 0, 0],
-        #                   [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0],
-        #                   [1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0],
-        #                   [1, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0],
-        #                   [0, 0, 0, 0, 0, 0],    [0, 0, 0, 0, 0]]
+        atla_count = [39, 43, 61, 46, 48, 39, 38, 41, 35, 32]
 
         for i in range(min(len(atla_count), self.options.boss_goal*2)):
             count = atla_count[i]
@@ -134,7 +150,7 @@ class DarkCloudWorld(World):
 
             while count > 0:
                 if ll[l_index] < 8:
-                    r = self.random.randint(0, min(8 - ll[l_index], count))
+                    r = self.random.randint(1, min(8 - ll[l_index], count))
                     ll[l_index] = ll[l_index] + r
                     count = count - r
 
@@ -160,7 +176,7 @@ class DarkCloudWorld(World):
             return None
         name = item.name
         if name.startswith("Progressive "):
-            prog_table = Items.progressive_item_list[name]
+            prog_table = self.progressive_item_list[name]
             if remove:
                 for item_name in reversed(prog_table):
                     if state.has(item_name, item.player):
@@ -419,7 +435,7 @@ class DarkCloudWorld(World):
                 "ruby_name": self.options.ruby_name.value,
                 "ungaga_name": self.options.ungaga_name.value,
                 "osmond_name": self.options.osmond_name.value,
-                # "apf": self.atla_per_floor,
+                "apf": self.atla_per_floor,
             },
         }
 
