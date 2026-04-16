@@ -1,8 +1,10 @@
 from BaseClasses import ItemClassification
 from ..Items import DarkCloudItem
+from ..JunkDrawer import progressive_char_recruit_id, progressive_char_recruit_name
 from ..Options import DarkCloudOptions
 
 ids = {
+    progressive_char_recruit_name: progressive_char_recruit_id,
     "Progressive Player's House": 971110100,
     "Progressive Macho's House": 971110101,
     "Progressive Laura's House": 971110102,
@@ -41,10 +43,6 @@ classifications = {
     "Norune River": ItemClassification.filler,
     "Norune Bridge": ItemClassification.filler,
 }
-
-player_house_ids = ["Progressive Player's House", "Progressive Player's House", "Progressive Player's House",
-                    "Progressive Player's House", "Progressive Player's House", "Progressive Player's House",
-                    "Progressive Player's House"]
 
 # Paige's House & Pike are in the Gaffer list to always be required
 gaffer_buggy_ids = ["Progressive Paige's House", "Progressive Paige's House", "Progressive Gaffer's Buggy",
@@ -95,7 +93,7 @@ mc_filler_2 = ["Progressive Laura's House", "Progressive Laura's House",
                "Progressive Alnet's House", "Progressive Alnet's House"]
 
 # Always required/useful/filler items
-required = player_house_ids + gaffer_buggy_ids + paige_house_ids + ["Norune Pond", "Progressive Dran's Windmill"]
+required = gaffer_buggy_ids + paige_house_ids + ["Norune Pond", "Progressive Dran's Windmill"]
 useful = hag_house_ids
 filler = windmill_ids + other_ids + alnet_house_ids + claude_house_ids + laura_house_ids + macho_house_ids
 
@@ -107,6 +105,17 @@ def create_norune_atla(options: DarkCloudOptions, player: int) -> list["DarkClou
     norune_progression = required.copy()
     norune_useful = useful.copy()
     norune_filler = filler.copy()
+
+    if options.progressive_chars:
+        player_house_ids = [progressive_char_recruit_name, progressive_char_recruit_name, progressive_char_recruit_name,
+                            progressive_char_recruit_name, progressive_char_recruit_name, progressive_char_recruit_name,
+                            progressive_char_recruit_name]
+    else:
+        player_house_ids = ["Progressive Player's House", "Progressive Player's House", "Progressive Player's House",
+                            "Progressive Player's House", "Progressive Player's House", "Progressive Player's House",
+                            "Progressive Player's House"]
+
+    norune_progression.extend(player_house_ids)
 
     # Dran's windmill is only full required if Dran is required or the key chest is available
     if options.all_bosses or options.miracle_sanity:

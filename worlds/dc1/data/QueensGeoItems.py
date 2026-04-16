@@ -1,8 +1,10 @@
 from BaseClasses import ItemClassification
 from ..Items import DarkCloudItem
+from ..JunkDrawer import progressive_char_recruit_id, progressive_char_recruit_name
 from ..Options import DarkCloudOptions
 
 ids = {
+    progressive_char_recruit_name: progressive_char_recruit_id,
     "Progressive Ruty's Store": 971110300,
     "Progressive Suzy's Store": 971110301,
     "Progressive Lana's Store": 971110302,
@@ -36,9 +38,6 @@ classifications = {
     "Queens Road": ItemClassification.filler
 }
 
-king_ids = ["Progressive King's Hideout", "Progressive King's Hideout", "Progressive King's Hideout",
-            "Progressive King's Hideout", "Progressive King's Hideout", "Progressive King's Hideout",
-            "Progressive King's Hideout"]
 cathedral_ids = ["Progressive Cathedral", "Progressive Cathedral", "Progressive Cathedral",
                  "Progressive Cathedral"]
 joker_ids = ["Progressive Joker's House", "Progressive Joker's House",
@@ -73,8 +72,8 @@ mc_filler = ["Progressive Ruty's Store", "Progressive Lana's Store",
 
 # Always required/useful/filler items
 # Jack's Store has a parfait
-required = king_ids + ["Progressive Jack's Store", "Progressive Jack's Store",
-                       "Progressive Joker's House", "Progressive Cathedral"]
+required = ["Progressive Jack's Store", "Progressive Jack's Store",
+            "Progressive Joker's House", "Progressive Cathedral"]
 useful = jack_ids + suzy_ids + ruty_ids
 filler = other_ids + fountain_ids + tower_ids + lana_ids + basker_ids
 
@@ -86,6 +85,17 @@ def create_queens_atla(options: DarkCloudOptions, player: int) -> list["DarkClou
     queens_required = required.copy()
     queens_useful = useful.copy()
     queens_filler = filler.copy()
+
+    if options.progressive_chars:
+        king_ids = [progressive_char_recruit_name, progressive_char_recruit_name, progressive_char_recruit_name,
+                    progressive_char_recruit_name, progressive_char_recruit_name, progressive_char_recruit_name,
+                    progressive_char_recruit_name]
+    else:
+        king_ids = ["Progressive King's Hideout", "Progressive King's Hideout", "Progressive King's Hideout",
+                    "Progressive King's Hideout", "Progressive King's Hideout", "Progressive King's Hideout",
+                    "Progressive King's Hideout"]
+
+    queens_required.extend(king_ids)
 
     if options.boss_goal == 3 or options.all_bosses:
         queens_required.extend(

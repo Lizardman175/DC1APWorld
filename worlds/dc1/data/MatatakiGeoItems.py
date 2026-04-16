@@ -1,8 +1,10 @@
 from BaseClasses import ItemClassification
 from ..Items import DarkCloudItem
+from ..JunkDrawer import progressive_char_recruit_id, progressive_char_recruit_name
 from ..Options import DarkCloudOptions
 
 ids = {
+    progressive_char_recruit_name: progressive_char_recruit_id,
     "Progressive Pao's House": 971110200,
     "Progressive Cacao's House": 971110201,
     "Progressive Bunbuku's House": 971110202,
@@ -48,9 +50,6 @@ classifications = {
     "Earth B": ItemClassification.filler,
 }
 
-cacao_ids = ["Progressive Cacao's House", "Progressive Cacao's House", "Progressive Cacao's House",
-             "Progressive Cacao's House", "Progressive Cacao's House", "Progressive Cacao's House",
-             "Progressive Cacao's House"]
 mush_ids = ["Progressive Mushroom House", "Progressive Mushroom House", "Progressive Mushroom House",
             "Progressive Mushroom House", "Progressive Mushroom House"]
 # Two pieces are needed to reach all MCs in the house, one for the second half of the dungeon
@@ -108,7 +107,7 @@ mc_useful_2 = ["Progressive Kye's House", "Progressive Kye's House", "Progressiv
 # mc_filler_2 = [,]  Bunbuku's chest accessed by the cabin is not shuffled right now
 
 # Always required/useful/filler items
-required = river_ids + cacao_ids
+required = river_ids
 useful = pao_ids + baron_ids + gob_ids + owl_ids
 filler = ["Earth A", "Earth B"] + other_ids + bunbuku_ids + couscous_ids + kye_ids + watermill_ids + well_ids
 
@@ -121,6 +120,17 @@ def create_matataki_atla(options: DarkCloudOptions, player: int) -> list["DarkCl
     matataki_progression = required.copy()
     matataki_useful = useful.copy()
     matataki_filler = filler.copy()
+
+    if options.progressive_chars:
+        cacao_ids = [progressive_char_recruit_name, progressive_char_recruit_name, progressive_char_recruit_name,
+                     progressive_char_recruit_name, progressive_char_recruit_name, progressive_char_recruit_name,
+                     progressive_char_recruit_name]
+    else:
+        cacao_ids = ["Progressive Cacao's House", "Progressive Cacao's House", "Progressive Cacao's House",
+                     "Progressive Cacao's House", "Progressive Cacao's House", "Progressive Cacao's House",
+                     "Progressive Cacao's House"]
+
+    matataki_progression.extend(cacao_ids)
 
     # Mush house is only full required if Utan is required
     if options.all_bosses or options.boss_goal == 2:
