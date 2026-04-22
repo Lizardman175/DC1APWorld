@@ -175,7 +175,7 @@ class DarkCloudWorld(World):
         if not item.advancement:
             return None
         name = item.name
-        if name.startswith("Progressive "):
+        if name.startswith("Progressive ") or name == "Matataki River":
             prog_table = self.progressive_item_list[name]
             if remove:
                 for item_name in reversed(prog_table):

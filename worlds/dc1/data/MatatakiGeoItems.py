@@ -21,7 +21,7 @@ ids = {
     "Progressive Watermill 3": 971110213,
     "Progressive Owl Shop": 971110214,
     "Matataki Trees": 971110215,
-    "Progressive Matataki River": 971110216,
+    "Matataki River": 971110216,
     "Matataki Bridge": 971110217,
     "Earth A": 971110218,
     "Earth B": 971110219,
@@ -89,9 +89,9 @@ watermill_ids = ["Progressive Watermill 1", "Progressive Watermill 1", "Progress
                  "Progressive Watermill 2", "Progressive Watermill 3", "Progressive Watermill 3", ]
 
 # Only 5 are required for progression, could take 3 out as useful?
-river_ids = ["Progressive Matataki River", "Progressive Matataki River", "Progressive Matataki River",
-             "Progressive Matataki River", "Progressive Matataki River", "Progressive Matataki River",
-             "Progressive Matataki River", "Progressive Matataki River"]
+river_ids = ["Matataki River", "Matataki River", "Matataki River",
+             "Matataki River", "Matataki River", "Matataki River",
+             "Matataki River", "Matataki River"]
 other_ids = ["Matataki Trees", "Matataki Trees", "Matataki Bridge"]
 
 
