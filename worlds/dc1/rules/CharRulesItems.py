@@ -50,4 +50,4 @@ class CharRulesItems(CharRules):
         return super().osmond_available(state, player) and osmond_items(state, player)
 
     # def got_accessible(self, state: CollectionState, player: int) -> bool:
-    #     return self.osmond_available(state, player)
+    #     return super().got_accessible(state, player)

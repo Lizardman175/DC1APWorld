@@ -31,4 +31,5 @@ class CharRules(CharRulesInterface):
         return self.ungaga_available(state, player)
 
     def got_accessible(self, state: CollectionState, player: int) -> bool:
-        return self.osmond_available(state, player)
+        return state.has_any(["Tomahon", "Boon"], player) and state.has_any(["Gotch", "Amuleo"], player) \
+            and self.osmond_available(state, player)

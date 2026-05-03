@@ -1,4 +1,5 @@
 from BaseClasses import CollectionState
+from worlds.dc1 import DarkCloudOptions
 from worlds.dc1.rules.CharRulesInterface import CharRulesInterface
 
 
@@ -25,11 +26,11 @@ class BossRules:
         # Just need to finish the head for the admission ticket.
         return state.has("Eye (HD)", player)
 
-    def genie_access(self, state: CollectionState, player: int) -> bool:
-        return state.has_all(["Book of Curses (Departure)", "The Broken Sword (Things Lost)", "Black Blood (Demon)",
+    def genie_access(self, state: CollectionState, player: int, count: int) -> bool:
+        return state.has_from_list_unique(["Book of Curses (Departure)", "The Broken Sword (Things Lost)", "Black Blood (Demon)",
                               "Bloody Dress (Protected)", "Assassin (Assassin)", "Sophia (Dark Power)",
                               "Bloody Agreement (The Deal)", "Sophia (Menace)", "Crown (Campaign)",
-                              "Buggy (Reunion)", "Sophia (Ceremony)", "Crown (Crowning Day)"], player)
+                              "Buggy (Reunion)", "Sophia (Ceremony)", "Crown (Crowning Day)"], player, count)
 
     def two_bosses(self, state: CollectionState, player: int) -> bool:
         return self.utan_access(state, player) and self.dran_access(state, player) and self.char_rules.goro_available(state, player)
@@ -46,5 +47,5 @@ class BossRules:
         return self.joe_access(state, player) and self.curse_access(state, player) and self.saia_access(state, player) and \
             self.utan_access(state, player) and self.dran_access(state, player) and self.char_rules.osmond_available(state, player)
 
-    def six_bosses(self, state: CollectionState, player: int) -> bool:
-        return self.genie_access(state, player) and self.five_bosses(state, player)
+    def six_bosses(self, state: CollectionState, player: int, count: int) -> bool:
+        return self.genie_access(state, player, count) and self.five_bosses(state, player)
