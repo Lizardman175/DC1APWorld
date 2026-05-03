@@ -18,6 +18,7 @@ from .data.Progressive import all_chars, split_chars
 from .game_id import dc1_name
 from .rules import ChestRules
 from .rules.BossRules import BossRules
+from .rules.BossRulesItems import BossRulesItems
 from .rules.CharRules import CharRules
 from .rules.CharRulesInterface import CharRulesInterface
 from .rules.CharRulesItems import CharRulesItems
@@ -31,6 +32,7 @@ geo_class = [NoruneGeoItems, MatatakiGeoItems, QueensGeoItems, MuskaGeoItems, Fa
 dungeon_locations = json.loads(pkgutil.get_data(__name__, "data/atla_locations.json").decode())
 
 prog_map = json.loads(pkgutil.get_data(__name__, "data/progressive.json").decode())
+
 # TODO webworld implementation as we get closer to completion.
 class DarkCloudWeb(WebWorld):
     theme = "jungle"
@@ -122,7 +124,10 @@ class DarkCloudWorld(World):
         else:
             self.char_rules = CharRules()
 
-        self.boss_rules = BossRules()
+        if self.options.miracle_sanity:
+            self.boss_rules = BossRulesItems()
+        else:
+            self.boss_rules = BossRules()
         self.boss_rules.set_char_rules(self.char_rules)
         # Don't add any generation actions before this line!  Need to determine rule classes first
 
@@ -166,9 +171,6 @@ class DarkCloudWorld(World):
             for i in range(min(5, int(self.options.boss_goal))):
                 for item in self.item_data[i]:
                     self.multiworld.itempool.extend(item.to_items(self.player, self))
-
-        # TODO temp fix for Big Async.  Replaced final Alnet's House with a garnet for now
-        self.multiworld.itempool.append(self.create_item("Garnet"))
 
     # Set up progressive items
     def collect_item(self, state: "CollectionState", item: "Item", remove: bool = False) -> Optional[str]:
@@ -293,11 +295,10 @@ class DarkCloudWorld(World):
         # Sometimes players kill the DG before the other bosses then have to refight the genie.  This will allow the
         # client to acknowledge the genie kill in that situation.
         if self.options.all_bosses and self.options.boss_goal == 6:
-            loc = DarkCloudLocation(self.player, "Dark Genie", dark_genie_id, LocationProgressType.DEFAULT,
-                                        got)
+            loc = DarkCloudLocation(self.player, "Dark Genie", dark_genie_id, LocationProgressType.DEFAULT, got)
             item = DarkCloudItem("Dark Genie", ItemClassification.progression, dark_genie_id, self.player)
             loc.place_locked_item(item)
-            loc.access_rule = lambda state: self.boss_rules.genie_access(state, self.player)
+            loc.access_rule = lambda state: self.boss_rules.genie_access(state, self.player, self.options.genie_pieces.value)
             got.locations.append(loc)
 
         # Connect Regions
@@ -361,8 +362,9 @@ class DarkCloudWorld(World):
                  lambda state: True)
         set_rule(self.multiworld.get_entrance("Factory -> MS2", self.player),
                  lambda state: self.char_rules.osmond_available_only(state, self.player))
+        # TODO double check this for different char_rules
         set_rule(self.multiworld.get_entrance("Factory -> DHC", self.player),
-                 lambda state: self.char_rules.osmond_available_only(state, self.player))
+                 lambda state: self.char_rules.got_accessible(state, self.player))
         set_rule(self.multiworld.get_entrance("DHC -> GOT", self.player),
                  lambda state: True)
 
@@ -403,10 +405,10 @@ class DarkCloudWorld(World):
             case 6:
                 if self.options.all_bosses:
                     self.multiworld.completion_condition[self.player] =\
-                        lambda state: self.boss_rules.six_bosses(state, self.player)
+                        lambda state: self.boss_rules.six_bosses(state, self.player, self.options.genie_pieces.value)
                 else:
                     self.multiworld.completion_condition[self.player] =\
-                        lambda state: self.boss_rules.genie_access(state, self.player) and\
+                        lambda state: self.boss_rules.genie_access(state, self.player, self.options.genie_pieces.value) and\
                                       self.char_rules.osmond_available(state, self.player)
 
     def create_item(self, name:str) -> DarkCloudItem:
@@ -421,6 +423,7 @@ class DarkCloudWorld(World):
             "options": {
                 "goal": self.options.boss_goal.value,
                 "all_bosses": self.options.all_bosses.value,
+                "genie_pieces": self.options.genie_pieces.value,
                 "open_dungeon": self.options.open_dungeon.value,
                 "starter_weapons": self.options.starter_weapons.value,
                 "abs_multiplier": self.options.abs_multiplier.value,
