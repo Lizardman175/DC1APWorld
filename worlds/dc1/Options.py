@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from Options import Choice, Toggle, PerGameCommonOptions, Range, DeathLink, FreeText
+from Options import Choice, Toggle, PerGameCommonOptions, Range, DeathLink, FreeText, OptionError
 
 
 class Goal(Range):
@@ -14,6 +14,14 @@ class AllBosses(Toggle):
     """Requires defeating every boss up to the goal boss in order to finish the game."""
     display_name = "All Bosses"
     default = 0
+
+# TODO better name
+class GeniePieces(Range):
+    """How many complete pieces of Seda's memory are required for access to the Dark Genie. No effect if boss goal is less than 6."""
+    display_name = ""
+    default = 12
+    range_start = 5
+    range_end = 12
 
 class OpenDungeon(Choice):
     """Open all dungeon floors as they become logically available."""
@@ -151,6 +159,7 @@ class OsmondName(FreeText):
 class DarkCloudOptions(PerGameCommonOptions):
     boss_goal: Goal
     all_bosses: AllBosses
+    genie_pieces: GeniePieces
     open_dungeon: OpenDungeon
     progressive_chars: ProgressiveCharRecruitment
     starter_weapons: BetterStartingWeapons
@@ -177,12 +186,12 @@ def test_char_name(char:str, name:str) -> None:
     if not re.fullmatch(len_pattern, name):
         raise NameLenException(char, name)
 
-class NameCharException(Exception):
+class NameCharException(OptionError):
     def __init__(self, message:str, name:str):
         self.message = message + "'s name contains invalid characters: " + name
         super().__init__(self.message)
 
-class NameLenException(Exception):
+class NameLenException(OptionError):
     def __init__(self, message:str, name:str):
         self.message = message + "'s name is invalid: '" + name + "'. Must be from 1 to 10 characters."
         super().__init__(self.message)
