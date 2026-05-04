@@ -15,12 +15,11 @@ class AllBosses(Toggle):
     display_name = "All Bosses"
     default = 0
 
-# TODO better name
-class GeniePieces(Range):
+class RequiredMemoryCount(Range):
     """How many complete pieces of Seda's memory are required for access to the Dark Genie. No effect if boss goal is less than 6."""
-    display_name = ""
+    display_name = "Required Memory Count"
     default = 12
-    range_start = 5
+    range_start = 6
     range_end = 12
 
 class OpenDungeon(Choice):
@@ -159,7 +158,7 @@ class OsmondName(FreeText):
 class DarkCloudOptions(PerGameCommonOptions):
     boss_goal: Goal
     all_bosses: AllBosses
-    genie_pieces: GeniePieces
+    memory_count: RequiredMemoryCount
     open_dungeon: OpenDungeon
     progressive_chars: ProgressiveCharRecruitment
     starter_weapons: BetterStartingWeapons

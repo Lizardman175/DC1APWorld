@@ -298,7 +298,7 @@ class DarkCloudWorld(World):
             loc = DarkCloudLocation(self.player, "Dark Genie", dark_genie_id, LocationProgressType.DEFAULT, got)
             item = DarkCloudItem("Dark Genie", ItemClassification.progression, dark_genie_id, self.player)
             loc.place_locked_item(item)
-            loc.access_rule = lambda state: self.boss_rules.genie_access(state, self.player, self.options.genie_pieces.value)
+            loc.access_rule = lambda state: self.boss_rules.genie_access(state, self.player, self.options.memory_count.value)
             got.locations.append(loc)
 
         # Connect Regions
@@ -362,7 +362,6 @@ class DarkCloudWorld(World):
                  lambda state: True)
         set_rule(self.multiworld.get_entrance("Factory -> MS2", self.player),
                  lambda state: self.char_rules.osmond_available_only(state, self.player))
-        # TODO double check this for different char_rules
         set_rule(self.multiworld.get_entrance("Factory -> DHC", self.player),
                  lambda state: self.char_rules.got_accessible(state, self.player))
         set_rule(self.multiworld.get_entrance("DHC -> GOT", self.player),
@@ -405,11 +404,11 @@ class DarkCloudWorld(World):
             case 6:
                 if self.options.all_bosses:
                     self.multiworld.completion_condition[self.player] =\
-                        lambda state: self.boss_rules.six_bosses(state, self.player, self.options.genie_pieces.value)
+                        lambda state: self.boss_rules.six_bosses(state, self.player, self.options.memory_count.value)
                 else:
                     self.multiworld.completion_condition[self.player] =\
-                        lambda state: self.boss_rules.genie_access(state, self.player, self.options.genie_pieces.value) and\
-                                      self.char_rules.osmond_available(state, self.player)
+                        lambda state: self.boss_rules.genie_access(state, self.player, self.options.memory_count.value) and\
+                                      self.char_rules.got_accessible(state, self.player)
 
     def create_item(self, name:str) -> DarkCloudItem:
         classification = self.item_name_to_classification[name]
@@ -423,7 +422,7 @@ class DarkCloudWorld(World):
             "options": {
                 "goal": self.options.boss_goal.value,
                 "all_bosses": self.options.all_bosses.value,
-                "genie_pieces": self.options.genie_pieces.value,
+                "memory_count": self.options.memory_count.value,
                 "open_dungeon": self.options.open_dungeon.value,
                 "starter_weapons": self.options.starter_weapons.value,
                 "abs_multiplier": self.options.abs_multiplier.value,
