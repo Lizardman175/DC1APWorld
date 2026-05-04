@@ -48,4 +48,4 @@ class BossRules:
             self.utan_access(state, player) and self.dran_access(state, player) and self.char_rules.osmond_available(state, player)
 
     def six_bosses(self, state: CollectionState, player: int, count: int) -> bool:
-        return self.genie_access(state, player, count) and self.five_bosses(state, player)
+        return self.genie_access(state, player, count) and self.five_bosses(state, player) and self.char_rules.got_accessible(state, player)
