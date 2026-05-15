@@ -19,7 +19,7 @@ class RequiredMemoryCount(Range):
     """How many complete pieces of Seda's memory are required for access to the Dark Genie. No effect if boss goal is less than 6."""
     display_name = "Required Memory Count"
     default = 12
-    range_start = 6
+    range_start = 4
     range_end = 12
 
 class OpenDungeon(Choice):
