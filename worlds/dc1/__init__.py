@@ -5,7 +5,7 @@ from typing import Mapping, Any, Optional
 
 from BaseClasses import Region, LocationProgressType, Item, CollectionState, ItemClassification
 from rule_builder.options import OptionFilter
-from rule_builder.rules import HasAll, And, True_
+from rule_builder.rules import HasAll, And, True_, False_
 from worlds.AutoWorld import World, WebWorld
 from .JunkDrawer import dark_genie_id, progressive_char_recruit_name, progressive_char_recruit_id
 
@@ -39,15 +39,15 @@ class DarkCloudWorld(World):
     Dark Cloud 1
     """
     game = dc1_name
-    required_client_version = (0, 6, 1)
+    required_client_version = (0, 6, 7)
     options_dataclass = Options.DarkCloudOptions
     options: Options.DarkCloudOptions
     topology_present = True
     web = DarkCloudWeb()
 
-    item_name_to_id = {"Dark Genie": dark_genie_id, }
+    item_name_to_id = {"Dark Genie": dark_genie_id, progressive_char_recruit_name: progressive_char_recruit_id}
     location_name_to_id = {"Dark Genie": dark_genie_id, }
-    item_name_to_classification = {}
+    item_name_to_classification = {progressive_char_recruit_name: ItemClassification.progression}
     filler_item_names = []
 
     chest_filter = None
@@ -81,8 +81,6 @@ class DarkCloudWorld(World):
 
         item_name_to_classification[row[0]] = classification
 
-    item_name_to_id.update({progressive_char_recruit_name: progressive_char_recruit_id})
-
     for i in geo_class:
         item_name_to_id.update(i.ids)
         item_name_to_classification.update(i.classifications)
@@ -103,14 +101,13 @@ class DarkCloudWorld(World):
 
     origin_region_name = "Norune"
 
-    # Floors will at a minimum get +1 each.  -1 is used so the rare 0 atla floor is possible
-    atla_per_floor = [[6, 2, -1, -1, -1, -1], [-1, -1, -1, -1, -1],
-                      [-1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1],
-                      [0, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1],
-                      [0, -1, -1, -1, -1, -1, 0], [-1, -1, -1, -1, -1, -1, -1],
-                      [-1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1]]
+    atla_per_floor = None
+    ut = False_()
 
     def generate_early(self) -> None:
+        if hasattr(self.multiworld, "generation_is_fake"):
+            self.ut = True_()
+
         self.chest_filter = OptionFilter(MiracleSanity, True)
 
         if self.options.progressive_chars:
@@ -124,12 +121,19 @@ class DarkCloudWorld(World):
                 self.progressive_item_list[progressive_name] = []
             self.progressive_item_list[progressive_name].append(prog_item)
 
-        # TODO hit an infinite loop? May be due to less than 6 for boss goal?
-        # self.normalize_atla()
+        self.normalize_atla()
 
     def normalize_atla(self):
         # Atla per dungeon half.  Not doing last dungeon since the alta are already static
-        atla_count = [39, 43, 61, 46, 48, 39, 38, 41, 35, 32]
+        atla_count = [35, 38, 54, 40, 42, 32, 32, 34, 29, 27]
+
+        # First 2 floors of DBC start above 0 so they are guaranteed to hit the minimum the game expects.
+        # SMT1 last floor has 1 to guarantee it has the one expected by the game
+        self.atla_per_floor = [[6, 2, 0, 0, 0, 0],    [0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0],    [0, 0, 0, 0, 0]]
 
         for i in range(min(len(atla_count), self.options.boss_goal*2)):
             count = atla_count[i]
@@ -229,27 +233,15 @@ class DarkCloudWorld(World):
                             self.set_rule(loc, HasAll(*chest.req_geo))
                     else:
                         if chest.req_char == "xiao":
-                            if hasattr(self.multiworld, "generation_is_fake"):
-                                if chest.req_geo:
-                                    self.set_rule(loc, And(Rules.r_xiao_available_only_ut, HasAll(*chest.req_geo)))
-                                else:
-                                    self.set_rule(loc, Rules.r_xiao_available_only_ut)
+                            if chest.req_geo:
+                                self.set_rule(loc, HasAll(*chest.req_geo) & ((self.ut & Rules.r_xiao_available_only_ut) | Rules.r_xiao_available_only))
                             else:
-                                if chest.req_geo:
-                                    self.set_rule(loc, And(Rules.r_xiao_available_only, HasAll(*chest.req_geo)))
-                                else:
-                                    self.set_rule(loc, Rules.r_xiao_available_only)
+                                self.set_rule(loc, (self.ut & Rules.r_xiao_available_only_ut) | Rules.r_xiao_available_only)
                         elif chest.req_char == "goro":
-                            if hasattr(self.multiworld, "generation_is_fake"):
                                 if chest.req_geo:
-                                    self.set_rule(loc, And(Rules.r_goro_available_only_ut, HasAll(*chest.req_geo)))
+                                    self.set_rule(loc, HasAll(*chest.req_geo) & ((self.ut & Rules.r_goro_available_only_ut) | Rules.r_goro_available))
                                 else:
-                                    self.set_rule(loc, Rules.r_goro_available_only_ut)
-                            else:
-                                if chest.req_geo:
-                                    self.set_rule(loc, And(Rules.r_goro_available_only, HasAll(*chest.req_geo)))
-                                else:
-                                    self.set_rule(loc, Rules.r_goro_available_only)
+                                    self.set_rule(loc, (self.ut & Rules.r_goro_available_only_ut) | Rules.r_goro_available)
                         elif chest.req_char == "ruby":
                             if chest.req_geo:
                                 self.set_rule(loc, And(Rules.r_ruby_available_only, HasAll(*chest.req_geo)))
@@ -279,28 +271,28 @@ class DarkCloudWorld(World):
             got.locations.append(loc)
 
         # Connect Regions and set rules
-        self.create_entrance(regions["Norune"], regions["Matataki"], Rules.r_xiao_available_only)
-        self.create_entrance(regions["Matataki"], regions["Queens"], Rules.r_goro_available)
-        self.create_entrance(regions["Queens"], regions["Muska"], Rules.r_ruby_available)
-        self.create_entrance(regions["Muska"], regions["Factory"], Rules.r_ungaga_available)
-        self.create_entrance(regions["Factory"], regions["DHC"], Rules.r_dhc_available)
+        self.create_entrance(regions["Norune"], regions["Matataki"], (self.ut & Rules.r_xiao_available_only_ut) | Rules.r_xiao_available_only)
+        self.create_entrance(regions["Matataki"], regions["Queens"], (self.ut & Rules.r_goro_available_only_ut) | Rules.r_goro_available)
+        self.create_entrance(regions["Queens"], regions["Muska"], (self.ut & Rules.r_ruby_available_only) | Rules.r_ruby_available)
+        self.create_entrance(regions["Muska"], regions["Factory"], (self.ut & Rules.r_ungaga_available_only) | Rules.r_ungaga_available)
+        self.create_entrance(regions["Factory"], regions["DHC"], Rules.r_dhc_available & ((self.ut & Rules.r_osmond_available_only) | Rules.r_osmond_available))
 
         self.create_entrance(regions["Norune"], regions["DBC1"])
-        self.create_entrance(regions["Norune"], regions["DBC2"], Rules.r_xiao_available_only)
+        self.create_entrance(regions["Norune"], regions["DBC2"], (self.ut & Rules.r_xiao_available_only_ut) | Rules.r_xiao_available_only)
 
         self.create_entrance(regions["Matataki"], regions["WOF1"])
-        self.create_entrance(regions["Matataki"], regions["WOF2"], Rules.r_goro_available)
+        self.create_entrance(regions["Matataki"], regions["WOF2"], (self.ut & Rules.r_goro_available_only_ut) | Rules.r_goro_available)
 
         self.create_entrance(regions["Queens"], regions["SW1"])
-        self.create_entrance(regions["Queens"], regions["SW2"], Rules.r_ruby_available)
+        self.create_entrance(regions["Queens"], regions["SW2"], (self.ut & Rules.r_ruby_available_only) | Rules.r_ruby_available)
 
         self.create_entrance(regions["Muska"], regions["SMT1"])
-        self.create_entrance(regions["Muska"], regions["SMT2"], Rules.r_ungaga_available)
+        self.create_entrance(regions["Muska"], regions["SMT2"], (self.ut & Rules.r_ungaga_available_only) | Rules.r_ungaga_available)
 
         self.create_entrance(regions["Factory"], regions["MS1"])
-        self.create_entrance(regions["Factory"], regions["MS2"], Rules.r_ungaga_available)
+        self.create_entrance(regions["Factory"], regions["MS2"], (self.ut & Rules.r_osmond_available_only) | Rules.r_osmond_available)
 
-        self.create_entrance(regions["DHC"], regions["GOT"], Rules.r_dhc_available)
+        self.create_entrance(regions["DHC"], regions["GOT"])
 
         self.multiworld.regions.extend(towns)
         self.multiworld.regions.extend(dungeons)

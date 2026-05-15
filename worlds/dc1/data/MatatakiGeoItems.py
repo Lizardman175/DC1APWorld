@@ -44,7 +44,7 @@ classifications = {
     "Progressive Watermill 3": ItemClassification.progression | ItemClassification.useful | ItemClassification.filler,
     "Progressive Owl Shop": ItemClassification.progression | ItemClassification.useful,
     "Matataki Trees": ItemClassification.filler,
-    "Progressive Matataki River": ItemClassification.progression,
+    "Matataki River": ItemClassification.progression,
     "Matataki Bridge": ItemClassification.filler,
     "Earth A": ItemClassification.filler,
     "Earth B": ItemClassification.filler,

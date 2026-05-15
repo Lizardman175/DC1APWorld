@@ -28,8 +28,8 @@ r_dhc_available = And(HasAny("Tomahon", "Boon"), HasAny("Gotch", "Amuleo"))
 
 def get_completion_rule(options: DarkCloudOptions) -> Rule:
 
-    r_dran_access = (chest_shuffle_off & Has("Dran's Sign")) | Has("Horned Key")
-    r_utan_access = Has("Mushroom Balcony") & (chest_shuffle_off | Has("Sundew"))
+    r_dran_access = (OptionFilter(MiracleSanity, False) & Has("Dran's Sign")) | Has("Horned Key")
+    r_utan_access = Has("Mushroom Balcony") & (OptionFilter(MiracleSanity, False) | Has("Sundew"))
     r_saia_access = HasAll("Cathedral's Holy Mark", "Divining House Sign")
     r_curse_access = HasAll("Chief Bonka's Cabin 2", "Zabo's Hay", "Enga's Roof")
     r_joe_access = Has("Eye (HD)")
