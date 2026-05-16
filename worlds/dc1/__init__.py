@@ -39,7 +39,7 @@ class DarkCloudWorld(World):
     Dark Cloud 1
     """
     game = dc1_name
-    required_client_version = (0, 6, 7)
+    required_client_version = (0, 6, 5)
     options_dataclass = Options.DarkCloudOptions
     options: Options.DarkCloudOptions
     topology_present = True
