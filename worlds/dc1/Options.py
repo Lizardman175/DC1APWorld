@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from Options import Choice, Toggle, PerGameCommonOptions, Range, DeathLink, FreeText
+from Options import Choice, Toggle, PerGameCommonOptions, Range, DeathLink, FreeText, OptionError
 
 
 class Goal(Range):
@@ -15,12 +15,25 @@ class AllBosses(Toggle):
     display_name = "All Bosses"
     default = 0
 
+class RequiredMemoryCount(Range):
+    """How many complete pieces of Seda's memory are required for access to the Dark Genie. No effect if boss goal is less than 6."""
+    display_name = "Required Memory Count"
+    default = 12
+    range_start = 4
+    range_end = 12
+
 class OpenDungeon(Choice):
     """Open all dungeon floors as they become logically available."""
     display_name = "Open Dungeon"
     default = 1
     option_closed = 0
     option_open = 1
+
+class ProgressiveCharRecruitment(Toggle):
+    """Makes all character recruitment buildings one progressive item.  Useful for long/large multiworlds.
+    All Player House pieces will be received, followed by Cacao's House starting at item 8, etc."""
+    display_name = "Progressive Char Recruitment"
+    default = 1
 
 class BetterStartingWeapons(Toggle):
     """Give each character a Tier 1 weapon in addition to their unbreakable starter."""
@@ -145,7 +158,9 @@ class OsmondName(FreeText):
 class DarkCloudOptions(PerGameCommonOptions):
     boss_goal: Goal
     all_bosses: AllBosses
+    memory_count: RequiredMemoryCount
     open_dungeon: OpenDungeon
+    progressive_chars: ProgressiveCharRecruitment
     starter_weapons: BetterStartingWeapons
     miracle_sanity: MiracleSanity
     abs_multiplier: AbsMultiplier
@@ -170,12 +185,12 @@ def test_char_name(char:str, name:str) -> None:
     if not re.fullmatch(len_pattern, name):
         raise NameLenException(char, name)
 
-class NameCharException(Exception):
+class NameCharException(OptionError):
     def __init__(self, message:str, name:str):
         self.message = message + "'s name contains invalid characters: " + name
         super().__init__(self.message)
 
-class NameLenException(Exception):
+class NameLenException(OptionError):
     def __init__(self, message:str, name:str):
         self.message = message + "'s name is invalid: '" + name + "'. Must be from 1 to 10 characters."
         super().__init__(self.message)

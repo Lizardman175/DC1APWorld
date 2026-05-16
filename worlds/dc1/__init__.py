@@ -4,22 +4,20 @@ import typing
 from typing import Mapping, Any, Optional
 
 from BaseClasses import Region, LocationProgressType, Item, CollectionState, ItemClassification
+from rule_builder.options import OptionFilter
+from rule_builder.rules import HasAll, And, True_, False_
 from worlds.AutoWorld import World, WebWorld
-from worlds.generic.Rules import set_rule
+from .JunkDrawer import dark_genie_id, progressive_char_recruit_name, progressive_char_recruit_id
 
 from .data import (NoruneGeoItems, MatatakiGeoItems, QueensGeoItems,
                    MuskaGeoItems, FactoryGeoItems, DHCGeoItems)
 from .Items import DarkCloudItem, ItemData
 from .Location import DarkCloudLocation
-from .Options import DarkCloudOptions
+from .Options import DarkCloudOptions, MiracleSanity
 from .data.MiracleChest import MiracleChest
+from .data.Progressive import all_chars, split_chars
 from .game_id import dc1_name
-from .rules import ChestRules
-from .rules.BossRules import BossRules
-from .rules.CharRules import CharRules
-from .rules.CharRulesInterface import CharRulesInterface
-from .rules.CharRulesItems import CharRulesItems
-from .rules.CharRulesUT import CharRulesUT
+from .rules import Rules
 
 geo_funcs = [NoruneGeoItems.create_norune_atla, MatatakiGeoItems.create_matataki_atla,
              QueensGeoItems.create_queens_atla, MuskaGeoItems.create_muska_atla,
@@ -28,7 +26,7 @@ geo_class = [NoruneGeoItems, MatatakiGeoItems, QueensGeoItems, MuskaGeoItems, Fa
 
 dungeon_locations = json.loads(pkgutil.get_data(__name__, "data/atla_locations.json").decode())
 
-dark_genie_id = 971119999
+prog_map = json.loads(pkgutil.get_data(__name__, "data/progressive.json").decode())
 
 # TODO webworld implementation as we get closer to completion.
 class DarkCloudWeb(WebWorld):
@@ -41,19 +39,25 @@ class DarkCloudWorld(World):
     Dark Cloud 1
     """
     game = dc1_name
-    required_client_version = (0, 6, 1)
+    required_client_version = (0, 6, 5)
     options_dataclass = Options.DarkCloudOptions
     options: Options.DarkCloudOptions
     topology_present = True
     web = DarkCloudWeb()
 
-    item_name_to_id = {"Dark Genie": dark_genie_id, }
+    item_name_to_id = {"Dark Genie": dark_genie_id, progressive_char_recruit_name: progressive_char_recruit_id}
     location_name_to_id = {"Dark Genie": dark_genie_id, }
-    item_name_to_classification = {}
+    item_name_to_classification = {progressive_char_recruit_name: ItemClassification.progression}
     filler_item_names = []
 
-    char_rules: CharRulesInterface = None
-    boss_rules: BossRules = None
+    chest_filter = None
+
+    progressive_item_list = {}
+    for prog_item in prog_map:
+        progressiveName = prog_map[prog_item]
+        if progressiveName not in progressive_item_list:
+            progressive_item_list[progressiveName] = []
+        progressive_item_list[progressiveName].append(prog_item)
 
     # Parse inventory item data
     item_data = [[],[],[],[],[]]
@@ -77,7 +81,6 @@ class DarkCloudWorld(World):
 
         item_name_to_classification[row[0]] = classification
 
-
     for i in geo_class:
         item_name_to_id.update(i.ids)
         item_name_to_classification.update(i.classifications)
@@ -98,17 +101,54 @@ class DarkCloudWorld(World):
 
     origin_region_name = "Norune"
 
+    atla_per_floor = None
+    ut = False_()
+
     def generate_early(self) -> None:
         if hasattr(self.multiworld, "generation_is_fake"):
-            self.char_rules = CharRulesUT()
-        elif self.options.miracle_sanity:
-            self.char_rules = CharRulesItems()
-        else:
-            self.char_rules = CharRules()
+            self.ut = True_()
 
-        self.boss_rules = BossRules()
-        self.boss_rules.set_char_rules(self.char_rules)
-        # Don't add any generation actions before this line!  Need to determine rule classes first
+        self.chest_filter = OptionFilter(MiracleSanity, True)
+
+        if self.options.progressive_chars:
+            temp_items = all_chars
+        else:
+            temp_items = split_chars
+
+        for prog_item in temp_items:
+            progressive_name = temp_items[prog_item]
+            if progressive_name not in self.progressive_item_list:
+                self.progressive_item_list[progressive_name] = []
+            self.progressive_item_list[progressive_name].append(prog_item)
+
+        self.normalize_atla()
+
+    def normalize_atla(self):
+        # Atla per dungeon half.  Not doing last dungeon since the alta are already static
+        atla_count = [35, 38, 54, 40, 42, 32, 32, 34, 29, 27]
+
+        # First 2 floors of DBC start above 0 so they are guaranteed to hit the minimum the game expects.
+        # SMT1 last floor has 1 to guarantee it has the one expected by the game
+        self.atla_per_floor = [[6, 2, 0, 0, 0, 0],    [0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0],    [0, 0, 0, 0, 0]]
+
+        for i in range(min(len(atla_count), self.options.boss_goal*2)):
+            count = atla_count[i]
+            ll = self.atla_per_floor[i]
+            l_index = 0
+
+            while count > 0:
+                if ll[l_index] < 8:
+                    r = self.random.randint(1, min(8 - ll[l_index], count))
+                    ll[l_index] = ll[l_index] + r
+                    count = count - r
+
+                l_index = (l_index + 1) % len(ll)
+
+            # print (ll, sum(ll))
 
     def create_items(self):
         for i in range(self.options.boss_goal):
@@ -119,16 +159,13 @@ class DarkCloudWorld(World):
                 for item in self.item_data[i]:
                     self.multiworld.itempool.extend(item.to_items(self.player, self))
 
-        # TODO temp fix for Big Async.  Replaced final Alnet's House with a garnet for now
-        self.multiworld.itempool.append(self.create_item("Garnet"))
-
     # Set up progressive items
     def collect_item(self, state: "CollectionState", item: "Item", remove: bool = False) -> Optional[str]:
         if not item.advancement:
             return None
         name = item.name
-        if name.startswith("Progressive "):
-            prog_table = Items.progressive_item_list[name]
+        if name.startswith("Progressive ") or name == "Matataki River":
+            prog_table = self.progressive_item_list[name]
             if remove:
                 for item_name in reversed(prog_table):
                     if state.has(item_name, item.player):
@@ -156,8 +193,8 @@ class DarkCloudWorld(World):
         dbc2 = Region("DBC2", self.player, self.multiworld)
         wof1 = Region("WOF1", self.player, self.multiworld)
         wof2 = Region("WOF2", self.player, self.multiworld)
-        sr1 = Region("SR1", self.player, self.multiworld)
-        sr2 = Region("SR2", self.player, self.multiworld)
+        sw1 = Region("SW1", self.player, self.multiworld)
+        sw2 = Region("SW2", self.player, self.multiworld)
         smt1 = Region("SMT1", self.player, self.multiworld)
         smt2 = Region("SMT2", self.player, self.multiworld)
         ms1 = Region("MS1", self.player, self.multiworld)
@@ -165,7 +202,7 @@ class DarkCloudWorld(World):
         got = Region("GOT", self.player, self.multiworld)
 
         towns = [norune, matataki, queens, muska, factory, dhc]
-        dungeons = [dbc1, dbc2, wof1, wof2, sr1, sr2, smt1, smt2, ms1, ms2, got]
+        dungeons = [dbc1, dbc2, wof1, wof2, sw1, sw2, smt1, smt2, ms1, ms2, got]
 
         for town in towns:
             regions[town.name] = town
@@ -191,175 +228,78 @@ class DarkCloudWorld(World):
                                             LocationProgressType.DEFAULT, towns[i])
                     if not chest.req_char:
                         if not chest.req_geo:
-                            loc.access_rule = lambda state: True
+                            self.set_rule(loc, True_())
                         else:
-                            loc.access_rule = lambda state, geo=chest.req_geo: state.has_all(geo, self.player)
+                            self.set_rule(loc, HasAll(*chest.req_geo))
                     else:
                         if chest.req_char == "xiao":
-                            if hasattr(self.multiworld, "generation_is_fake"):
-                                if chest.req_geo:
-                                    loc.access_rule = lambda state, geo=chest.req_geo: \
-                                        ChestRules.xiao_available_only_ut(state, self.player) and state.has_all(geo, self.player)
-                                else:
-                                    loc.access_rule = lambda state: ChestRules.xiao_available_only_ut(state, self.player)
+                            if chest.req_geo:
+                                self.set_rule(loc, HasAll(*chest.req_geo) & ((self.ut & Rules.r_xiao_available_only_ut) | Rules.r_xiao_available_only))
                             else:
-                                if chest.req_geo:
-                                    loc.access_rule = lambda state, geo=chest.req_geo: \
-                                        ChestRules.xiao_available_only(state, self.player) and state.has_all(geo, self.player)
-                                else:
-                                    loc.access_rule = lambda state: ChestRules.xiao_available_only(state, self.player)
+                                self.set_rule(loc, (self.ut & Rules.r_xiao_available_only_ut) | Rules.r_xiao_available_only)
                         elif chest.req_char == "goro":
-                            if hasattr(self.multiworld, "generation_is_fake"):
                                 if chest.req_geo:
-                                    loc.access_rule = lambda state, geo=chest.req_geo: \
-                                        ChestRules.goro_available_only_ut(state, self.player) and state.has_all(geo, self.player)
+                                    self.set_rule(loc, HasAll(*chest.req_geo) & ((self.ut & Rules.r_goro_available_only_ut) | Rules.r_goro_available))
                                 else:
-                                    loc.access_rule = lambda state: ChestRules.goro_available_only_ut(state, self.player)
-                            else:
-                                if chest.req_geo:
-                                    loc.access_rule = lambda state, geo=chest.req_geo: \
-                                        ChestRules.goro_available_only(state, self.player) and state.has_all(geo, self.player)
-                                else:
-                                    loc.access_rule = lambda state: ChestRules.goro_available_only(state, self.player)
+                                    self.set_rule(loc, (self.ut & Rules.r_goro_available_only_ut) | Rules.r_goro_available)
                         elif chest.req_char == "ruby":
                             if chest.req_geo:
-                                loc.access_rule = lambda state, geo=chest.req_geo: \
-                                    ChestRules.ruby_available_only(state, self.player) and state.has_all(geo, self.player)
+                                self.set_rule(loc, And(Rules.r_ruby_available_only, HasAll(*chest.req_geo)))
                             else:
-                                loc.access_rule = lambda state: ChestRules.ruby_available_only(state, self.player)
+                                self.set_rule(loc, Rules.r_ruby_available_only)
                         elif chest.req_char == "ungaga":
                             if chest.req_geo:
-                                loc.access_rule = lambda state, geo=chest.req_geo: \
-                                    ChestRules.ungaga_available_only(state, self.player) and state.has_all(geo, self.player)
+                                self.set_rule(loc, And(Rules.r_ungaga_available_only, HasAll(*chest.req_geo)))
                             else:
-                                loc.access_rule = lambda state: ChestRules.ungaga_available_only(state, self.player)
+                                self.set_rule(loc, Rules.r_ungaga_available_only)
                         # Some items have Osmond listed but he doesn't currently have any special requirements beyond the region
                         # so we need to handle ignoring him with these 2 cases:
                         elif chest.req_geo:
-                            loc.access_rule = lambda state, geo=chest.req_geo: state.has_all(geo, self.player)
+                            self.set_rule(loc, HasAll(*chest.req_geo))
                         else:
-                            loc.access_rule = lambda state: True
+                            self.set_rule(loc, True_())
 
                     towns[i].locations.append(loc)
 
         # Sometimes players kill the DG before the other bosses then have to refight the genie.  This will allow the
         # client to acknowledge the genie kill in that situation.
         if self.options.all_bosses and self.options.boss_goal == 6:
-            loc = DarkCloudLocation(self.player, "Dark Genie", dark_genie_id, LocationProgressType.DEFAULT,
-                                        got)
+            loc = DarkCloudLocation(self.player, "Dark Genie", dark_genie_id, LocationProgressType.DEFAULT, got)
             item = DarkCloudItem("Dark Genie", ItemClassification.progression, dark_genie_id, self.player)
             loc.place_locked_item(item)
-            loc.access_rule = lambda state: self.boss_rules.genie_access(state, self.player)
+            self.set_rule(loc, Rules.get_completion_rule(self.options))
             got.locations.append(loc)
 
-        # Connect Regions
-        def create_connection(from_region: str, to_region: str):
-            regions[from_region].connect(regions[to_region])
+        # Connect Regions and set rules
+        self.create_entrance(regions["Norune"], regions["Matataki"], (self.ut & Rules.r_xiao_available_only_ut) | Rules.r_xiao_available_only)
+        self.create_entrance(regions["Matataki"], regions["Queens"], (self.ut & Rules.r_goro_available_only_ut) | Rules.r_goro_available)
+        self.create_entrance(regions["Queens"], regions["Muska"], (self.ut & Rules.r_ruby_available_only) | Rules.r_ruby_available)
+        self.create_entrance(regions["Muska"], regions["Factory"], (self.ut & Rules.r_ungaga_available_only) | Rules.r_ungaga_available)
+        self.create_entrance(regions["Factory"], regions["DHC"], Rules.r_dhc_available & ((self.ut & Rules.r_osmond_available_only) | Rules.r_osmond_available))
 
-        create_connection("Norune", "Matataki")
-        create_connection("Norune", "Queens")
-        create_connection("Norune", "Muska")
-        create_connection("Norune", "Factory")
-        create_connection("Norune", "DHC")
+        self.create_entrance(regions["Norune"], regions["DBC1"])
+        self.create_entrance(regions["Norune"], regions["DBC2"], (self.ut & Rules.r_xiao_available_only_ut) | Rules.r_xiao_available_only)
 
-        create_connection("Norune", "DBC1")
-        create_connection("Norune", "DBC2")
+        self.create_entrance(regions["Matataki"], regions["WOF1"])
+        self.create_entrance(regions["Matataki"], regions["WOF2"], (self.ut & Rules.r_goro_available_only_ut) | Rules.r_goro_available)
 
-        create_connection("Matataki", "WOF1")
-        create_connection("Matataki", "WOF2")
+        self.create_entrance(regions["Queens"], regions["SW1"])
+        self.create_entrance(regions["Queens"], regions["SW2"], (self.ut & Rules.r_ruby_available_only) | Rules.r_ruby_available)
 
-        create_connection("Queens", "SR1")
-        create_connection("Queens", "SR2")
+        self.create_entrance(regions["Muska"], regions["SMT1"])
+        self.create_entrance(regions["Muska"], regions["SMT2"], (self.ut & Rules.r_ungaga_available_only) | Rules.r_ungaga_available)
 
-        create_connection("Muska", "SMT1")
-        create_connection("Muska", "SMT2")
+        self.create_entrance(regions["Factory"], regions["MS1"])
+        self.create_entrance(regions["Factory"], regions["MS2"], (self.ut & Rules.r_osmond_available_only) | Rules.r_osmond_available)
 
-        create_connection("Factory", "MS1")
-        create_connection("Factory", "MS2")
-
-        create_connection("DHC", "GOT")
+        self.create_entrance(regions["DHC"], regions["GOT"])
 
         self.multiworld.regions.extend(towns)
         self.multiworld.regions.extend(dungeons)
 
     def set_rules(self):
-
-        set_rule(self.multiworld.get_entrance("Norune -> DBC1", self.player), lambda state: True)
-
-        set_rule(self.multiworld.get_entrance("Norune -> DBC2", self.player),
-                 lambda state: self.char_rules.xiao_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Norune -> Matataki", self.player),
-                 lambda state: self.char_rules.xiao_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Matataki -> WOF1", self.player),
-                 lambda state: self.char_rules.xiao_available(state, self.player))
-
-        set_rule(self.multiworld.get_entrance("Matataki -> WOF2", self.player),
-                 lambda state: self.char_rules.goro_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Norune -> Queens", self.player),
-                 lambda state: self.char_rules.goro_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Queens -> SR1", self.player),
-                 lambda state: self.char_rules.goro_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Queens -> SR2", self.player),
-                 lambda state: self.char_rules.ruby_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Norune -> Muska", self.player),
-                 lambda state: self.char_rules.ruby_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Muska -> SMT1", self.player),
-                 lambda state: self.char_rules.ruby_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Muska -> SMT2", self.player),
-                 lambda state: self.char_rules.ungaga_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Norune -> Factory", self.player),
-                 lambda state: self.char_rules.ungaga_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Factory -> MS1", self.player),
-                 lambda state: self.char_rules.ungaga_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Factory -> MS2", self.player),
-                 lambda state: self.char_rules.osmond_available(state, self.player))
-        set_rule(self.multiworld.get_entrance("Norune -> DHC", self.player),
-                 lambda state: self.char_rules.got_accessible(state, self.player))
-        set_rule(self.multiworld.get_entrance("DHC -> GOT", self.player),
-                 lambda state: self.char_rules.got_accessible(state, self.player))
-
         # Set up completion goal
-        match self.options.boss_goal:
-            case 2:
-                if self.options.all_bosses:
-                    self.multiworld.completion_condition[self.player] =\
-                        lambda state: self.boss_rules.two_bosses(state, self.player)
-                else:
-                    self.multiworld.completion_condition[self.player] =\
-                        lambda state: self.boss_rules.utan_access(state, self.player) and \
-                                      self.char_rules.goro_available(state, self.player)
-            case 3:
-                if self.options.all_bosses:
-                    self.multiworld.completion_condition[self.player] =\
-                        lambda state: self.boss_rules.three_bosses(state, self.player)
-                else:
-                    self.multiworld.completion_condition[self.player] =\
-                        lambda state: self.boss_rules.saia_access(state, self.player) and\
-                                      self.char_rules.ruby_available(state, self.player)
-            case 4:
-                if self.options.all_bosses:
-                    self.multiworld.completion_condition[self.player] =\
-                        lambda state: self.boss_rules.four_bosses(state, self.player)
-                else:
-                    self.multiworld.completion_condition[self.player] =\
-                        lambda state: self.boss_rules.curse_access(state, self.player) and\
-                                      self.char_rules.ungaga_available(state, self.player)
-            case 5:
-                if self.options.all_bosses:
-                    self.multiworld.completion_condition[self.player] =\
-                        lambda state: self.boss_rules.five_bosses(state, self.player)
-                else:
-                    self.multiworld.completion_condition[self.player] =\
-                        lambda state: self.boss_rules.joe_access(state, self.player) and\
-                                      self.char_rules.osmond_available(state, self.player)
-            case 6:
-                if self.options.all_bosses:
-                    self.multiworld.completion_condition[self.player] =\
-                        lambda state: self.boss_rules.six_bosses(state, self.player)
-                else:
-                    self.multiworld.completion_condition[self.player] =\
-                        lambda state: self.boss_rules.genie_access(state, self.player) and\
-                                      self.char_rules.osmond_available(state, self.player)
+        self.set_completion_rule(Rules.get_completion_rule(self.options))
 
     def create_item(self, name:str) -> DarkCloudItem:
         classification = self.item_name_to_classification[name]
@@ -373,6 +313,7 @@ class DarkCloudWorld(World):
             "options": {
                 "goal": self.options.boss_goal.value,
                 "all_bosses": self.options.all_bosses.value,
+                "memory_count": self.options.memory_count.value,
                 "open_dungeon": self.options.open_dungeon.value,
                 "starter_weapons": self.options.starter_weapons.value,
                 "abs_multiplier": self.options.abs_multiplier.value,
@@ -387,6 +328,7 @@ class DarkCloudWorld(World):
                 "ruby_name": self.options.ruby_name.value,
                 "ungaga_name": self.options.ungaga_name.value,
                 "osmond_name": self.options.osmond_name.value,
+                "apf": self.atla_per_floor,
             },
         }
 

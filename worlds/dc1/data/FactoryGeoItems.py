@@ -57,12 +57,13 @@ ftl_ids = ["Progressive Parts FTL", "Progressive Parts FTL", "Progressive Parts 
 
 # Excluding the lookout tower, only the first piece of any georama gives any MCs
 mc_filler = ["Progressive Lookout", "Progressive Lookout", "Progressive Parts AMR", "Progressive Parts AML",
-             "Progressive Parts HGR", "Progressive Parts HGL", "Progressive Parts HGR2", "Progressive Parts HGL2",
-             "Progressive Parts TIR", "Progressive Parts TIL", "Progressive Parts FTR", "Progressive Parts FTL"]
+             "Progressive Parts HGR2", "Progressive Parts HGL2", "Progressive Parts FTR", "Progressive Parts FTL"]
 mc_useful = ["Progressive Parts CT"]
 
-filler = (aml_ids + amr_ids + hgr_ids + hgl_ids + hg2_ids + chest_ids + waist_ids +
-          tir_ids + til_ids + ftr_ids + ftl_ids)
+filler_cond = ["Progressive Parts HGR", "Progressive Parts HGL", "Progressive Parts TIR", "Progressive Parts TIL"]
+required_cond = hgr_ids + hgl_ids + tir_ids + til_ids
+
+filler = aml_ids + amr_ids + hg2_ids + chest_ids + waist_ids + ftr_ids + ftl_ids
 
 
 def create_factory_atla(options: DarkCloudOptions, player: int) -> List["DarkCloudItem"]:
@@ -87,6 +88,16 @@ def create_factory_atla(options: DarkCloudOptions, player: int) -> List["DarkClo
     else:
         factory_useful.extend(mc_useful)
         factory_filler.extend(mc_filler)
+
+    if options.miracle_sanity or options.boss_goal > 5:
+        factory_required.extend(filler_cond)
+    else:
+        factory_filler.extend(filler_cond)
+
+    if options.boss_goal > 5:
+        factory_required.extend(required_cond)
+    else:
+        factory_filler.extend(required_cond)
 
     for i in factory_required:
         items.append(DarkCloudItem(i, ItemClassification.progression, ids[i], player))
