@@ -81,8 +81,7 @@ well_ids = ["Progressive Well 1", "Progressive Well 1", "Progressive Well 1", "P
             "Progressive Well 1",
             "Progressive Well 2", "Progressive Well 2", "Progressive Well 2", "Progressive Well 2",
             "Progressive Well 2",
-            "Progressive Well 3", "Progressive Well 3", "Progressive Well 3", "Progressive Well 3",
-            "Progressive Well 3"]
+            ]
 
 # Each watermill has MCs, 2 have gourds
 watermill_ids = ["Progressive Watermill 1", "Progressive Watermill 1", "Progressive Watermill 2",
@@ -125,10 +124,21 @@ def create_matataki_atla(options: DarkCloudOptions, player: int) -> list["DarkCl
         cacao_ids = [progressive_char_recruit_name, progressive_char_recruit_name, progressive_char_recruit_name,
                      progressive_char_recruit_name, progressive_char_recruit_name, progressive_char_recruit_name,
                      progressive_char_recruit_name]
+        if options.extra_char_buildings:
+            cacao_ids.append(progressive_char_recruit_name)
     else:
         cacao_ids = ["Progressive Cacao's House", "Progressive Cacao's House", "Progressive Cacao's House",
                      "Progressive Cacao's House", "Progressive Cacao's House", "Progressive Cacao's House",
                      "Progressive Cacao's House"]
+        if options.extra_char_buildings:
+            cacao_ids.append("Progressive Cacao's House")
+
+    if options.extra_char_buildings:
+        matataki_progression.append("Matataki River")
+        matataki_filler.extend(["Progressive Well 3" for _ in range(5 - min(5, options.boss_goal.value + 1))])
+    else:
+        matataki_filler.extend(["Progressive Well 3", "Progressive Well 3", "Progressive Well 3", "Progressive Well 3",
+            "Progressive Well 3"])
 
     matataki_progression.extend(cacao_ids)
 

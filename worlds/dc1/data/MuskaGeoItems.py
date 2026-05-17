@@ -88,10 +88,14 @@ def create_muska_atla(options: DarkCloudOptions, player: int) -> List["DarkCloud
         sister_ids = [progressive_char_recruit_name, progressive_char_recruit_name, progressive_char_recruit_name,
                       progressive_char_recruit_name, progressive_char_recruit_name, progressive_char_recruit_name,
                       progressive_char_recruit_name]
+        if options.extra_char_buildings:
+            sister_ids.append(progressive_char_recruit_name)
     else:
         sister_ids = ["Progressive 3 Sisters' House", "Progressive 3 Sisters' House", "Progressive 3 Sisters' House",
                       "Progressive 3 Sisters' House", "Progressive 3 Sisters' House", "Progressive 3 Sisters' House",
                       "Progressive 3 Sisters' House"]
+        if options.extra_char_buildings:
+            sister_ids.append("Progressive 3 Sisters' House")
 
     muska_required.extend(sister_ids)
 

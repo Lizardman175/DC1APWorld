@@ -165,6 +165,11 @@ class DarkCloudWorld(World):
             return None
         name = item.name
         if name.startswith("Progressive ") or name == "Matataki River":
+            if self.options.progressive_chars and \
+                    (name.startswith("Progressive Player") or name.startswith("Progressive Cacao") or
+                     name.startswith("Progressive King") or name.startswith("Progressive 3")):
+                return super(DarkCloudWorld, self).collect_item(state, item, remove)
+
             prog_table = self.progressive_item_list[name]
             if remove:
                 for item_name in reversed(prog_table):
@@ -315,6 +320,7 @@ class DarkCloudWorld(World):
                 "all_bosses": self.options.all_bosses.value,
                 "memory_count": self.options.memory_count.value,
                 "open_dungeon": self.options.open_dungeon.value,
+                "progressive_chars": self.options.progressive_chars.value,
                 "starter_weapons": self.options.starter_weapons.value,
                 "abs_multiplier": self.options.abs_multiplier.value,
                 "attach_multiplier": self.options.attach_multiplier.value,

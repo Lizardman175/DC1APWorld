@@ -108,10 +108,14 @@ def create_norune_atla(options: DarkCloudOptions, player: int) -> list["DarkClou
         player_house_ids = [progressive_char_recruit_name, progressive_char_recruit_name, progressive_char_recruit_name,
                             progressive_char_recruit_name, progressive_char_recruit_name, progressive_char_recruit_name,
                             progressive_char_recruit_name]
+        if options.extra_char_buildings:
+            player_house_ids.append(progressive_char_recruit_name)
     else:
         player_house_ids = ["Progressive Player's House", "Progressive Player's House", "Progressive Player's House",
                             "Progressive Player's House", "Progressive Player's House", "Progressive Player's House",
                             "Progressive Player's House"]
+        if options.extra_char_buildings:
+            player_house_ids.append("Progressive Player's House")
 
     norune_progression.extend(player_house_ids)
 

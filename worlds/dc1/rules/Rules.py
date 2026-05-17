@@ -1,5 +1,5 @@
 from rule_builder.options import OptionFilter
-from rule_builder.rules import HasAll, Has, HasAllCounts, And, HasAny, HasFromListUnique, CanReachRegion, Rule
+from rule_builder.rules import HasAll, Has, HasAllCounts, And, HasAny, HasFromListUnique, CanReachRegion, Rule, False_
 from worlds.dc1.Options import AllBosses, MiracleSanity, DarkCloudOptions
 
 chest_shuffle_off = OptionFilter(MiracleSanity, False)
@@ -45,7 +45,7 @@ def get_completion_rule(options: DarkCloudOptions) -> Rule:
     r_five_bosses = r_four_bosses & r_joe_access
     r_six_bosses = r_five_bosses & r_genie_access
 
-    r_goal = None
+    r_goal = False_()
 
     match options.boss_goal:
         case 2:

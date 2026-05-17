@@ -90,10 +90,14 @@ def create_queens_atla(options: DarkCloudOptions, player: int) -> list["DarkClou
         king_ids = [progressive_char_recruit_name, progressive_char_recruit_name, progressive_char_recruit_name,
                     progressive_char_recruit_name, progressive_char_recruit_name, progressive_char_recruit_name,
                     progressive_char_recruit_name]
+        if options.extra_char_buildings:
+            king_ids.append(progressive_char_recruit_name)
     else:
         king_ids = ["Progressive King's Hideout", "Progressive King's Hideout", "Progressive King's Hideout",
                     "Progressive King's Hideout", "Progressive King's Hideout", "Progressive King's Hideout",
                     "Progressive King's Hideout"]
+        if options.extra_char_buildings:
+            king_ids.append("Progressive King's Hideout")
 
     queens_required.extend(king_ids)
 
