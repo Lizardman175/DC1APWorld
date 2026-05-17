@@ -35,6 +35,13 @@ class ProgressiveCharRecruitment(Toggle):
     display_name = "Progressive Char Recruitment"
     default = 1
 
+class ExtraCharBuildingPieces(Toggle):
+    """Adds an extra of each character recruitment building to the item pool as well as an extra Matataki River
+    in place of a number of Well parts. What building parts are reflected by the progressive_chars option.
+    Adds a little extra progression speed to larger multiworlds."""
+    display_name = "Extra Char Building Pieces"
+    default = 0
+
 class BetterStartingWeapons(Toggle):
     """Give each character a Tier 1 weapon in addition to their unbreakable starter."""
     display_name = "Better Starting Weapons"
@@ -161,6 +168,7 @@ class DarkCloudOptions(PerGameCommonOptions):
     memory_count: RequiredMemoryCount
     open_dungeon: OpenDungeon
     progressive_chars: ProgressiveCharRecruitment
+    extra_char_buildings: ExtraCharBuildingPieces
     starter_weapons: BetterStartingWeapons
     miracle_sanity: MiracleSanity
     abs_multiplier: AbsMultiplier
