@@ -289,15 +289,15 @@ class DarkCloudWorld(World):
         self.create_entrance(regions["DHC"], regions["GOT"])
 
         if self.options.miracle_sanity:
-            self.create_entrance(regions["Norune"], regions["XiaoChests"],
+            self.create_entrance(regions["Norune"], regions["Xiao-Locked Chests"],
                                  (self.ut & Rules.r_xiao_available_only_ut) | Rules.r_xiao_available_only)
-            self.create_entrance(regions["Matataki"], regions["GoroChests"],
+            self.create_entrance(regions["Matataki"], regions["Goro-Locked Chests"],
                                  (self.ut & Rules.r_goro_available_only_ut) | Rules.r_goro_available)
-            self.create_entrance(regions["Queens"], regions["RubyChests"],
+            self.create_entrance(regions["Queens"], regions["Ruby-Locked Chests"],
                                  (self.ut & Rules.r_ruby_available_only) | Rules.r_ruby_available)
-            self.create_entrance(regions["Muska"], regions["UngagaChests"],
+            self.create_entrance(regions["Muska"], regions["Ungaga-Locked Chests"],
                                  (self.ut & Rules.r_ungaga_available_only) | Rules.r_ungaga_available)
-            self.create_entrance(regions["Factory"], regions["OsmondChests"],
+            self.create_entrance(regions["Factory"], regions["Osmond-Locked Chests"],
                                  (self.ut & Rules.r_osmond_available_only) | Rules.r_osmond_available)
 
         self.multiworld.regions.extend(regions.values())
