@@ -5,7 +5,7 @@ from typing import Mapping, Any, Optional
 
 from BaseClasses import Region, LocationProgressType, Item, CollectionState, ItemClassification
 from rule_builder.options import OptionFilter
-from rule_builder.rules import HasAll, And, True_, False_
+from rule_builder.rules import HasAll, True_, False_
 from worlds.AutoWorld import World, WebWorld
 from .JunkDrawer import dark_genie_id, progressive_char_recruit_name, progressive_char_recruit_id
 
@@ -215,7 +215,7 @@ class DarkCloudWorld(World):
         for dungeon in dungeons:
             regions[dungeon.name] = dungeon
 
-        # Only add locations for the relevant dungeons
+        # Create dungeon locations. Only add locations for the relevant dungeons
         for i in range(min(len(dungeons), self.options.boss_goal * 2)):
             dun = dungeons[i]
             dun_locs = dungeon_locations[i]
@@ -225,46 +225,35 @@ class DarkCloudWorld(World):
                 loc = DarkCloudLocation(self.player, key, dun_locs[key], LocationProgressType.DEFAULT, dun)
                 dun.locations.append(loc)
 
+        # Create miracle chest locations
         if self.options.miracle_sanity:
+            # Regions for chests requiring local character
+            xiao_chests = Region("Xiao-Locked Chests", self.player, self.multiworld)
+            goro_chests = Region("Goro-Locked Chests", self.player, self.multiworld)
+            ruby_chests = Region("Ruby-Locked Chests", self.player, self.multiworld)
+            ungaga_chests = Region("Ungaga-Locked Chests", self.player, self.multiworld)
+            osmond_chests = Region("Osmond-Locked Chests", self.player, self.multiworld)
+
+            chest_regions = [xiao_chests, goro_chests, ruby_chests, ungaga_chests, osmond_chests]
+            for chest_region in chest_regions:
+                regions[chest_region.name] = chest_region
+
             for i in range(min(5, int(self.options.boss_goal))):
                 mcs = self.mc_data[i]
                 for chest in mcs:
-                    loc = DarkCloudLocation(self.player, str(chest.name), int(chest.ap_id),
-                                            LocationProgressType.DEFAULT, towns[i])
-                    if not chest.req_char:
-                        if not chest.req_geo:
-                            self.set_rule(loc, True_())
-                        else:
-                            self.set_rule(loc, HasAll(*chest.req_geo))
+                    if chest.req_char:
+                        loc = DarkCloudLocation(self.player, str(chest.name), int(chest.ap_id),
+                                                LocationProgressType.DEFAULT, chest_regions[i])
+                        chest_regions[i].locations.append(loc)
                     else:
-                        if chest.req_char == "xiao":
-                            if chest.req_geo:
-                                self.set_rule(loc, HasAll(*chest.req_geo) & ((self.ut & Rules.r_xiao_available_only_ut) | Rules.r_xiao_available_only))
-                            else:
-                                self.set_rule(loc, (self.ut & Rules.r_xiao_available_only_ut) | Rules.r_xiao_available_only)
-                        elif chest.req_char == "goro":
-                                if chest.req_geo:
-                                    self.set_rule(loc, HasAll(*chest.req_geo) & ((self.ut & Rules.r_goro_available_only_ut) | Rules.r_goro_available))
-                                else:
-                                    self.set_rule(loc, (self.ut & Rules.r_goro_available_only_ut) | Rules.r_goro_available)
-                        elif chest.req_char == "ruby":
-                            if chest.req_geo:
-                                self.set_rule(loc, And(Rules.r_ruby_available_only, HasAll(*chest.req_geo)))
-                            else:
-                                self.set_rule(loc, Rules.r_ruby_available_only)
-                        elif chest.req_char == "ungaga":
-                            if chest.req_geo:
-                                self.set_rule(loc, And(Rules.r_ungaga_available_only, HasAll(*chest.req_geo)))
-                            else:
-                                self.set_rule(loc, Rules.r_ungaga_available_only)
-                        # Some items have Osmond listed but he doesn't currently have any special requirements beyond the region
-                        # so we need to handle ignoring him with these 2 cases:
-                        elif chest.req_geo:
-                            self.set_rule(loc, HasAll(*chest.req_geo))
-                        else:
-                            self.set_rule(loc, True_())
+                        loc = DarkCloudLocation(self.player, str(chest.name), int(chest.ap_id),
+                                                LocationProgressType.DEFAULT, towns[i])
+                        towns[i].locations.append(loc)
 
-                    towns[i].locations.append(loc)
+                    if not chest.req_geo:
+                        self.set_rule(loc, True_())
+                    else:
+                        self.set_rule(loc, HasAll(*chest.req_geo))
 
         # Sometimes players kill the DG before the other bosses then have to refight the genie.  This will allow the
         # client to acknowledge the genie kill in that situation.
@@ -299,8 +288,19 @@ class DarkCloudWorld(World):
 
         self.create_entrance(regions["DHC"], regions["GOT"])
 
-        self.multiworld.regions.extend(towns)
-        self.multiworld.regions.extend(dungeons)
+        if self.options.miracle_sanity:
+            self.create_entrance(regions["Norune"], regions["Xiao-Locked Chests"],
+                                 (self.ut & Rules.r_xiao_available_only_ut) | Rules.r_xiao_available_only)
+            self.create_entrance(regions["Matataki"], regions["Goro-Locked Chests"],
+                                 (self.ut & Rules.r_goro_available_only_ut) | Rules.r_goro_available)
+            self.create_entrance(regions["Queens"], regions["Ruby-Locked Chests"],
+                                 (self.ut & Rules.r_ruby_available_only) | Rules.r_ruby_available)
+            self.create_entrance(regions["Muska"], regions["Ungaga-Locked Chests"],
+                                 (self.ut & Rules.r_ungaga_available_only) | Rules.r_ungaga_available)
+            self.create_entrance(regions["Factory"], regions["Osmond-Locked Chests"],
+                                 (self.ut & Rules.r_osmond_available_only) | Rules.r_osmond_available)
+
+        self.multiworld.regions.extend(regions.values())
 
     def set_rules(self):
         # Set up completion goal
