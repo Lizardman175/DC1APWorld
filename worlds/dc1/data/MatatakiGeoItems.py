@@ -135,7 +135,6 @@ def create_matataki_atla(options: DarkCloudOptions, player: int) -> list["DarkCl
 
     if options.extra_char_buildings:
         matataki_progression.append("Matataki River")
-        matataki_filler.extend(["Progressive Well 3" for _ in range(5 - min(5, options.boss_goal.value + 1))])
     else:
         matataki_filler.extend(["Progressive Well 3", "Progressive Well 3", "Progressive Well 3", "Progressive Well 3",
             "Progressive Well 3"])
@@ -178,4 +177,12 @@ def create_matataki_atla(options: DarkCloudOptions, player: int) -> list["DarkCl
 
     # print(len(items))
     # print (items)
+    return items
+
+def create_well_parts(count: int, player: int) -> list["DarkCloudItem"]:
+    items = []
+    name = "Progressive Well 3"
+    items.extend(
+        [DarkCloudItem(name, ItemClassification.filler, ids[name], player) for _ in range(min(5, count))]
+    )
     return items
