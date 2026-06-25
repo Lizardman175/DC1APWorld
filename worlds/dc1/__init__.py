@@ -1,4 +1,6 @@
 import json
+import logging
+import math
 import pkgutil
 import typing
 from typing import Mapping, Any, Optional
@@ -52,6 +54,8 @@ class DarkCloudWorld(World):
 
     chest_filter = None
 
+    item_count_to_gen = 0
+
     progressive_item_list = {}
     for prog_item in prog_map:
         progressiveName = prog_map[prog_item]
@@ -60,7 +64,8 @@ class DarkCloudWorld(World):
         progressive_item_list[progressiveName].append(prog_item)
 
     # Parse inventory item data
-    item_data = [[],[],[],[],[]]
+    item_data = []
+    item_name_to_data = {}
     reader = pkgutil.get_data(__name__, "data/item_data.csv").decode().splitlines()
     for line in reader:
         row = line.split(",")
@@ -77,7 +82,9 @@ class DarkCloudWorld(World):
             else:
                 counts.append(0)
 
-        item_data[0].append(ItemData(row[0], int(row[1]), classification, counts))
+        item = ItemData(row[0], int(row[1]), classification, counts)
+        item_data.append(item)
+        item_name_to_data[row[0]] = item
 
         item_name_to_classification[row[0]] = classification
 
@@ -151,13 +158,73 @@ class DarkCloudWorld(World):
             # print (ll, sum(ll))
 
     def create_items(self):
-        for i in range(self.options.boss_goal):
-            self.multiworld.itempool.extend(geo_funcs[i](self.options, self.player))
-
+        # Static items for chest shuffle
         if self.options.miracle_sanity:
-            for i in range(min(5, int(self.options.boss_goal))):
-                for item in self.item_data[i]:
-                    self.multiworld.itempool.extend(item.to_items(self.player, self))
+            for item in self.item_data:
+                items = item.to_items(self.player, self)
+                self.item_count_to_gen -= len(items)
+                self.multiworld.itempool.extend(items)
+
+        # Georama
+        for i in range(self.options.boss_goal):
+            items = geo_funcs[i](self.options, self.player)
+            self.item_count_to_gen -= len(items)
+            self.multiworld.itempool.extend(items)
+
+        # Create Well 3 parts if item count remains above 0
+        # Some/All Well 3 pieces are ignored for minimal settings with extra_char_buildings on
+        items = MatatakiGeoItems.create_well_parts(self.item_count_to_gen, self.player)
+        self.item_count_to_gen -= len(items)
+        self.multiworld.itempool.extend(items)
+
+        # Create useful items
+        half = math.ceil(self.item_count_to_gen / 2)
+        items = self.gen_useful(half)
+        self.item_count_to_gen -= len(items)
+        self.multiworld.itempool.extend(items)
+
+        # Create filler from remaining item count
+        items = self.gen_filler(self.item_count_to_gen)
+        self.item_count_to_gen -= len(items)
+        self.multiworld.itempool.extend(items)
+
+        # Count check
+        if self.item_count_to_gen > 0:
+            logging.warning(f"Not enough items generated for {self.player}.")
+        elif self.item_count_to_gen < 0:
+            logging.warning(f"Too many items generated for {self.player}.")
+
+    def gen_useful(self, count: int) -> list[DarkCloudItem]:
+        names = ["Attack+1", "Magic+1", "Fire", "Ice", "Thunder", "Wind", "Holy", "Antidote Amulet", "Powerup Powder",
+                 "Gold Bullion", "Dran's Feather", "Dragon Slayer", "Undead Buster", "Sea Killer", "Stone Breaker",
+                 "Plant Buster", "Beast Buster", "Sky Hunter", "Metal Breaker", "Mimic Breaker", "Mage Slayer"]
+        items = []
+
+        for i in range(count):
+            rand = self.random.randint(0, len(names)-1)
+            item = self.item_name_to_data[names[rand]].to_item(self.player, self)
+            items.append(item)
+
+        return items
+
+    #
+    def gen_filler(self, count: int) -> list[DarkCloudItem]:
+        names = ["Anti-Freeze Amulet", "Anti-Curse Amulet", "Anti-Goo Amulet",
+                 "Tasty Water", "Premium Water", "Bread", "Premium Chicken", "Stamina Drink",
+                 "Antidote Drink", "Holy Water", "Soap", "Mighty Healing", "Cheese", "Bomb", "Fire Gem",
+                 "Ice Gem", "Thunder Gem", "Wind gem", "Holy Gem", "Throbbing Cherry", "Bomb Nuts",
+                 "Revival Powder", "Repair Powder", "Treasure Chest Key", "Auto-Repair Powder", ]
+        # Currently not adding fishing bait, but might if fish shuffle is added?
+        bait_names = ["Carrot", "Potato Cake", "Minon", "Battan", "Petite Fish", "Evy", "Mimi", "Prickly",
+                      "Gooey Peach", "Poisonous Apple", "Mellow Banana", ]
+        items = []
+
+        for i in range(count):
+            rand = self.random.randint(0, len(names)-1)
+            item = self.item_name_to_data[names[rand]].to_item(self.player, self)
+            items.append(item)
+
+        return items
 
     # Set up progressive items
     def collect_item(self, state: "CollectionState", item: "Item", remove: bool = False) -> Optional[str]:
@@ -219,6 +286,7 @@ class DarkCloudWorld(World):
         for i in range(min(len(dungeons), self.options.boss_goal * 2)):
             dun = dungeons[i]
             dun_locs = dungeon_locations[i]
+            self.item_count_to_gen += len(dun_locs)
 
             # Create locations, then add to the dungeons
             for key in dun_locs:
@@ -240,6 +308,7 @@ class DarkCloudWorld(World):
 
             for i in range(min(5, int(self.options.boss_goal))):
                 mcs = self.mc_data[i]
+                self.item_count_to_gen += len(mcs)
                 for chest in mcs:
                     if chest.req_char:
                         loc = DarkCloudLocation(self.player, str(chest.name), int(chest.ap_id),
