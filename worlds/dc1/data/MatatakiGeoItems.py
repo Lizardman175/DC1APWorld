@@ -135,9 +135,6 @@ def create_matataki_atla(options: DarkCloudOptions, player: int) -> list["DarkCl
 
     if options.extra_char_buildings:
         matataki_progression.append("Matataki River")
-    else:
-        matataki_filler.extend(["Progressive Well 3", "Progressive Well 3", "Progressive Well 3", "Progressive Well 3",
-            "Progressive Well 3"])
 
     matataki_progression.extend(cacao_ids)
 
