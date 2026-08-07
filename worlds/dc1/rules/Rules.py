@@ -1,5 +1,6 @@
 from rule_builder.options import OptionFilter
-from rule_builder.rules import HasAll, Has, HasAllCounts, And, HasAny, HasFromListUnique, CanReachRegion, Rule, False_
+from rule_builder.rules import HasAll, Has, HasAllCounts, And, HasAny, HasFromListUnique, CanReachRegion, Rule, False_, \
+    True_
 from worlds.dc1.Options import AllBosses, MiracleSanity, DarkCloudOptions
 
 chest_shuffle_off = OptionFilter(MiracleSanity, False)
@@ -12,8 +13,19 @@ r_ungaga_items = HasAllCounts({"Fluffy Doughnut": 3, "Fish Candy": 3, "Grass Cak
 r_osmond_items = HasAllCounts({"Fluffy Doughnut": 4, "Fish Candy": 4, "Grass Cake": 3,
                                "Witch Parfait": 2, "Scorpion Jerky": 1, "Fruit of Eden": 14, "Pocket": 3})
 
-r_xiao_available_only = HasAll("Stray Cat", "Gaffer's Lamp", "Pike")
+r_gaffer = HasAll("Gaffer's Lamp", "Pike")
+r_owl = Has("Wise Owl Entrance")
+r_ruty = Has("Ruty's Pushcart 3")
+r_suzy = Has("Suzy's Lamp")
+r_lana = Has("Lana's Pushcart 1")
+r_jack = Has("Jack's Lamp")
+r_joker = HasAll("Joker's Lamp", "Sheriff's Sign")
+r_brooke = Has("Brooke's Hay")
+r_ledan = True_()
+r_simba = True_()
+
 r_xiao_available_only_ut = Has("Stray Cat")
+r_xiao_available_only = And(r_gaffer, r_xiao_available_only_ut)
 r_goro_available_only = HasAll("Matataki River H", "Cacao's Laundry")
 r_goro_available_only_ut = HasAll("Matataki River E", "Cacao's Laundry")
 r_ruby_available_only = Has("King's Lamp")
