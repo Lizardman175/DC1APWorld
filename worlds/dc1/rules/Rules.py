@@ -18,7 +18,6 @@ r_owl = Has("Wise Owl Entrance")
 r_ruty = Has("Ruty's Pushcart 3")
 r_suzy = Has("Suzy's Lamp")
 r_lana = Has("Lana's Pushcart 1")
-r_jack = Has("Jack's Lamp")
 r_joker = HasAll("Joker's Lamp", "Sheriff's Sign")
 r_brooke = Has("Brooke's Hay")
 r_ledan = True_()
@@ -37,6 +36,9 @@ r_ruby_available = r_ruby_available_only & (chest_shuffle_off | r_ruby_items)
 r_ungaga_available = r_ungaga_available_only & (chest_shuffle_off | r_ungaga_items)
 r_osmond_available = r_osmond_available_only & (chest_shuffle_off | r_osmond_items)
 r_dhc_available = And(HasAny("Tomahon", "Boon"), HasAny("Gotch", "Amuleo"))
+
+# Ruby required for the better shop completion cutscene reward first
+r_jack = And(Has("Jack's Lamp"), r_ruby_available_only)
 
 def get_completion_rule(options: DarkCloudOptions) -> Rule:
 
