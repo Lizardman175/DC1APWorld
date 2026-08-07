@@ -7,14 +7,14 @@ from typing import Mapping, Any, Optional
 
 from BaseClasses import Region, LocationProgressType, Item, CollectionState, ItemClassification
 from rule_builder.options import OptionFilter
-from rule_builder.rules import HasAll, True_, False_
+from rule_builder.rules import HasAll, True_, False_, Rule
 from worlds.AutoWorld import World, WebWorld
 from .JunkDrawer import dark_genie_id, progressive_char_recruit_name, progressive_char_recruit_id
 
 from .data import (NoruneGeoItems, MatatakiGeoItems, QueensGeoItems,
                    MuskaGeoItems, FactoryGeoItems, DHCGeoItems)
 from .Items import DarkCloudItem, ItemData
-from .Location import DarkCloudLocation
+from .Location import DarkCloudLocation, shop_locations_to_id
 from .Options import DarkCloudOptions, MiracleSanity
 from .data.MiracleChest import MiracleChest
 from .data.Progressive import all_chars, split_chars
@@ -105,6 +105,9 @@ class DarkCloudWorld(World):
     for i in mc_data:
         for j in i:
             location_name_to_id.update({str(j.name): int(j.ap_id)})
+
+    for s in shop_locations_to_id:
+        location_name_to_id.update(s)
 
     origin_region_name = "Norune"
 
@@ -249,6 +252,45 @@ class DarkCloudWorld(World):
 
         return super(DarkCloudWorld, self).collect_item(state, item, remove)
 
+    def shop_locations(self, towns: list[Region]):
+        if self.options.shop_sanity.value == 0:
+            return
+
+        # Considered making a dict of town to shop data but this works...
+        # Item ID breakdown: abcd. a: town, 1 indexed. b: 3 to indicate shops (0 for MCs, 1/2 for atla), c: shop index, d: location ID
+        self.shop_location("Gaffer's Shop Item", 97111_1300, towns[0], Rules.r_gaffer)
+        self.shop_location("Wise Owl Shop Item", 97111_2300, towns[1], Rules.r_owl)
+        if self.options.boss_goal > 2:
+            self.shop_location("Ruty's Shop Item", 97111_3300, towns[2], Rules.r_ruty)
+            self.shop_location("Suzy's Shop Item", 97111_3310, towns[2], Rules.r_suzy)
+            self.shop_location("Lana's Shop Item", 97111_3320, towns[2], Rules.r_lana)
+            self.shop_location("Jack's Shop Item", 97111_3330, towns[2], Rules.r_jack)
+            self.shop_location("Joker's Shop Item", 97111_3340, towns[2], Rules.r_joker)
+            if self.options.boss_goal > 3:
+                self.shop_location("Brooke's Shop Item", 97111_4300, towns[3], Rules.r_brooke)
+                if self.options.boss_goal > 4:
+                    self.shop_location("Ledan's Shop Item", 97111_5300, towns[4], Rules.r_ledan)
+                    if self.options.boss_goal > 5:
+                        self.shop_location("Fairy King's Item Shop Item", 97111_6300, towns[5], Rules.r_simba)
+                        self.shop_location("Fairy King's Gem Shop Item", 97111_6310, towns[5], Rules.r_simba)
+                        self.shop_location("Fairy King's Attachment Shop Item", 97111_6320, towns[5], Rules.r_simba)
+
+        return
+
+    def shop_location(self, name: str, item_id: int, town: Region, rule: Rule):
+        loc1 = DarkCloudLocation(self.player, f"{name} 1", item_id, LocationProgressType.DEFAULT, town)
+        loc2 = DarkCloudLocation(self.player, f"{name} 2", item_id + 1, LocationProgressType.DEFAULT, town)
+
+        self.set_rule(loc1, rule)
+        self.set_rule(loc2, rule)
+
+        town.locations.append(loc1)
+        town.locations.append(loc2)
+
+        self.item_count_to_gen += 2
+
+        return
+
     def create_regions(self):
         regions: typing.Dict[str, Region] = {}
 
@@ -324,6 +366,9 @@ class DarkCloudWorld(World):
                     else:
                         self.set_rule(loc, HasAll(*chest.req_geo))
 
+        # Create shop locations if enabled
+        self.shop_locations(towns)
+
         # Sometimes players kill the DG before the other bosses then have to refight the genie.  This will allow the
         # client to acknowledge the genie kill in that situation.
         if self.options.all_bosses and self.options.boss_goal == 6:
@@ -396,6 +441,7 @@ class DarkCloudWorld(World):
                 "attach_mult_config": self.options.attach_mult_config.value,
                 "auto_build": self.options.auto_build.value,
                 "miracle_sanity": self.options.miracle_sanity.value,
+                "shop_sanity": self.options.shop_sanity.value,
                 "death_link": self.options.death_link.value,
                 "toan_name": self.options.toan_name.value,
                 "xiao_name": self.options.xiao_name.value,
