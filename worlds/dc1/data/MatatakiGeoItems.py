@@ -75,8 +75,11 @@ couscous_ids = ["Progressive Couscous's House", "Progressive Couscous's House",
 gob_ids = ["Progressive Gob's House", "Progressive Gob's House",
            "Progressive Gob's House", "Progressive Gob's House", "Progressive Gob's House"]
 
-# Inside has a gourd, so first 2 pieces are minimum useful.  Reward is a shop so the rest useful
+# Inside has a gourd and is a shop, so pieces are minimum useful.
 owl_ids = ["Progressive Owl Shop", "Progressive Owl Shop", "Progressive Owl Shop", "Progressive Owl Shop"]
+# Items required for MCs
+owl_ids_2 = ["Progressive Owl Shop", "Progressive Owl Shop"]
+
 well_ids = ["Progressive Well 1", "Progressive Well 1", "Progressive Well 1", "Progressive Well 1",
             "Progressive Well 1",
             "Progressive Well 2", "Progressive Well 2", "Progressive Well 2", "Progressive Well 2",
@@ -95,8 +98,7 @@ other_ids = ["Matataki Trees", "Matataki Trees", "Matataki Bridge"]
 
 
 # Atla that give MCs by content quality (unless handled otherwise). If MC shuffle is on, these all need to be required
-mc_useful = ["Progressive Owl Shop", "Progressive Owl Shop",
-             "Progressive Bunbuku's House", "Progressive Bunbuku's House",
+mc_useful = ["Progressive Bunbuku's House", "Progressive Bunbuku's House",
              "Progressive Baron's House", "Progressive Pao's House", "Progressive Pao's House", ]
 mc_filler = ["Progressive Watermill 1", ]
 
@@ -107,7 +109,7 @@ mc_useful_2 = ["Progressive Kye's House", "Progressive Kye's House", "Progressiv
 
 # Always required/useful/filler items
 required = river_ids
-useful = pao_ids + baron_ids + gob_ids + owl_ids
+useful = pao_ids + baron_ids + gob_ids
 filler = ["Earth A", "Earth B"] + other_ids + bunbuku_ids + couscous_ids + kye_ids + watermill_ids + well_ids
 
 
@@ -162,6 +164,16 @@ def create_matataki_atla(options: DarkCloudOptions, player: int) -> list["DarkCl
         matataki_useful.extend(mc_useful_2)
         matataki_filler.extend(mc_filler)
         # matataki_filler.extend(mc_filler_2)
+
+    if options.shop_sanity:
+        matataki_progression.extend(owl_ids)
+        matataki_progression.extend(owl_ids_2)
+    else:
+        matataki_useful.extend(owl_ids)
+        if options.miracle_sanity:
+            matataki_progression.extend(owl_ids_2)
+        else:
+            matataki_useful.extend(owl_ids_2)
 
     for i in matataki_progression:
         items.append(DarkCloudItem(i, ItemClassification.progression, ids[i], player))
