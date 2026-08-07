@@ -52,6 +52,12 @@ class MiracleSanity(Toggle):
     display_name = "Chest Sanity"
     default = 0
 
+class ShopSanity(Toggle):
+    """Add 2 items to each shop (excluding Rando).  Gaffer will have 2 items temporarily replaced if the full shop is
+    unlocked."""
+    display_name = "Shop Sanity"
+    default = 0
+
 class AbsMultiplier(Choice):
     """Adjust the ABS gained from enemies."""
     display_name = "ABS Multiplier"
@@ -171,6 +177,7 @@ class DarkCloudOptions(PerGameCommonOptions):
     extra_char_buildings: ExtraCharBuildingPieces
     starter_weapons: BetterStartingWeapons
     miracle_sanity: MiracleSanity
+    shop_sanity: ShopSanity
     abs_multiplier: AbsMultiplier
     attach_multiplier: AttachmentMultiplierValue
     attach_mult_config: AttachmentMultiplierConfig
