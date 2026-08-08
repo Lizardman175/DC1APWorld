@@ -35,7 +35,7 @@ classifications = {
     "Progressive Totem Pole A": ItemClassification.progression | ItemClassification.filler,
     "Progressive Totem Pole B": ItemClassification.progression | ItemClassification.filler,
     "Progressive Totem Pole C": ItemClassification.progression | ItemClassification.filler,
-    "Progressive Oasis": ItemClassification.useful | ItemClassification.filler,
+    "Progressive Oasis": ItemClassification.progression | ItemClassification.useful | ItemClassification.filler,
     "Muska Lacka Trees": ItemClassification.filler,
     "Muska Lacka Road": ItemClassification.filler
 }
@@ -64,10 +64,9 @@ misc_ids = ["Muska Lacka Trees", "Muska Lacka Trees", "Muska Lacka Road", "Muska
             "Muska Lacka Road", "Muska Lacka Road", "Muska Lacka Road"]
 
 
-mc_required = ["Progressive Chief's House", "Progressive Toto's House",
+mc_required = ["Progressive Chief's House", "Progressive Toto's House", "Progressive Oasis",
                "Progressive Enga's House", "Progressive Enga's House", "Progressive Enga's House"]
-mc_useful = ["Progressive Jibubu's House", "Progressive Jibubu's House",
-             "Progressive Prisoner Cabin", "Progressive Oasis"]
+mc_useful = ["Progressive Jibubu's House", "Progressive Jibubu's House", "Progressive Prisoner Cabin"]
 mc_filler = ["Progressive Totem Pole A", "Progressive Totem Pole B", "Progressive Totem Pole C"]
 
 
