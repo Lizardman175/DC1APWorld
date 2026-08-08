@@ -14,12 +14,12 @@ from .JunkDrawer import dark_genie_id, progressive_char_recruit_name, progressiv
 from .data import (NoruneGeoItems, MatatakiGeoItems, QueensGeoItems,
                    MuskaGeoItems, FactoryGeoItems, DHCGeoItems)
 from .Items import DarkCloudItem, ItemData
-from .Location import DarkCloudLocation, shop_locations_to_id
+from .Location import DarkCloudLocation, shop_locations_to_id, fish_locations_to_id
 from .Options import DarkCloudOptions, MiracleSanity
 from .data.MiracleChest import MiracleChest
 from .data.Progressive import all_chars, split_chars
 from .game_id import dc1_name
-from .rules import Rules
+from .rules import Rules, FishRules
 
 geo_funcs = [NoruneGeoItems.create_norune_atla, MatatakiGeoItems.create_matataki_atla,
              QueensGeoItems.create_queens_atla, MuskaGeoItems.create_muska_atla,
@@ -47,9 +47,11 @@ class DarkCloudWorld(World):
     topology_present = True
     web = DarkCloudWeb()
 
-    item_name_to_id = {"Dark Genie": dark_genie_id, progressive_char_recruit_name: progressive_char_recruit_id}
+    glitches_item_name = JunkDrawer.glitch_name
+
+    item_name_to_id = {"Dark Genie": dark_genie_id, progressive_char_recruit_name: progressive_char_recruit_id, glitches_item_name: game_id.base_id - 1}
     location_name_to_id = {"Dark Genie": dark_genie_id, }
-    item_name_to_classification = {progressive_char_recruit_name: ItemClassification.progression}
+    item_name_to_classification = {progressive_char_recruit_name: ItemClassification.progression, glitches_item_name: ItemClassification.progression}
     filler_item_names = []
 
     chest_filter = None
@@ -109,14 +111,19 @@ class DarkCloudWorld(World):
     for s in shop_locations_to_id:
         location_name_to_id.update(s)
 
+    for f in fish_locations_to_id:
+        location_name_to_id.update(f)
+
     origin_region_name = "Norune"
 
     atla_per_floor = None
     ut = False_()
+    is_ut = False
 
     def generate_early(self) -> None:
-        if hasattr(self.multiworld, "generation_is_fake"):
+        if getattr(self.multiworld, "generation_is_fake", False):
             self.ut = True_()
+            self.is_ut = True
 
         self.chest_filter = OptionFilter(MiracleSanity, True)
 
@@ -174,8 +181,15 @@ class DarkCloudWorld(World):
             self.item_count_to_gen -= len(items)
             self.multiworld.itempool.extend(items)
 
-        # Create Well 3 parts if item count remains above 0
-        # Some/All Well 3 pieces are ignored for minimal settings with extra_char_buildings on
+        # Always add fishing rod
+        self.multiworld.itempool.append(self.item_name_to_data["Fishing Rod"].to_item(self.player, self))
+        self.item_count_to_gen -= 1
+
+        # Add skipped georama parts from the first 2 towns if there is space
+        # Some/All Windmill/Well 3 pieces are ignored for minimal settings with extra_char_buildings on
+        items = NoruneGeoItems.create_windmill_parts(self.item_count_to_gen, self.player)
+        self.item_count_to_gen -= len(items)
+        self.multiworld.itempool.extend(items)
         items = MatatakiGeoItems.create_well_parts(self.item_count_to_gen, self.player)
         self.item_count_to_gen -= len(items)
         self.multiworld.itempool.extend(items)
@@ -201,6 +215,12 @@ class DarkCloudWorld(World):
         names = ["Attack+1", "Magic+1", "Fire", "Ice", "Thunder", "Wind", "Holy", "Antidote Amulet", "Powerup Powder",
                  "Gold Bullion", "Dran's Feather", "Dragon Slayer", "Undead Buster", "Sea Killer", "Stone Breaker",
                  "Plant Buster", "Beast Buster", "Sky Hunter", "Metal Breaker", "Mimic Breaker", "Mage Slayer"]
+        # Currently not adding fishing bait, but might if fish shuffle is added?
+        bait_names = ["Carrot", "Potato Cake", "Poisonous Apple", "Petite Fish", "Evy", "Prickly"]
+
+        if self.options.fish_sanity.value > 0:
+            names.extend(bait_names)
+
         items = []
 
         for i in range(count):
@@ -217,9 +237,6 @@ class DarkCloudWorld(World):
                  "Antidote Drink", "Holy Water", "Soap", "Mighty Healing", "Cheese", "Bomb", "Fire Gem",
                  "Ice Gem", "Thunder Gem", "Wind gem", "Holy Gem", "Throbbing Cherry", "Bomb Nuts",
                  "Revival Powder", "Repair Powder", "Treasure Chest Key", "Auto-Repair Powder", ]
-        # Currently not adding fishing bait, but might if fish shuffle is added?
-        bait_names = ["Carrot", "Potato Cake", "Minon", "Battan", "Petite Fish", "Evy", "Mimi", "Prickly",
-                      "Gooey Peach", "Poisonous Apple", "Mellow Banana", ]
         items = []
 
         for i in range(count):
@@ -288,6 +305,96 @@ class DarkCloudWorld(World):
         town.locations.append(loc2)
 
         self.item_count_to_gen += 2
+
+        return
+
+    def fish_locations(self, regions: list[Region]):
+        if self.options.fish_sanity.value == 0:
+            return
+
+        niler = DarkCloudLocation(self.player, "Catch a Niler", 97111_0407, LocationProgressType.DEFAULT, regions[0])
+        gummy = DarkCloudLocation(self.player, "Catch a Gummy", 97111_0406, LocationProgressType.DEFAULT, regions[0])
+        nonky = DarkCloudLocation(self.player, "Catch a Nonky", 97111_0402, LocationProgressType.DEFAULT, regions[0])
+        gobbler = DarkCloudLocation(self.player, "Catch a Gobbler", 97111_0401, LocationProgressType.DEFAULT, regions[0])
+
+        if self.is_ut:
+            self.set_rule(niler, FishRules.r_niler_fish_ut)
+            self.set_rule(gummy, FishRules.r_gummy_fish_ut)
+            self.set_rule(nonky, FishRules.r_nonky_fish_ut)
+            self.set_rule(gobbler, FishRules.r_gobbler_fish_ut)
+        else:
+            self.set_rule(niler, FishRules.r_niler_fish)
+            self.set_rule(gummy, FishRules.r_gummy_fish)
+            self.set_rule(nonky, FishRules.r_nonky_fish)
+            self.set_rule(gobbler, FishRules.r_gobbler_fish)
+
+        regions[0].locations.extend([niler, gummy, nonky, gobbler])
+        self.item_count_to_gen += 4
+
+        baku = DarkCloudLocation(self.player, "Catch a Baku Baku", 97111_0404, LocationProgressType.DEFAULT, regions[1])
+        tarton = DarkCloudLocation(self.player, "Catch a Tarton", 97111_0410, LocationProgressType.DEFAULT, regions[1])
+        umadakara = DarkCloudLocation(self.player, "Catch an Umadakara", 97111_0409, LocationProgressType.DEFAULT, regions[1])
+
+        if self.is_ut:
+            self.set_rule(baku, FishRules.r_baku_fish_ut)
+            self.set_rule(tarton, FishRules.r_tarton_fish_ut)
+            self.set_rule(umadakara, FishRules.r_umadakara_fish_ut)
+        else:
+            self.set_rule(baku, FishRules.r_baku_fish)
+            self.set_rule(tarton, FishRules.r_tarton_fish)
+            self.set_rule(umadakara, FishRules.r_umadakara_fish)
+
+        regions[1].locations.extend([baku, tarton, umadakara])
+        self.item_count_to_gen += 3
+
+        if self.options.boss_goal > 2:
+            if self.options.fish_sanity.value >= 2:
+                mardan = DarkCloudLocation(self.player, "Catch a Mardan Garayan", 97111_0405, LocationProgressType.DEFAULT, regions[1])
+                if self.is_ut:
+                    self.set_rule(mardan, FishRules.r_mardan_fish_ut)
+                else:
+                    self.set_rule(mardan, FishRules.r_mardan_fish)
+                regions[1].locations.append(mardan)
+                self.item_count_to_gen += 1
+
+            ocean_fish = [("Catch a Hama Hama", 97111_0413), ("Catch a Kaji", 97111_0403),
+                          ("Catch a Piccoly", 97111_0411), ("Catch a Bon", 97111_0412), ("Catch a Bobo", 97111_0400)]
+
+            if self.is_ut:
+                ocean_rule = FishRules.r_ocean_fish_ut
+            else:
+                ocean_rule = FishRules.r_ocean_fish
+
+            for fish in ocean_fish:
+                loc = DarkCloudLocation(self.player, fish[0], fish[1], LocationProgressType.DEFAULT, regions[2])
+                self.set_rule(loc, ocean_rule)
+                regions[2].locations.append(loc)
+
+            self.item_count_to_gen += 5
+
+            if self.options.boss_goal > 3:
+                if self.options.fish_sanity.value >= 2:
+                    baron = DarkCloudLocation(self.player, "Catch a Baron Garayan", 97111_0417,
+                                               LocationProgressType.DEFAULT, regions[1])
+                    if self.is_ut:
+                        self.set_rule(baron, FishRules.r_baron_fish_ut)
+                    else:
+                        self.set_rule(baron, FishRules.r_baron_fish)
+                    regions[1].locations.append(baron)
+                    self.item_count_to_gen += 1
+
+                desert_fish = [("Catch a Den", 97111_0415), ("Catch a Heela", 97111_0416),
+                               ("Catch a Negie", 97111_0414)]
+                if self.is_ut:
+                    desert_rule = FishRules.r_desert_fish_ut
+                else:
+                    desert_rule = FishRules.r_desert_fish
+                for fish in desert_fish:
+                    loc = DarkCloudLocation(self.player, fish[0], fish[1], LocationProgressType.DEFAULT, regions[3])
+                    self.set_rule(loc, desert_rule)
+                    regions[3].locations.append(loc)
+
+                self.item_count_to_gen += 3
 
         return
 
@@ -368,6 +475,8 @@ class DarkCloudWorld(World):
 
         # Create shop locations if enabled
         self.shop_locations(towns)
+        # Create fish locations if enabled
+        self.fish_locations(towns)
 
         # Sometimes players kill the DG before the other bosses then have to refight the genie.  This will allow the
         # client to acknowledge the genie kill in that situation.
@@ -442,6 +551,7 @@ class DarkCloudWorld(World):
                 "auto_build": self.options.auto_build.value,
                 "miracle_sanity": self.options.miracle_sanity.value,
                 "shop_sanity": self.options.shop_sanity.value,
+                "fish_sanity": self.options.fish_sanity.value,
                 "death_link": self.options.death_link.value,
                 "toan_name": self.options.toan_name.value,
                 "xiao_name": self.options.xiao_name.value,
