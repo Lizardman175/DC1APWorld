@@ -35,7 +35,7 @@ classifications = {
     "Progressive Totem Pole A": ItemClassification.progression | ItemClassification.filler,
     "Progressive Totem Pole B": ItemClassification.progression | ItemClassification.filler,
     "Progressive Totem Pole C": ItemClassification.progression | ItemClassification.filler,
-    "Progressive Oasis": ItemClassification.useful | ItemClassification.filler,
+    "Progressive Oasis": ItemClassification.progression | ItemClassification.useful | ItemClassification.filler,
     "Muska Lacka Trees": ItemClassification.filler,
     "Muska Lacka Road": ItemClassification.filler
 }
