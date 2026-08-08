@@ -83,8 +83,7 @@ owl_ids_2 = ["Progressive Owl Shop", "Progressive Owl Shop"]
 well_ids = ["Progressive Well 1", "Progressive Well 1", "Progressive Well 1", "Progressive Well 1",
             "Progressive Well 1",
             "Progressive Well 2", "Progressive Well 2", "Progressive Well 2", "Progressive Well 2",
-            "Progressive Well 2",
-            ]
+            "Progressive Well 2", ]
 
 # Each watermill has MCs, 2 have gourds
 watermill_ids = ["Progressive Watermill 1", "Progressive Watermill 1", "Progressive Watermill 2",
