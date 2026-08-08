@@ -58,6 +58,16 @@ class ShopSanity(Toggle):
     display_name = "Shop Sanity"
     default = 0
 
+class FishSanity(Choice):
+    """Catching each fish once is a location.  Adds carrots to Wise Owl Shop inventory for Umadakara.
+    all_fish includes the Garayan fish as well.  Mardan Garayans require Queens (boss goal 3+) to
+    purchase poisonous apples and Baron Garayan Muska Lacka (boss goal 4+) for potato cakes."""
+    display_name = "Fish Sanity"
+    option_none = 0
+    option_most_fish = 1
+    option_all_fish = 2
+    default = 0
+
 class AbsMultiplier(Choice):
     """Adjust the ABS gained from enemies."""
     display_name = "ABS Multiplier"
@@ -178,6 +188,7 @@ class DarkCloudOptions(PerGameCommonOptions):
     starter_weapons: BetterStartingWeapons
     miracle_sanity: MiracleSanity
     shop_sanity: ShopSanity
+    fish_sanity: FishSanity
     abs_multiplier: AbsMultiplier
     attach_multiplier: AttachmentMultiplierValue
     attach_mult_config: AttachmentMultiplierConfig
