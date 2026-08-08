@@ -74,8 +74,7 @@ hag_house_ids = ["Progressive Hag's House", "Progressive Hag's House", "Progress
 alnet_house_ids = ["Progressive Alnet's House", "Progressive Alnet's House", "Progressive Alnet's House"]
 
 windmill_ids = ["Progressive Windmill 1", "Progressive Windmill 1", "Progressive Windmill 1",
-                "Progressive Windmill 2", "Progressive Windmill 2", "Progressive Windmill 2",
-                "Progressive Windmill 3", "Progressive Windmill 3", "Progressive Windmill 3"]
+                "Progressive Windmill 2", "Progressive Windmill 2", "Progressive Windmill 2"]
 other_ids = ["Norune Trees", "Norune Trees", "Norune Bridge", "Norune Road", "Norune Road", "Norune Road",
              "Norune Road", "Norune Road", "Norune River", "Norune River", "Norune River", "Norune River"]
 
@@ -148,4 +147,13 @@ def create_norune_atla(options: DarkCloudOptions, player: int) -> list["DarkClou
 
     # print(len(items))
     # print (items)
+    return items
+
+# Above leaves out a few windmill pieces so there is space for other items in the pool.  Add them back if possible
+def create_windmill_parts(count: int, player: int) -> list["DarkCloudItem"]:
+    items = []
+    name = "Progressive Windmill 3"
+    items.extend(
+        [DarkCloudItem(name, ItemClassification.filler, ids[name], player) for _ in range(min(3, count))]
+    )
     return items
