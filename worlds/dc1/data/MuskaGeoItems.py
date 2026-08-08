@@ -64,10 +64,9 @@ misc_ids = ["Muska Lacka Trees", "Muska Lacka Trees", "Muska Lacka Road", "Muska
             "Muska Lacka Road", "Muska Lacka Road", "Muska Lacka Road"]
 
 
-mc_required = ["Progressive Chief's House", "Progressive Toto's House",
+mc_required = ["Progressive Chief's House", "Progressive Toto's House", "Progressive Oasis",
                "Progressive Enga's House", "Progressive Enga's House", "Progressive Enga's House"]
-mc_useful = ["Progressive Jibubu's House", "Progressive Jibubu's House",
-             "Progressive Prisoner Cabin", "Progressive Oasis"]
+mc_useful = ["Progressive Jibubu's House", "Progressive Jibubu's House", "Progressive Prisoner Cabin"]
 mc_filler = ["Progressive Totem Pole A", "Progressive Totem Pole B", "Progressive Totem Pole C"]
 
 
