@@ -18,3 +18,36 @@ Additionally, if miracle chests are shuffled accessing each character (excluding
 - Boss 4 King's Curse: Recruit Ungaga.  Complete Chief's House, Zabo's House, and Enga's House.  View scene from Chief's house then visit the other 2 for the key items.
 - Boss 5 Minotaur Joe: Recruit Osmond.  Complete Parts HD and view cutscene for key item.
 - Boss 6 Dark Genie: Have access to Gallery of Time.  Complete X number of Seda's memory georama, where X is the `memory_count` yaml option.
+
+# Count of each georama item needed 
+Boss 1 (for Horned Key, if miracle chests not shuffled)
+- Dran's windmill: 5
+
+Boss 2
+- Mushroom house: 7
+
+Boss 3
+- Cathedral: 5
+- Divining house: 4
+
+Boss 4
+- Chief's house: 5
+- Zabo's house: 6
+- Enga's house: 7
+
+Boss 5
+- Parts HD: 3
+
+Dark Genie
+- Crowning Day: 4
+- (Night of the) Ceremony: 6
+- Reunion (in the Storm): 5
+- (First) Campaign: 6
+- Menace (of the West): 6
+- The Deal: 5
+- Dark Power: 6
+- (The) Assassin: 7
+- (Must be) Protected: 4
+- (Birth of the) Demon: 4
+- Things Lost: 4
+- Departure: 5
