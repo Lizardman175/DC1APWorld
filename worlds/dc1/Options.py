@@ -103,11 +103,11 @@ class AutoBuild(Choice):
     display_name = "Auto Build Buildings"
     option_off = 0
     option_any_percent = 1
-    option_hundo = 2
-    option_muska_only = 3
+    option_hundo = 14
+    option_muska_only = 2
     option_robot_only = 4
-    option_muska_robot_only = 5
-    default = 2
+    option_muska_robot_only = 6
+    default = 14
 
 class ToanName(FreeText):
     """Default name for Toan.
