@@ -134,9 +134,6 @@ def create_matataki_atla(options: DarkCloudOptions, player: int) -> list["DarkCl
         if options.extra_char_buildings:
             cacao_ids.append("Progressive Cacao's House")
 
-    if options.extra_char_buildings:
-        matataki_progression.append("Matataki River")
-
     matataki_progression.extend(cacao_ids)
 
     # Mush house is only full required if Utan is required
