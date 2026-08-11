@@ -9,7 +9,7 @@ from BaseClasses import Region, LocationProgressType, Item, CollectionState, Ite
 from rule_builder.options import OptionFilter
 from rule_builder.rules import HasAll, True_, False_, Rule
 from worlds.AutoWorld import World, WebWorld
-from .JunkDrawer import dark_genie_id, progressive_char_recruit_name, progressive_char_recruit_id
+from .JunkDrawer import progressive_char_recruit_name, progressive_char_recruit_id
 
 from .data import (NoruneGeoItems, MatatakiGeoItems, QueensGeoItems,
                    MuskaGeoItems, FactoryGeoItems, DHCGeoItems)
@@ -49,8 +49,8 @@ class DarkCloudWorld(World):
 
     glitches_item_name = JunkDrawer.glitch_name
 
-    item_name_to_id = {"Dark Genie": dark_genie_id, progressive_char_recruit_name: progressive_char_recruit_id, glitches_item_name: game_id.base_id - 1}
-    location_name_to_id = {"Dark Genie": dark_genie_id, }
+    item_name_to_id = {progressive_char_recruit_name: progressive_char_recruit_id, glitches_item_name: game_id.base_id - 1}
+    location_name_to_id = {}
     item_name_to_classification = {progressive_char_recruit_name: ItemClassification.progression, glitches_item_name: ItemClassification.progression}
     filler_item_names = []
 
@@ -477,15 +477,6 @@ class DarkCloudWorld(World):
         self.shop_locations(towns)
         # Create fish locations if enabled
         self.fish_locations(towns)
-
-        # Sometimes players kill the DG before the other bosses then have to refight the genie.  This will allow the
-        # client to acknowledge the genie kill in that situation.
-        if self.options.all_bosses and self.options.boss_goal == 6:
-            loc = DarkCloudLocation(self.player, "Dark Genie", dark_genie_id, LocationProgressType.DEFAULT, got)
-            item = DarkCloudItem("Dark Genie", ItemClassification.progression, dark_genie_id, self.player)
-            loc.place_locked_item(item)
-            self.set_rule(loc, Rules.get_completion_rule(self.options))
-            got.locations.append(loc)
 
         # Connect Regions and set rules
         self.create_entrance(regions["Norune"], regions["Matataki"], (self.ut & Rules.r_xiao_available_only_ut) | Rules.r_xiao_available_only)
