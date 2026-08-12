@@ -68,6 +68,11 @@ class FishSanity(Choice):
     option_all_fish = 2
     default = 0
 
+class GemSet(Toggle):
+    """Adds a set of gems to the item pool.  *May require non-atla locations to be enabled to guarantee a full set.*"""
+    display_name = "Gem Set"
+    default = 0
+
 class AbsMultiplier(Choice):
     """Adjust the ABS gained from enemies."""
     display_name = "ABS Multiplier"
@@ -189,6 +194,7 @@ class DarkCloudOptions(PerGameCommonOptions):
     miracle_sanity: MiracleSanity
     shop_sanity: ShopSanity
     fish_sanity: FishSanity
+    gem_set: GemSet
     abs_multiplier: AbsMultiplier
     attach_multiplier: AttachmentMultiplierValue
     attach_mult_config: AttachmentMultiplierConfig
