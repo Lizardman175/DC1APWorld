@@ -5,7 +5,7 @@ import pkgutil
 import typing
 from typing import Mapping, Any, Optional
 
-from BaseClasses import Region, LocationProgressType, Item, CollectionState, ItemClassification
+from BaseClasses import Region, LocationProgressType, Item, CollectionState, ItemClassification, Tutorial
 from rule_builder.options import OptionFilter
 from rule_builder.rules import HasAll, True_, False_, Rule
 from worlds.AutoWorld import World, WebWorld
@@ -33,8 +33,18 @@ prog_map = json.loads(pkgutil.get_data(__name__, "data/progressive.json").decode
 # TODO webworld implementation as we get closer to completion.
 class DarkCloudWeb(WebWorld):
     theme = "jungle"
-    bug_report_page = ""
 
+    setup_en = Tutorial(
+        "Multiworld Setup Guide",
+        "A guide to setting up Dark Cloud 1 for Archipelago.",
+        "English",
+        "setup_en.md",
+        "setup/en",
+        ["Lizardman175"]
+    )
+
+    tutorials = [setup_en]
+    game_info_languages = ["en"]
 
 class DarkCloudWorld(World):
     """
@@ -193,6 +203,16 @@ class DarkCloudWorld(World):
         items = MatatakiGeoItems.create_well_parts(self.item_count_to_gen, self.player)
         self.item_count_to_gen -= len(items)
         self.multiworld.itempool.extend(items)
+
+        if self.options.gem_set:
+            gems = ["Garnet", "Peridot", "Diamond", "Aquamarine", "Topaz", "Pearl",
+                    "Emerald", "Amethyst", "Sapphire", "Opal", "Ruby", "Turquoise"]
+            for gem in gems:
+                if self.item_count_to_gen > 0:
+                    self.multiworld.itempool.append(self.create_item(gem))
+                    self.item_count_to_gen -= 1
+                else:
+                    break
 
         # Create useful items
         half = math.ceil(self.item_count_to_gen / 2)
