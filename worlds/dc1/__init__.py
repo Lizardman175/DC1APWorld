@@ -232,37 +232,37 @@ class DarkCloudWorld(World):
             logging.warning(f"Too many items generated for {self.player}.")
 
     def gen_useful(self, count: int) -> list[DarkCloudItem]:
-        names = ["Attack+1", "Magic+1", "Fire", "Ice", "Thunder", "Wind", "Holy", "Antidote Amulet", "Powerup Powder",
-                 "Gold Bullion", "Dran's Feather", "Dragon Slayer", "Undead Buster", "Sea Killer", "Stone Breaker",
-                 "Plant Buster", "Beast Buster", "Sky Hunter", "Metal Breaker", "Mimic Breaker", "Mage Slayer"]
+        # +x attachments will have the + number determined when created, so no need to random them here
+        names = {"Attack+1": 10, "Magic+1": 7, "Fire": 8, "Ice": 8, "Thunder": 8, "Wind": 8, "Holy": 8,
+                 "Antidote Amulet": 10, "Powerup Powder": 9, "Gold Bullion": 6, "Dran's Feather": 9,
+                 "Dragon Slayer": 10, "Undead Buster": 10, "Sea Killer": 10, "Stone Breaker": 10, "Plant Buster": 10,
+                 "Beast Buster": 10, "Sky Hunter": 10, "Metal Breaker": 10, "Mimic Breaker": 10, "Mage Slayer": 10}
         # Currently not adding fishing bait, but might if fish shuffle is added?
-        bait_names = ["Carrot", "Potato Cake", "Poisonous Apple", "Petite Fish", "Evy", "Prickly"]
+        bait_names = {"Carrot": 7, "Potato Cake": 4, "Poisonous Apple": 4, "Petite Fish": 7, "Evy": 7, "Prickly": 7}
 
         if self.options.fish_sanity.value > 0:
-            names.extend(bait_names)
+            names.update(bait_names)
 
         items = []
 
-        for i in range(count):
-            rand = self.random.randint(0, len(names)-1)
-            item = self.item_name_to_data[names[rand]].to_item(self.player, self)
-            items.append(item)
+        for name in self.random.choices(list(names.keys()), weights=list(names.values()), k=count):
+            items.append(self.item_name_to_data[name].to_item(self.player, self))
 
         return items
 
     #
     def gen_filler(self, count: int) -> list[DarkCloudItem]:
-        names = ["Anti-Freeze Amulet", "Anti-Curse Amulet", "Anti-Goo Amulet",
-                 "Tasty Water", "Premium Water", "Bread", "Premium Chicken", "Stamina Drink",
-                 "Antidote Drink", "Holy Water", "Soap", "Mighty Healing", "Cheese", "Bomb", "Fire Gem",
-                 "Ice Gem", "Thunder Gem", "Wind gem", "Holy Gem", "Throbbing Cherry", "Bomb Nuts",
-                 "Revival Powder", "Repair Powder", "Treasure Chest Key", "Auto-Repair Powder", ]
+        names = {"Anti-Freeze Amulet": 4, "Anti-Curse Amulet": 4, "Anti-Goo Amulet": 4,
+                 "Tasty Water": 9, "Premium Water": 6, "Bread": 8, "Cheese": 10, "Premium Chicken": 6,
+                 "Antidote Drink": 7, "Holy Water": 7, "Soap": 7, "Mighty Healing": 5, "Stamina Drink": 8,
+                 "Bomb": 10, "Fire Gem": 8, "Ice Gem": 8, "Thunder Gem": 8, "Wind gem": 8, "Holy Gem": 8,
+                 "Throbbing Cherry": 8, "Bomb Nuts": 5, "Revival Powder": 4, "Repair Powder": 10,
+                 "Treasure Chest Key": 7, "Auto-Repair Powder": 4 }
+
         items = []
 
-        for i in range(count):
-            rand = self.random.randint(0, len(names)-1)
-            item = self.item_name_to_data[names[rand]].to_item(self.player, self)
-            items.append(item)
+        for name in self.random.choices(list(names.keys()), weights=list(names.values()), k=count):
+            items.append(self.item_name_to_data[name].to_item(self.player, self))
 
         return items
 
