@@ -2,8 +2,8 @@ from BaseClasses import Location, Region
 from worlds.dc1.game_id import dc1_name
 
 # Location ID patterns: (all prefixed with 97111)
-# Atla  ABxx: A = Town index, B = 1/2 for front/rear atla, xx = atla id
-# MCs   A0XX: A = Town index, 0 = MC location category, xx = chest ID
+# Atla  ABxx: A = Town index 1-6, B = 1/2 for front/rear atla, xx = atla id
+# MCs   A0XX: A = Town index 1-5, 0 = MC location category, xx = chest ID
 # Shops A3Bx: A = Town index, 3 = shop items category, B = shop index relative to town, x = item
 # Fish  04xx: 04 = Fish location category, xx = fish item
 #
