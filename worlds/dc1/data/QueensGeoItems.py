@@ -120,7 +120,7 @@ def create_queens_atla(options: DarkCloudOptions, player: int) -> list["DarkClou
         queens_useful.extend(mc_useful)
         queens_filler.extend(mc_filler)
 
-    if options.shop_sanity:
+    if options.shop_sanity or options.fish_sanity.value > 0:
         queens_required.extend(joker_ids)
         queens_required.extend(sheriff_ids)
         queens_required.extend(useful)

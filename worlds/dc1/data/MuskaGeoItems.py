@@ -116,7 +116,7 @@ def create_muska_atla(options: DarkCloudOptions, player: int) -> List["DarkCloud
         muska_useful.extend(mc_useful)
         muska_filler.extend(mc_filler)
 
-    if options.shop_sanity:
+    if options.shop_sanity or options.fish_sanity.value > 0:
         muska_required.extend(brooke_ids)
         muska_required.append("Progressive Brooke's House")
     else:

@@ -161,7 +161,7 @@ def create_matataki_atla(options: DarkCloudOptions, player: int) -> list["DarkCl
         matataki_filler.extend(mc_filler)
         # matataki_filler.extend(mc_filler_2)
 
-    if options.shop_sanity:
+    if options.shop_sanity or options.fish_sanity.value > 0:
         matataki_progression.extend(owl_ids)
         matataki_progression.extend(owl_ids_2)
     else:

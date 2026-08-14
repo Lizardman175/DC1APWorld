@@ -68,6 +68,15 @@ class FishSanity(Choice):
     option_all_fish = 2
     default = 0
 
+class FloorSanity(Choice):
+    """Makes full clearing a floor count as a location.  This requires killing all 15 current enemies without leaving or
+    going to a back floor.  'all_floors' includes character limited floors."""
+    display_name = "Floor Sanity"
+    option_none = 0
+    option_most_floors = 1
+    option_all_floors = 2
+    default = 0
+
 class GemSet(Toggle):
     """Adds a set of gems to the item pool.  *May require non-atla locations to be enabled to guarantee a full set.*"""
     display_name = "Gem Set"
@@ -194,6 +203,7 @@ class DarkCloudOptions(PerGameCommonOptions):
     miracle_sanity: MiracleSanity
     shop_sanity: ShopSanity
     fish_sanity: FishSanity
+    floor_sanity: FloorSanity
     gem_set: GemSet
     abs_multiplier: AbsMultiplier
     attach_multiplier: AttachmentMultiplierValue
