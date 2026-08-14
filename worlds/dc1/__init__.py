@@ -14,11 +14,11 @@ from .JunkDrawer import progressive_char_recruit_name, progressive_char_recruit_
 from .data import (NoruneGeoItems, MatatakiGeoItems, QueensGeoItems,
                    MuskaGeoItems, FactoryGeoItems, DHCGeoItems)
 from .Items import DarkCloudItem, ItemData
-from .Location import DarkCloudLocation, shop_locations_to_id, fish_locations_to_id
+from .Location import DarkCloudLocation, shop_locations_to_id, fish_locations_to_id, floors, char_floors
 from .Options import DarkCloudOptions, MiracleSanity
 from .data.MiracleChest import MiracleChest
 from .data.Progressive import all_chars, split_chars
-from .game_id import dc1_name
+from .game_id import dc1_name, base_id
 from .rules import Rules, FishRules
 
 geo_funcs = [NoruneGeoItems.create_norune_atla, MatatakiGeoItems.create_matataki_atla,
@@ -60,7 +60,7 @@ class DarkCloudWorld(World):
     glitches_item_name = JunkDrawer.glitch_name
 
     item_name_to_id = {progressive_char_recruit_name: progressive_char_recruit_id, glitches_item_name: game_id.base_id - 1}
-    location_name_to_id = {}
+    location_name_to_id = Location.floor_location_ids()
     item_name_to_classification = {progressive_char_recruit_name: ItemClassification.progression, glitches_item_name: ItemClassification.progression}
     filler_item_names = []
 
@@ -340,12 +340,12 @@ class DarkCloudWorld(World):
         if self.is_ut:
             self.set_rule(niler, FishRules.r_niler_fish_ut)
             self.set_rule(gummy, FishRules.r_gummy_fish_ut)
-            self.set_rule(nonky, FishRules.r_nonky_fish_ut)
+            self.set_rule(nonky, FishRules.r_gummy_fish_ut)
             self.set_rule(gobbler, FishRules.r_gobbler_fish_ut)
         else:
             self.set_rule(niler, FishRules.r_niler_fish)
             self.set_rule(gummy, FishRules.r_gummy_fish)
-            self.set_rule(nonky, FishRules.r_nonky_fish)
+            self.set_rule(nonky, FishRules.r_gummy_fish)
             self.set_rule(gobbler, FishRules.r_gobbler_fish)
 
         regions[0].locations.extend([niler, gummy, nonky, gobbler])
@@ -377,6 +377,7 @@ class DarkCloudWorld(World):
                 regions[1].locations.append(mardan)
                 self.item_count_to_gen += 1
 
+            ocean_region = Region("Ocean Fish", self.player, self.multiworld)
             ocean_fish = [("Catch a Hama Hama", 97111_0413), ("Catch a Kaji", 97111_0403),
                           ("Catch a Piccoly", 97111_0411), ("Catch a Bon", 97111_0412), ("Catch a Bobo", 97111_0400)]
 
@@ -386,11 +387,12 @@ class DarkCloudWorld(World):
                 ocean_rule = FishRules.r_ocean_fish
 
             for fish in ocean_fish:
-                loc = DarkCloudLocation(self.player, fish[0], fish[1], LocationProgressType.DEFAULT, regions[2])
-                self.set_rule(loc, ocean_rule)
-                regions[2].locations.append(loc)
+                ocean_region.locations.append(DarkCloudLocation(self.player, fish[0], fish[1],
+                                                                LocationProgressType.DEFAULT, regions[2]))
 
-            self.item_count_to_gen += 5
+            self.create_entrance(regions[2], ocean_region, ocean_rule)
+            self.multiworld.regions.append(ocean_region)
+            self.item_count_to_gen += len(ocean_fish)
 
             if self.options.boss_goal > 3:
                 if self.options.fish_sanity.value >= 2:
@@ -403,20 +405,57 @@ class DarkCloudWorld(World):
                     regions[1].locations.append(baron)
                     self.item_count_to_gen += 1
 
+                oasis_region = Region("Oasis Fish", self.player, self.multiworld)
                 desert_fish = [("Catch a Den", 97111_0415), ("Catch a Heela", 97111_0416),
                                ("Catch a Negie", 97111_0414)]
                 if self.is_ut:
                     desert_rule = FishRules.r_desert_fish_ut
                 else:
                     desert_rule = FishRules.r_desert_fish
-                for fish in desert_fish:
-                    loc = DarkCloudLocation(self.player, fish[0], fish[1], LocationProgressType.DEFAULT, regions[3])
-                    self.set_rule(loc, desert_rule)
-                    regions[3].locations.append(loc)
 
-                self.item_count_to_gen += 3
+                for fish in desert_fish:
+                    oasis_region.locations.append(DarkCloudLocation(self.player, fish[0], fish[1],
+                                                                    LocationProgressType.DEFAULT, regions[3]))
+
+                self.create_entrance(regions[3], oasis_region, desert_rule)
+                self.multiworld.regions.append(oasis_region)
+                self.item_count_to_gen += len(desert_fish)
 
         return
+
+    def floor_locations(self, regions: list[Region]) -> int:
+        loc_count = 0
+        if self.options.floor_sanity == 0:
+            return loc_count
+
+        count = 0
+        for dun in floors.keys():
+            for floor in floors[dun]:
+                region = regions[count + 1] if count < 10 and floor > 8 else regions[count]
+                loc = DarkCloudLocation(self.player, "Clear " + dun + " Floor " + str(floor),
+                                        int(base_id + ((count / 2 + 1) * 1000) + 400 + floor),
+                                        LocationProgressType.DEFAULT, region)
+                region.locations.append(loc)
+                loc_count += 1
+            count += 2
+            if count / 2 == self.options.boss_goal:
+                break
+
+        if self.options.floor_sanity > 1:
+            count = 0
+            for dun in char_floors.keys():
+                for floor in char_floors[dun]:
+                    region = regions[count + 1] if count < 10 and floor > 8 else regions[count]
+                    loc = DarkCloudLocation(self.player, "Clear " + dun + " Floor " + str(floor),
+                                            int(base_id + ((count / 2 + 1) * 1000) + 400 + floor),
+                                            LocationProgressType.DEFAULT, region)
+                    region.locations.append(loc)
+                    loc_count += 1
+                count += 2
+                if count / 2 == self.options.boss_goal:
+                    break
+
+        return loc_count
 
     def create_regions(self):
         regions: typing.Dict[str, Region] = {}
@@ -497,6 +536,7 @@ class DarkCloudWorld(World):
         self.shop_locations(towns)
         # Create fish locations if enabled
         self.fish_locations(towns)
+        self.item_count_to_gen += self.floor_locations(dungeons)
 
         # Connect Regions and set rules
         self.create_entrance(regions["Norune"], regions["Matataki"], (self.ut & Rules.r_xiao_available_only_ut) | Rules.r_xiao_available_only)
@@ -563,6 +603,7 @@ class DarkCloudWorld(World):
                 "miracle_sanity": self.options.miracle_sanity.value,
                 "shop_sanity": self.options.shop_sanity.value,
                 "fish_sanity": self.options.fish_sanity.value,
+                "floor_sanity": self.options.floor_sanity.value,
                 "death_link": self.options.death_link.value,
                 "toan_name": self.options.toan_name.value,
                 "xiao_name": self.options.xiao_name.value,
