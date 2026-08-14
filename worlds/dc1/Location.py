@@ -1,14 +1,13 @@
 from BaseClasses import Location, Region
-from worlds.dc1.game_id import dc1_name
+from worlds.dc1.game_id import dc1_name, base_id
 
 # Location ID patterns: (all prefixed with 97111)
 # Atla  ABxx: A = Town index 1-6, B = 1/2 for front/rear atla, xx = atla id
 # MCs   A0XX: A = Town index 1-5, 0 = MC location category, xx = chest ID
-# Shops A3Bx: A = Town index, 3 = shop items category, B = shop index relative to town, x = item
+# Shops A3Bx: A = Town index 1-6, 3 = shop items category, B = shop index relative to town, x = item
+# Floor A4xx: A = Town index 1-6, 4 = floor clear category, xx = floor value 1 indexed
 # Fish  04xx: 04 = Fish location category, xx = fish item
 #
-# Special Location IDs:
-# Dark Genie flag  9999
 
 shop_locations_to_id = {"Gaffer's Shop Item 1": 97111_1300}, {"Gaffer's Shop Item 2": 97111_1301}, \
                        {"Wise Owl Shop Item 1": 97111_2300}, {"Wise Owl Shop Item 2": 97111_2301}, \
@@ -33,6 +32,36 @@ fish_locations_to_id = ({"Catch a Bobo": 97111_0400}, {"Catch a Gobbler": 97111_
                         {"Catch a Hama Hama": 97111_0413}, {"Catch a Negie": 97111_0414},
                         {"Catch a Den": 97111_0415}, {"Catch a Heela": 97111_0416},
                         {"Catch a Baron Garayan": 97111_0417})
+
+floors = {"DBC": [1, 2, 3, 5, 6, 7, 9, 10, 12, 13, 14],
+          "WOF": [1, 2, 3, 5, 6, 7, 8, 10, 11, 13, 14, 15, 16],
+          "SW":  [1, 2, 3, 4, 6, 7, 8, 10, 11, 13, 14, 15, 16, 17],
+          "SMT": [1, 2, 3, 4, 6, 7, 8, 10, 11, 12, 14, 15, 16, 17],
+          "MS":  [1, 2, 3, 5, 6, 7, 9, 10, 12, 13, 14],
+          "GOT": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 24]}
+
+char_floors = {"DBC": [11],
+               "WOF": [4, 12],
+               "SW":  [5, 12],
+               "SMT": [5, 13],
+               "MS":  [4, 11],
+               "GOT": [19, 20, 21, 22, 23]}
+
+def floor_location_ids() -> dict[str, int]:
+    ids = {}
+    count = 0
+    for dun in floors.keys():
+        count += 1
+        for floor in floors[dun]:
+            ids["Clear " + dun + " Floor " + str(floor)] = base_id + (count * 1000) + 400 + floor
+
+    count = 0
+    for dun in char_floors.keys():
+        count += 1
+        for char_floor in char_floors[dun]:
+            ids["Clear " + dun + " Floor " + str(char_floor)] = base_id + (count * 1000) + 400 + char_floor
+
+    return ids
 
 class DarkCloudLocation(Location):
     game = dc1_name
