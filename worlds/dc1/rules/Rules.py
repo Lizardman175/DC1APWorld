@@ -53,24 +53,39 @@ def get_completion_rule(options: DarkCloudOptions) -> Rule:
                                   "Bloody Agreement (The Deal)", "Sophia (Menace)", "Crown (Campaign)",
                                   "Buggy (Reunion)", "Sophia (Ceremony)", "Crown (Crowning Day)", count=options.memory_count.value)
 
-    r_two_bosses = r_dran_access & r_utan_access
-    r_three_bosses = r_two_bosses & r_saia_access
-    r_four_bosses = r_three_bosses & r_curse_access
-    r_five_bosses = r_four_bosses & r_joe_access
-    r_six_bosses = r_five_bosses & r_genie_access
+    r_two_bosses = And(r_dran_access, r_utan_access)
+    r_three_bosses = And(r_two_bosses, r_saia_access)
+    r_four_bosses = And(r_three_bosses, r_curse_access)
+    r_five_bosses = And(r_four_bosses, r_joe_access)
+    r_six_bosses = And(r_five_bosses, r_genie_access)
 
     r_goal = False_()
 
     match options.boss_goal:
         case 2:
-            r_goal = CanReachRegion("WOF2") & ((all_bosses_off & r_utan_access) | r_two_bosses)
+            if all_bosses_off:
+                r_goal = And(CanReachRegion("WOF2"), r_utan_access)
+            else:
+                r_goal = And(CanReachRegion("WOF2"), r_two_bosses)
         case 3:
-            r_goal = CanReachRegion("SW2") & ((all_bosses_off & r_saia_access) | r_three_bosses)
+            if all_bosses_off:
+                r_goal = And(CanReachRegion("SW2"), r_saia_access)
+            else:
+                r_goal = And(CanReachRegion("SW2"), r_three_bosses)
         case 4:
-            r_goal = CanReachRegion("SMT2") & ((all_bosses_off & r_curse_access) | r_four_bosses)
+            if all_bosses_off:
+                r_goal = And(CanReachRegion("SMT2"), r_curse_access)
+            else:
+                r_goal = And(CanReachRegion("SMT2"), r_four_bosses)
         case 5:
-            r_goal = CanReachRegion("MS2") & ((all_bosses_off & r_joe_access) | r_five_bosses)
+            if all_bosses_off:
+                r_goal = And(CanReachRegion("MS2"), r_joe_access)
+            else:
+                r_goal = And(CanReachRegion("MS2"), r_five_bosses)
         case 6:
-            r_goal = CanReachRegion("GOT") & ((all_bosses_off & r_genie_access) | r_six_bosses)
+            if all_bosses_off:
+                r_goal = And(CanReachRegion("GOT"), r_genie_access)
+            else:
+                r_goal = And(CanReachRegion("GOT"), r_six_bosses)
 
     return r_goal
