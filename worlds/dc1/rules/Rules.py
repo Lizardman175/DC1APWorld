@@ -1,17 +1,18 @@
 from rule_builder.options import OptionFilter
 from rule_builder.rules import HasAll, Has, HasAllCounts, And, HasAny, HasFromListUnique, CanReachRegion, Rule, False_, \
-    True_
+    True_, Or
+from worlds.dc1.JunkDrawer import glitch_name
 from worlds.dc1.Options import AllBosses, MiracleSanity, DarkCloudOptions
 
 chest_shuffle_off = OptionFilter(MiracleSanity, False)
 all_bosses_off = OptionFilter(AllBosses, False)
 
-r_goro_items = HasAllCounts({"Fluffy Doughnut": 1, "Fish Candy": 1, "Fruit of Eden": 2, "Pocket": 1})
-r_ruby_items = HasAllCounts({"Fluffy Doughnut": 2, "Fish Candy": 2, "Grass Cake": 1, "Fruit of Eden": 6, "Pocket": 2})
-r_ungaga_items = HasAllCounts({"Fluffy Doughnut": 3, "Fish Candy": 3, "Grass Cake": 2,
-                               "Witch Parfait": 1, "Fruit of Eden": 10, "Pocket": 3})
-r_osmond_items = HasAllCounts({"Fluffy Doughnut": 4, "Fish Candy": 4, "Grass Cake": 3,
-                               "Witch Parfait": 2, "Scorpion Jerky": 1, "Fruit of Eden": 14, "Pocket": 3})
+r_goro_items = Or(HasAllCounts({"Fluffy Doughnut": 1, "Fish Candy": 1, "Fruit of Eden": 2, "Pocket": 1}), Has(glitch_name))
+r_ruby_items = Or(HasAllCounts({"Fluffy Doughnut": 2, "Fish Candy": 2, "Grass Cake": 1, "Fruit of Eden": 6, "Pocket": 2}), Has(glitch_name))
+r_ungaga_items = Or(HasAllCounts({"Fluffy Doughnut": 4, "Fish Candy": 3, "Grass Cake": 2,
+                               "Witch Parfait": 1, "Fruit of Eden": 10, "Pocket": 3}), Has(glitch_name))
+r_osmond_items = Or(HasAllCounts({"Fluffy Doughnut": 6, "Fish Candy": 5, "Grass Cake": 3,
+                               "Witch Parfait": 2, "Scorpion Jerky": 1, "Fruit of Eden": 14, "Pocket": 3}), Has(glitch_name))
 
 r_gaffer = HasAll("Gaffer's Lamp", "Pike")
 r_owl = Has("Wise Owl Entrance")
@@ -23,8 +24,8 @@ r_brooke = Has("Brooke's Hay")
 r_ledan = True_()
 r_simba = True_()
 
-r_xiao_available_only_ut = Has("Stray Cat")
-r_xiao_available_only = And(r_gaffer, r_xiao_available_only_ut)
+r_xiao_available_only_ut = And(Or(r_gaffer, Has(glitch_name)), Has("Stray Cat"))
+r_xiao_available_only = And(r_gaffer, Has("Stray Cat"))
 r_goro_available_only = HasAll("Matataki River H", "Cacao's Laundry")
 r_goro_available_only_ut = HasAll("Matataki River E", "Cacao's Laundry")
 r_ruby_available_only = Has("King's Lamp")
@@ -32,6 +33,7 @@ r_ungaga_available_only = Has("Sisters' Odds & Ends")
 r_osmond_available_only = r_ungaga_available_only
 
 r_goro_available = r_goro_available_only & (chest_shuffle_off | r_goro_items)
+r_goro_available_ut = r_goro_available_only_ut & (chest_shuffle_off | r_goro_items)
 r_ruby_available = r_ruby_available_only & (chest_shuffle_off | r_ruby_items)
 r_ungaga_available = r_ungaga_available_only & (chest_shuffle_off | r_ungaga_items)
 r_osmond_available = r_osmond_available_only & (chest_shuffle_off | r_osmond_items)
