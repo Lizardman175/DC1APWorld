@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from Options import Choice, Toggle, PerGameCommonOptions, Range, DeathLink, FreeText, OptionError
+from Options import Choice, Toggle, PerGameCommonOptions, Range, DeathLink, FreeText, OptionError, Visibility
 
 
 class Goal(Range):
@@ -81,6 +81,15 @@ class GemSet(Toggle):
     """Adds a set of gems to the item pool.  *May require non-atla locations to be enabled to guarantee a full set.*"""
     display_name = "Gem Set"
     default = 0
+
+class Idea(Choice):
+    """It's time for another 'Good Idea, Bad Idea'.  Good Idea: Leave this option alone. Bad Idea: Enable this option.
+    *Be prepared to release the slot/only use this in MWs where that is accepted.*"""
+    display_name = "Idea"
+    default = 0
+    option_good = 0
+    option_bad = 1
+    visibility = Visibility.none
 
 class AbsMultiplier(Choice):
     """Adjust the ABS gained from enemies."""
@@ -205,6 +214,7 @@ class DarkCloudOptions(PerGameCommonOptions):
     fish_sanity: FishSanity
     floor_sanity: FloorSanity
     gem_set: GemSet
+    idea: Idea
     abs_multiplier: AbsMultiplier
     attach_multiplier: AttachmentMultiplierValue
     attach_mult_config: AttachmentMultiplierConfig
