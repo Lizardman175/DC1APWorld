@@ -8,7 +8,8 @@ from typing import Mapping, Any, Optional
 from BaseClasses import Region, LocationProgressType, Item, CollectionState, ItemClassification, Tutorial
 from rule_builder.options import OptionFilter
 from rule_builder.rules import HasAll, True_, False_, Rule
-from worlds.AutoWorld import World, WebWorld
+from worlds.AutoWorld import World
+from .DarkCloudWeb import DarkCloudWeb
 from .JunkDrawer import progressive_char_recruit_name, progressive_char_recruit_id
 
 from .data import (NoruneGeoItems, MatatakiGeoItems, QueensGeoItems,
@@ -30,22 +31,6 @@ dungeon_locations = json.loads(pkgutil.get_data(__name__, "data/atla_locations.j
 
 prog_map = json.loads(pkgutil.get_data(__name__, "data/progressive.json").decode())
 
-# TODO webworld implementation as we get closer to completion.
-class DarkCloudWeb(WebWorld):
-    theme = "jungle"
-
-    setup_en = Tutorial(
-        "Multiworld Setup Guide",
-        "A guide to setting up Dark Cloud 1 for Archipelago.",
-        "English",
-        "setup_en.md",
-        "setup/en",
-        ["Lizardman175"]
-    )
-
-    tutorials = [setup_en]
-    game_info_languages = ["en"]
-
 class DarkCloudWorld(World):
     """
     Dark Cloud 1
@@ -59,9 +44,11 @@ class DarkCloudWorld(World):
 
     glitches_item_name = JunkDrawer.glitch_name
 
-    item_name_to_id = {progressive_char_recruit_name: progressive_char_recruit_id, glitches_item_name: game_id.base_id - 1}
+    item_name_to_id = {progressive_char_recruit_name: progressive_char_recruit_id,
+                       glitches_item_name: game_id.base_id - 1}
     location_name_to_id = Location.floor_location_ids()
-    item_name_to_classification = {progressive_char_recruit_name: ItemClassification.progression, glitches_item_name: ItemClassification.progression}
+    item_name_to_classification = {progressive_char_recruit_name: ItemClassification.progression,
+                                   glitches_item_name: ItemClassification.progression}
     filler_item_names = []
 
     chest_filter = None
@@ -237,10 +224,10 @@ class DarkCloudWorld(World):
 
     def gen_useful(self, count: int) -> list[DarkCloudItem]:
         # +x attachments will have the + number determined when created, so no need to random them here
-        names = {"Attack+1": 10, "Magic+1": 7, "Fire": 8, "Ice": 8, "Thunder": 8, "Wind": 8, "Holy": 8,
-                 "Antidote Amulet": 10, "Powerup Powder": 9, "Gold Bullion": 6, "Dran's Feather": 9,
-                 "Dragon Slayer": 10, "Undead Buster": 10, "Sea Killer": 10, "Stone Breaker": 10, "Plant Buster": 10,
-                 "Beast Buster": 10, "Sky Hunter": 10, "Metal Breaker": 10, "Mimic Breaker": 10, "Mage Slayer": 10}
+        names = {"Attack+1": 9, "Magic+1": 7, "Fire": 8, "Ice": 8, "Thunder": 8, "Wind": 8, "Holy": 8,
+                 "Antidote Amulet": 8, "Powerup Powder": 9, "Gold Bullion": 6, "Dran's Feather": 9,
+                 "Dragon Slayer": 9, "Undead Buster": 9, "Sea Killer": 9, "Stone Breaker": 9, "Plant Buster": 9,
+                 "Beast Buster": 9, "Sky Hunter": 9, "Metal Breaker": 9, "Mimic Breaker": 9, "Mage Slayer": 9}
         # Currently not adding fishing bait, but might if fish shuffle is added?
         bait_names = {"Carrot": 7, "Potato Cake": 4, "Poisonous Apple": 4, "Petite Fish": 7, "Evy": 7, "Prickly": 7}
 
@@ -261,7 +248,7 @@ class DarkCloudWorld(World):
                  "Antidote Drink": 7, "Holy Water": 7, "Soap": 7, "Mighty Healing": 5, "Stamina Drink": 8,
                  "Bomb": 10, "Fire Gem": 8, "Ice Gem": 8, "Thunder Gem": 8, "Wind gem": 8, "Holy Gem": 8,
                  "Throbbing Cherry": 8, "Bomb Nuts": 5, "Revival Powder": 4, "Repair Powder": 10,
-                 "Treasure Chest Key": 7, "Auto-Repair Powder": 4 }
+                 "Treasure Chest Key": 6, "Auto-Repair Powder": 4 }
 
         items = []
 
@@ -429,46 +416,6 @@ class DarkCloudWorld(World):
 
         return
 
-    def floor_locations(self, regions: list[Region]) -> int:
-        loc_count = 0
-        if self.options.floor_sanity == 0:
-            return loc_count
-
-        count = 0
-        for dun in floors.keys():
-            for floor in floors[dun]:
-                region = regions[count + 1] if count < 10 and floor > 8 else regions[count]
-                region.locations.append(DarkCloudLocation(self.player, "Clear " + dun + " Floor " + str(floor),
-                                        int(base_id + ((count / 2 + 1) * 1000) + 400 + floor),
-                                        LocationProgressType.DEFAULT, region))
-                loc_count += 1
-            count += 2
-            if count / 2 == self.options.boss_goal:
-                break
-
-        if self.options.idea.value > 0:
-            region = regions[10]
-            for floor in floors["DS"]:
-                region.locations.append(DarkCloudLocation(self.player, "Clear DS Floor " + str(floor),
-                                        int(base_id + (7 * 1000) + 400 + floor),
-                                        LocationProgressType.PRIORITY, region))
-                loc_count += 1
-
-        if self.options.floor_sanity.value > 1:
-            count = 0
-            for dun in char_floors.keys():
-                for floor in char_floors[dun]:
-                    region = regions[count + 1] if count < 10 and floor > 8 else regions[count]
-                    region.locations.append(DarkCloudLocation(self.player, "Clear " + dun + " Floor " + str(floor),
-                                            int(base_id + ((count / 2 + 1) * 1000) + 400 + floor),
-                                            LocationProgressType.DEFAULT, region))
-                    loc_count += 1
-                count += 2
-                if count / 2 == self.options.boss_goal:
-                    break
-
-        return loc_count
-
     def create_regions(self):
         regions: typing.Dict[str, Region] = {}
 
@@ -548,7 +495,9 @@ class DarkCloudWorld(World):
         self.shop_locations(towns)
         # Create fish locations if enabled
         self.fish_locations(regions)
-        self.item_count_to_gen += self.floor_locations(dungeons)
+        self.item_count_to_gen += Location.floor_locations(self.player, self.options.boss_goal.value,
+                                                           self.options.floor_sanity.value, self.options.idea.value,
+                                                           dungeons)
 
         # Connect Regions and set rules
         self.create_entrance(regions["Norune"], regions["Matataki"], (self.ut & Rules.r_xiao_available_only_ut) | Rules.r_xiao_available_only)
