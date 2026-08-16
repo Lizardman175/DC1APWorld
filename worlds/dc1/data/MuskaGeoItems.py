@@ -35,7 +35,7 @@ classifications = {
     "Progressive Totem Pole A": ItemClassification.progression | ItemClassification.filler,
     "Progressive Totem Pole B": ItemClassification.progression | ItemClassification.filler,
     "Progressive Totem Pole C": ItemClassification.progression | ItemClassification.filler,
-    "Progressive Oasis": ItemClassification.useful | ItemClassification.filler,
+    "Progressive Oasis": ItemClassification.progression | ItemClassification.useful | ItemClassification.filler,
     "Muska Lacka Trees": ItemClassification.filler,
     "Muska Lacka Road": ItemClassification.filler
 }
@@ -64,16 +64,15 @@ misc_ids = ["Muska Lacka Trees", "Muska Lacka Trees", "Muska Lacka Road", "Muska
             "Muska Lacka Road", "Muska Lacka Road", "Muska Lacka Road"]
 
 
-mc_required = ["Progressive Chief's House", "Progressive Toto's House",
+mc_required = ["Progressive Chief's House", "Progressive Toto's House", "Progressive Oasis",
                "Progressive Enga's House", "Progressive Enga's House", "Progressive Enga's House"]
-mc_useful = ["Progressive Jibubu's House", "Progressive Jibubu's House", "Progressive Brooke's House",
-             "Progressive Prisoner Cabin", "Progressive Oasis"]
+mc_useful = ["Progressive Jibubu's House", "Progressive Jibubu's House", "Progressive Prisoner Cabin"]
 mc_filler = ["Progressive Totem Pole A", "Progressive Totem Pole B", "Progressive Totem Pole C"]
 
 
 # required = sister_ids
 # Jibubu gives fruit of eden, Brooke runs a shop, Toto gives a nice sword
-useful = jibubu_ids + brooke_ids + toto_ids
+useful = jibubu_ids + toto_ids
 filler = prisoner_ids + oasis_ids + totem_ids + misc_ids
 
 
@@ -116,6 +115,16 @@ def create_muska_atla(options: DarkCloudOptions, player: int) -> List["DarkCloud
     else:
         muska_useful.extend(mc_useful)
         muska_filler.extend(mc_filler)
+
+    if options.shop_sanity or options.fish_sanity.value > 0:
+        muska_required.extend(brooke_ids)
+        muska_required.append("Progressive Brooke's House")
+    else:
+        muska_useful.extend(brooke_ids)
+        if options.miracle_sanity:
+            muska_required.append("Progressive Brooke's House")
+        else:
+            muska_useful.append("Progressive Brooke's House")
 
     for i in muska_required:
         items.append(DarkCloudItem(i, ItemClassification.progression, ids[i], player))

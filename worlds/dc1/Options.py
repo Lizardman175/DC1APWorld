@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from Options import Choice, Toggle, PerGameCommonOptions, Range, DeathLink, FreeText, OptionError
+from Options import Choice, Toggle, PerGameCommonOptions, Range, DeathLink, FreeText, OptionError, Visibility
 
 
 class Goal(Range):
@@ -52,6 +52,48 @@ class MiracleSanity(Toggle):
     display_name = "Chest Sanity"
     default = 0
 
+class ShopSanity(Toggle):
+    """Add 2 items to each shop (excluding Rando).  Gaffer will have 2 items temporarily replaced if the full shop is
+    unlocked."""
+    display_name = "Shop Sanity"
+    default = 0
+
+class FishSanity(Choice):
+    """Catching each fish once is a location.  Adds carrots to Wise Owl Shop inventory for Umadakara.
+    some_fish is Norune/Matataki/Muska Lacka fish
+    most_fish adds ocean fish
+    all_fish includes the Garayan fish as well.  Mardan Garayans require Queens (boss goal 3+) to
+    purchase poisonous apples and Baron Garayan Muska Lacka (boss goal 4+) for potato cakes."""
+    display_name = "Fish Sanity"
+    option_none = 0
+    option_some_fish = 1
+    option_most_fish = 2
+    option_all_fish = 4
+    default = 0
+
+class FloorSanity(Choice):
+    """Makes full clearing a floor count as a location.  This requires killing all 15 current enemies without leaving or
+    going to a back floor.  'all_floors' includes character limited floors."""
+    display_name = "Floor Sanity"
+    option_none = 0
+    option_most_floors = 1
+    option_all_floors = 2
+    default = 0
+
+class GemSet(Toggle):
+    """Adds a set of gems to the item pool.  *May require non-atla locations to be enabled to guarantee a full set.*"""
+    display_name = "Gem Set"
+    default = 0
+
+class Idea(Choice):
+    """It's time for another 'Good Idea, Bad Idea'.  Good Idea: Leave this option alone. Bad Idea: Enable this option.
+    *Be prepared to release the slot/only use this in MWs where that is accepted. It is not thoroughly tested.*"""
+    display_name = "Idea"
+    default = 0
+    option_good = 0
+    option_bad = 1
+    visibility = Visibility.none
+
 class AbsMultiplier(Choice):
     """Adjust the ABS gained from enemies."""
     display_name = "ABS Multiplier"
@@ -87,11 +129,11 @@ class AutoBuild(Choice):
     display_name = "Auto Build Buildings"
     option_off = 0
     option_any_percent = 1
-    option_hundo = 2
-    option_muska_only = 3
+    option_hundo = 14
+    option_muska_only = 2
     option_robot_only = 4
-    option_muska_robot_only = 5
-    default = 2
+    option_muska_robot_only = 6
+    default = 14
 
 class ToanName(FreeText):
     """Default name for Toan.
@@ -171,6 +213,11 @@ class DarkCloudOptions(PerGameCommonOptions):
     extra_char_buildings: ExtraCharBuildingPieces
     starter_weapons: BetterStartingWeapons
     miracle_sanity: MiracleSanity
+    shop_sanity: ShopSanity
+    fish_sanity: FishSanity
+    floor_sanity: FloorSanity
+    gem_set: GemSet
+    idea: Idea
     abs_multiplier: AbsMultiplier
     attach_multiplier: AttachmentMultiplierValue
     attach_mult_config: AttachmentMultiplierConfig

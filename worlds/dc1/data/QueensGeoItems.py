@@ -63,19 +63,15 @@ other_ids = ["Queens Trees", "Queens Trees", "Queens Road", "Queens Road",
 
 # Atla that give MCs by content quality (unless handled otherwise). If MC shuffle is on, these all need to be required
 # Sheriff completion is required for Joker's house access inside, yielding a fruit o eden
-mc_useful = (["Progressive Suzy's Store", "Progressive Suzy's Store", "Progressive Suzy's Store",
-             "Progressive Suzy's Store", "Progressive Lana's Store", "Progressive Lana's Store",
-             "Progressive Basker's Store", "Progressive Queens Fountain", "Progressive Leaning Tower", ] +
-             sheriff_ids + joker_ids)
-mc_filler = ["Progressive Ruty's Store", "Progressive Lana's Store",
-             "Progressive Lana's Store", "Progressive Basker's Store"]
+mc_useful = (["Progressive Basker's Store", "Progressive Queens Fountain", "Progressive Leaning Tower", ])
+mc_filler = ["Progressive Basker's Store"]
 
 # Always required/useful/filler items
 # Jack's Store has a parfait
 required = ["Progressive Jack's Store", "Progressive Jack's Store",
             "Progressive Joker's House", "Progressive Cathedral"]
-useful = jack_ids + suzy_ids + ruty_ids
-filler = other_ids + fountain_ids + tower_ids + lana_ids + basker_ids
+useful = jack_ids + suzy_ids + ruty_ids + lana_ids
+filler = other_ids + fountain_ids + tower_ids + basker_ids
 
 
 def create_queens_atla(options: DarkCloudOptions, player: int) -> list["DarkCloudItem"]:
@@ -83,7 +79,7 @@ def create_queens_atla(options: DarkCloudOptions, player: int) -> list["DarkClou
     items = []
 
     queens_required = required.copy()
-    queens_useful = useful.copy()
+    queens_useful = []
     queens_filler = filler.copy()
 
     if options.progressive_chars:
@@ -123,6 +119,29 @@ def create_queens_atla(options: DarkCloudOptions, player: int) -> list["DarkClou
     else:
         queens_useful.extend(mc_useful)
         queens_filler.extend(mc_filler)
+
+    if options.shop_sanity or options.fish_sanity.value > 0:
+        queens_required.extend(joker_ids)
+        queens_required.extend(sheriff_ids)
+        queens_required.extend(useful)
+        queens_required.extend(["Progressive Suzy's Store", "Progressive Suzy's Store", "Progressive Suzy's Store",
+                                "Progressive Suzy's Store",
+                                "Progressive Lana's Store", "Progressive Lana's Store", "Progressive Ruty's Store",
+                                "Progressive Lana's Store", "Progressive Lana's Store"])
+    else:
+        queens_useful.extend(useful)
+        if options.miracle_sanity:
+            queens_required.extend(joker_ids)
+            queens_required.extend(sheriff_ids)
+            queens_required.extend(["Progressive Suzy's Store", "Progressive Suzy's Store", "Progressive Suzy's Store",
+                                    "Progressive Suzy's Store", "Progressive Lana's Store", "Progressive Lana's Store"])
+            queens_required.extend(["Progressive Ruty's Store", "Progressive Lana's Store", "Progressive Lana's Store"])
+        else:
+            queens_useful.extend(joker_ids)
+            queens_useful.extend(sheriff_ids)
+            queens_useful.extend(["Progressive Suzy's Store", "Progressive Suzy's Store", "Progressive Suzy's Store",
+                                  "Progressive Suzy's Store", "Progressive Lana's Store", "Progressive Lana's Store"])
+            queens_filler.extend(["Progressive Ruty's Store", "Progressive Lana's Store", "Progressive Lana's Store"])
 
     for i in queens_required:
         items.append(DarkCloudItem(i, ItemClassification.progression, ids[i], player))

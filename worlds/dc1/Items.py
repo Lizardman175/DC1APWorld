@@ -1,10 +1,17 @@
-import json
-import pkgutil
 import re
 
 from BaseClasses import Item, ItemClassification
 from .game_id import dc1_name
 
+# Item ID patterns: (all prefixed with 97111)
+# Georama     0Axx:  0 = Georama, A = town index, xx = georama piece
+# Consumables 1xxx:  1 = Consumable item category, xxx = item ID from game
+# Attachments 2xxx:  2 = Attachment item category, xxx = item ID from game
+# +x attach   20AB: 20 = Attachment, A = type 0-3 (att/speed/end/mag), B = +1/2/3
+# Weapons     3xxx:  3 = Weapon item category, xxx = item ID from game (unused)
+#
+# Special Item IDs:
+# Progressive Char Building 0000
 
 class DarkCloudItem(Item):
     game = dc1_name
@@ -28,13 +35,25 @@ class ItemData:
             # Randomize the +x value for attack, speed, endurance, magic attachments on the server
             if 971112000 < self.ap_id <= 971112033:
                 for i in range(self.counts[j]):
-                    temp_ap_id = self.ap_id
-                    rand = world.random.randint(0, 2)
-                    temp_ap_id = temp_ap_id + rand
-                    temp_name = re.search('(.*\\+)', self.name).group(0) + str(rand+1)
-                    items.append(DarkCloudItem(temp_name, self.classification, temp_ap_id, player))
+                    items.append(self.to_stat_item(player, world))
             else:
                 for i in range(self.counts[j]):
                     items.append(DarkCloudItem(self.name, self.classification, self.ap_id, player))
 
         return items
+
+    def to_item(self, player: int, world) -> DarkCloudItem:
+        # Randomize the +x value for attack, speed, endurance, magic attachments on the server
+        if 971112000 < self.ap_id <= 971112033:
+            item = self.to_stat_item(player, world)
+        else:
+            item = DarkCloudItem(self.name, self.classification, self.ap_id, player)
+
+        return item
+
+    def to_stat_item(self, player: int, world) -> DarkCloudItem:
+        temp_ap_id = self.ap_id
+        rand = world.random.randint(0, 2)
+        temp_ap_id = temp_ap_id + rand
+        temp_name = re.search('(.*\\+)', self.name).group(0) + str(rand + 1)
+        return DarkCloudItem(temp_name, self.classification, temp_ap_id, player)

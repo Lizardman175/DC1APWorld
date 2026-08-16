@@ -75,13 +75,15 @@ couscous_ids = ["Progressive Couscous's House", "Progressive Couscous's House",
 gob_ids = ["Progressive Gob's House", "Progressive Gob's House",
            "Progressive Gob's House", "Progressive Gob's House", "Progressive Gob's House"]
 
-# Inside has a gourd, so first 2 pieces are minimum useful.  Reward is a shop so the rest useful
+# Inside has a gourd and is a shop, so pieces are minimum useful.
 owl_ids = ["Progressive Owl Shop", "Progressive Owl Shop", "Progressive Owl Shop", "Progressive Owl Shop"]
+# Items required for MCs
+owl_ids_2 = ["Progressive Owl Shop", "Progressive Owl Shop"]
+
 well_ids = ["Progressive Well 1", "Progressive Well 1", "Progressive Well 1", "Progressive Well 1",
             "Progressive Well 1",
             "Progressive Well 2", "Progressive Well 2", "Progressive Well 2", "Progressive Well 2",
-            "Progressive Well 2",
-            ]
+            "Progressive Well 2", ]
 
 # Each watermill has MCs, 2 have gourds
 watermill_ids = ["Progressive Watermill 1", "Progressive Watermill 1", "Progressive Watermill 2",
@@ -95,8 +97,7 @@ other_ids = ["Matataki Trees", "Matataki Trees", "Matataki Bridge"]
 
 
 # Atla that give MCs by content quality (unless handled otherwise). If MC shuffle is on, these all need to be required
-mc_useful = ["Progressive Owl Shop", "Progressive Owl Shop",
-             "Progressive Bunbuku's House", "Progressive Bunbuku's House",
+mc_useful = ["Progressive Bunbuku's House", "Progressive Bunbuku's House",
              "Progressive Baron's House", "Progressive Pao's House", "Progressive Pao's House", ]
 mc_filler = ["Progressive Watermill 1", ]
 
@@ -107,7 +108,7 @@ mc_useful_2 = ["Progressive Kye's House", "Progressive Kye's House", "Progressiv
 
 # Always required/useful/filler items
 required = river_ids
-useful = pao_ids + baron_ids + gob_ids + owl_ids
+useful = pao_ids + baron_ids + gob_ids
 filler = ["Earth A", "Earth B"] + other_ids + bunbuku_ids + couscous_ids + kye_ids + watermill_ids + well_ids
 
 
@@ -132,13 +133,6 @@ def create_matataki_atla(options: DarkCloudOptions, player: int) -> list["DarkCl
                      "Progressive Cacao's House"]
         if options.extra_char_buildings:
             cacao_ids.append("Progressive Cacao's House")
-
-    if options.extra_char_buildings:
-        matataki_progression.append("Matataki River")
-        matataki_filler.extend(["Progressive Well 3" for _ in range(5 - min(5, options.boss_goal.value + 1))])
-    else:
-        matataki_filler.extend(["Progressive Well 3", "Progressive Well 3", "Progressive Well 3", "Progressive Well 3",
-            "Progressive Well 3"])
 
     matataki_progression.extend(cacao_ids)
 
@@ -167,6 +161,16 @@ def create_matataki_atla(options: DarkCloudOptions, player: int) -> list["DarkCl
         matataki_filler.extend(mc_filler)
         # matataki_filler.extend(mc_filler_2)
 
+    if options.shop_sanity or options.fish_sanity.value > 0:
+        matataki_progression.extend(owl_ids)
+        matataki_progression.extend(owl_ids_2)
+    else:
+        matataki_useful.extend(owl_ids)
+        if options.miracle_sanity:
+            matataki_progression.extend(owl_ids_2)
+        else:
+            matataki_useful.extend(owl_ids_2)
+
     for i in matataki_progression:
         items.append(DarkCloudItem(i, ItemClassification.progression, ids[i], player))
 
@@ -178,4 +182,12 @@ def create_matataki_atla(options: DarkCloudOptions, player: int) -> list["DarkCl
 
     # print(len(items))
     # print (items)
+    return items
+
+def create_well_parts(count: int, player: int) -> list["DarkCloudItem"]:
+    items = []
+    name = "Progressive Well 3"
+    items.extend(
+        [DarkCloudItem(name, ItemClassification.filler, ids[name], player) for _ in range(min(5, count))]
+    )
     return items
