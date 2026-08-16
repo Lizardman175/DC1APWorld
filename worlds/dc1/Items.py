@@ -12,7 +12,6 @@ from .game_id import dc1_name
 #
 # Special Item IDs:
 # Progressive Char Building 0000
-# Dark Genie flag           9999
 
 class DarkCloudItem(Item):
     game = dc1_name
