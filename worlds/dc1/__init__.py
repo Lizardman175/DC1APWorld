@@ -5,7 +5,7 @@ import pkgutil
 import typing
 from typing import Mapping, Any, Optional
 
-from BaseClasses import Region, LocationProgressType, Item, CollectionState, ItemClassification, Tutorial
+from BaseClasses import Region, LocationProgressType, Item, CollectionState, ItemClassification
 from rule_builder.options import OptionFilter
 from rule_builder.rules import HasAll, True_, False_, Rule
 from worlds.AutoWorld import World
@@ -286,8 +286,8 @@ class DarkCloudWorld(World):
 
         # Considered making a dict of town to shop data but this works...
         # Item ID breakdown: abcd. a: town, 1 indexed. b: 3 to indicate shops (0 for MCs, 1/2 for atla), c: shop index, d: location ID
-        self.shop_location("Gaffer's Shop Item", 97111_1300, towns[0], Rules.r_gaffer)
-        self.shop_location("Wise Owl Shop Item", 97111_2300, towns[1], Rules.r_owl)
+        self.shop_location("Gaffer's Shop Item", 97111_3100, towns[0], Rules.r_gaffer)
+        self.shop_location("Wise Owl Shop Item", 97111_3200, towns[1], Rules.r_owl)
         if self.options.boss_goal > 2:
             self.shop_location("Ruty's Shop Item", 97111_3300, towns[2], Rules.r_ruty)
             self.shop_location("Suzy's Shop Item", 97111_3310, towns[2], Rules.r_suzy)
@@ -295,13 +295,13 @@ class DarkCloudWorld(World):
             self.shop_location("Jack's Shop Item", 97111_3330, towns[2], Rules.r_jack)
             self.shop_location("Joker's Shop Item", 97111_3340, towns[2], Rules.r_joker)
             if self.options.boss_goal > 3:
-                self.shop_location("Brooke's Shop Item", 97111_4300, towns[3], Rules.r_brooke)
+                self.shop_location("Brooke's Shop Item", 97111_3400, towns[3], Rules.r_brooke)
                 if self.options.boss_goal > 4:
-                    self.shop_location("Ledan's Shop Item", 97111_5300, towns[4], Rules.r_ledan)
+                    self.shop_location("Ledan's Shop Item", 97111_3500, towns[4], Rules.r_ledan)
                     if self.options.boss_goal > 5:
-                        self.shop_location("Fairy King's Item Shop Item", 97111_6300, towns[5], Rules.r_simba)
-                        self.shop_location("Fairy King's Gem Shop Item", 97111_6310, towns[5], Rules.r_simba)
-                        self.shop_location("Fairy King's Attachment Shop Item", 97111_6320, towns[5], Rules.r_simba)
+                        self.shop_location("Fairy King's Item Shop Item", 97111_3600, towns[5], Rules.r_simba)
+                        self.shop_location("Fairy King's Gem Shop Item", 97111_3610, towns[5], Rules.r_simba)
+                        self.shop_location("Fairy King's Attachment Shop Item", 97111_3620, towns[5], Rules.r_simba)
 
         return
 
@@ -323,10 +323,10 @@ class DarkCloudWorld(World):
         if self.options.fish_sanity.value == 0:
             return
 
-        niler = DarkCloudLocation(self.player, "Catch a Niler", 97111_0407, LocationProgressType.DEFAULT, regions["Norune"])
-        gummy = DarkCloudLocation(self.player, "Catch a Gummy", 97111_0406, LocationProgressType.DEFAULT, regions["Norune"])
-        nonky = DarkCloudLocation(self.player, "Catch a Nonky", 97111_0402, LocationProgressType.DEFAULT, regions["Norune"])
-        gobbler = DarkCloudLocation(self.player, "Catch a Gobbler", 97111_0401, LocationProgressType.DEFAULT, regions["Norune"])
+        niler = DarkCloudLocation(self.player, "Catch a Niler", 97111_4007, LocationProgressType.DEFAULT, regions["Norune"])
+        gummy = DarkCloudLocation(self.player, "Catch a Gummy", 97111_4006, LocationProgressType.DEFAULT, regions["Norune"])
+        nonky = DarkCloudLocation(self.player, "Catch a Nonky", 97111_4002, LocationProgressType.DEFAULT, regions["Norune"])
+        gobbler = DarkCloudLocation(self.player, "Catch a Gobbler", 97111_4001, LocationProgressType.DEFAULT, regions["Norune"])
 
         if self.is_ut:
             self.set_rule(niler, FishRules.r_niler_fish_ut)
@@ -342,9 +342,9 @@ class DarkCloudWorld(World):
         regions["Norune"].locations.extend([niler, gummy, nonky, gobbler])
         self.item_count_to_gen += 4
 
-        baku = DarkCloudLocation(self.player, "Catch a Baku Baku", 97111_0404, LocationProgressType.DEFAULT, regions["Matataki"])
-        tarton = DarkCloudLocation(self.player, "Catch a Tarton", 97111_0410, LocationProgressType.DEFAULT, regions["Matataki"])
-        umadakara = DarkCloudLocation(self.player, "Catch an Umadakara", 97111_0409, LocationProgressType.DEFAULT, regions["Matataki"])
+        baku = DarkCloudLocation(self.player, "Catch a Baku Baku", 97111_4004, LocationProgressType.DEFAULT, regions["Matataki"])
+        tarton = DarkCloudLocation(self.player, "Catch a Tarton", 97111_4010, LocationProgressType.DEFAULT, regions["Matataki"])
+        umadakara = DarkCloudLocation(self.player, "Catch an Umadakara", 97111_4009, LocationProgressType.DEFAULT, regions["Matataki"])
 
         if self.is_ut:
             self.set_rule(baku, FishRules.r_baku_fish_ut)
@@ -359,8 +359,8 @@ class DarkCloudWorld(World):
         self.item_count_to_gen += 3
 
         if self.options.boss_goal > 2:
-            if self.options.fish_sanity.value >= 2:
-                mardan = DarkCloudLocation(self.player, "Catch a Mardan Garayan", 97111_0405,
+            if self.options.fish_sanity.value > 2:
+                mardan = DarkCloudLocation(self.player, "Catch a Mardan Garayan", 97111_4005,
                                            LocationProgressType.DEFAULT, regions["Matataki"])
                 if self.is_ut:
                     self.set_rule(mardan, FishRules.r_mardan_fish_ut)
@@ -369,27 +369,27 @@ class DarkCloudWorld(World):
                 regions["Matataki"].locations.append(mardan)
                 self.item_count_to_gen += 1
 
+            if self.options.fish_sanity.value > 1:
+                ocean_region = Region("Ocean Fish", self.player, self.multiworld)
+                ocean_fish = [("Catch a Hama Hama", 97111_4013), ("Catch a Kaji", 97111_4003),
+                              ("Catch a Piccoly", 97111_4011), ("Catch a Bon", 97111_4012), ("Catch a Bobo", 97111_4000)]
 
-            ocean_region = Region("Ocean Fish", self.player, self.multiworld)
-            ocean_fish = [("Catch a Hama Hama", 97111_0413), ("Catch a Kaji", 97111_0403),
-                          ("Catch a Piccoly", 97111_0411), ("Catch a Bon", 97111_0412), ("Catch a Bobo", 97111_0400)]
+                if self.is_ut:
+                    ocean_rule = FishRules.r_ocean_fish_ut
+                else:
+                    ocean_rule = FishRules.r_ocean_fish
 
-            if self.is_ut:
-                ocean_rule = FishRules.r_ocean_fish_ut
-            else:
-                ocean_rule = FishRules.r_ocean_fish
+                for fish in ocean_fish:
+                    ocean_region.locations.append(DarkCloudLocation(self.player, fish[0], fish[1],
+                                            LocationProgressType.DEFAULT, ocean_region))
 
-            for fish in ocean_fish:
-                ocean_region.locations.append(DarkCloudLocation(self.player, fish[0], fish[1],
-                                        LocationProgressType.DEFAULT, ocean_region))
-
-            self.create_entrance(regions["Queens"], ocean_region, ocean_rule)
-            self.multiworld.regions.append(ocean_region)
-            self.item_count_to_gen += len(ocean_fish)
+                self.create_entrance(regions["Queens"], ocean_region, ocean_rule)
+                self.multiworld.regions.append(ocean_region)
+                self.item_count_to_gen += len(ocean_fish)
 
             if self.options.boss_goal > 3:
-                if self.options.fish_sanity.value >= 2:
-                    baron = DarkCloudLocation(self.player, "Catch a Baron Garayan", 97111_0417,
+                if self.options.fish_sanity.value > 2:
+                    baron = DarkCloudLocation(self.player, "Catch a Baron Garayan", 97111_4017,
                                                LocationProgressType.DEFAULT, regions["Matataki"])
                     if self.is_ut:
                         self.set_rule(baron, FishRules.r_baron_fish_ut)
@@ -399,8 +399,8 @@ class DarkCloudWorld(World):
                     self.item_count_to_gen += 1
 
                 oasis_region = Region("Oasis Fish", self.player, self.multiworld)
-                desert_fish = [("Catch a Den", 97111_0415), ("Catch a Heela", 97111_0416),
-                               ("Catch a Negie", 97111_0414)]
+                desert_fish = [("Catch a Den", 97111_4015), ("Catch a Heela", 97111_4016),
+                               ("Catch a Negie", 97111_4014)]
                 if self.is_ut:
                     desert_rule = FishRules.r_desert_fish_ut
                 else:

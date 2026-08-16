@@ -60,12 +60,15 @@ class ShopSanity(Toggle):
 
 class FishSanity(Choice):
     """Catching each fish once is a location.  Adds carrots to Wise Owl Shop inventory for Umadakara.
+    some_fish is Norune/Matataki/Muska Lacka fish
+    most_fish adds ocean fish
     all_fish includes the Garayan fish as well.  Mardan Garayans require Queens (boss goal 3+) to
     purchase poisonous apples and Baron Garayan Muska Lacka (boss goal 4+) for potato cakes."""
     display_name = "Fish Sanity"
     option_none = 0
-    option_most_fish = 1
-    option_all_fish = 2
+    option_some_fish = 1
+    option_most_fish = 2
+    option_all_fish = 4
     default = 0
 
 class FloorSanity(Choice):
@@ -84,7 +87,7 @@ class GemSet(Toggle):
 
 class Idea(Choice):
     """It's time for another 'Good Idea, Bad Idea'.  Good Idea: Leave this option alone. Bad Idea: Enable this option.
-    *Be prepared to release the slot/only use this in MWs where that is accepted.*"""
+    *Be prepared to release the slot/only use this in MWs where that is accepted. It is not thoroughly tested.*"""
     display_name = "Idea"
     default = 0
     option_good = 0

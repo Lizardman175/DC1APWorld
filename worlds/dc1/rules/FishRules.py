@@ -4,7 +4,7 @@ from worlds.dc1.rules.Rules import r_owl, r_ruty, r_lana, r_brooke
 
 # Effishient rules?
 r_bait_shops = Or(And(CanReachRegion("Matataki"), r_owl),
-                  And(CanReachRegion("Queens"), Or(r_ruty, r_lana)))
+                  And(CanReachRegion("Queens"),r_lana))
 
 # No region checks for desert fish as they'll be in the Muska region so all relevant regions are accessible
 r_bait_shops_2 = Or(r_owl, r_ruty, r_lana, r_brooke)
