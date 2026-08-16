@@ -38,8 +38,7 @@ floors = {"DBC": [1, 2, 3, 5, 6, 7, 9, 10, 12, 13, 14],
           "SW":  [1, 2, 3, 4, 6, 7, 8, 10, 11, 13, 14, 15, 16, 17],
           "SMT": [1, 2, 3, 4, 6, 7, 8, 10, 11, 12, 14, 15, 16, 17],
           "MS":  [1, 2, 3, 5, 6, 7, 9, 10, 12, 13, 14],
-          "GOT": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 24],
-          "DS":  [5, 15, 25, 35, 45]}
+          "GOT": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 24]}
 
 char_floors = {"DBC": [11],
                "WOF": [4, 12],
@@ -92,7 +91,7 @@ def floor_locations(player: int, boss_goal: int, floor_sanity: int, idea: int, r
 
     if idea > 0:
         region = regions[10]
-        for floor in floors["DS"]:
+        for floor in [5, 15, 25, 35, 45]:
             region.locations.append(DarkCloudLocation(player, "Clear DS Floor " + str(floor),
                                                       int(base_id + (7 * 100) + 4000 + floor),
                                                       LocationProgressType.PRIORITY, region))
