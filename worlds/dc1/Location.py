@@ -61,6 +61,9 @@ def floor_location_ids() -> dict[str, int]:
         for char_floor in char_floors[dun]:
             ids["Clear " + dun + " Floor " + str(char_floor)] = base_id + (count * 100) + 4000 + char_floor
 
+    for floor in [5, 15, 25, 35, 45]:
+        ids["Clear DS Floor " + str(floor)] = base_id + 4700 + floor
+
     return ids
 
 class DarkCloudLocation(Location):
@@ -93,7 +96,7 @@ def floor_locations(player: int, boss_goal: int, floor_sanity: int, idea: int, r
         region = regions[10]
         for floor in [5, 15, 25, 35, 45]:
             region.locations.append(DarkCloudLocation(player, "Clear DS Floor " + str(floor),
-                                                      int(base_id + (7 * 100) + 4000 + floor),
+                                                      int(base_id + 4700 + floor),
                                                       LocationProgressType.PRIORITY, region))
             loc_count += 1
 

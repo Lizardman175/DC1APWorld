@@ -67,8 +67,7 @@ bunbuku_ids = ["Progressive Bunbuku's House", "Progressive Bunbuku's House", "Pr
 
 kye_ids = ["Progressive Kye's House", "Progressive Kye's House", "Progressive Kye's House", "Progressive Kye's House"]
 
-# Fruit and gourd, rest is filler (rewards aren't that great)
-couscous_ids = ["Progressive Couscous's House", "Progressive Couscous's House",
+couscous_ids = ["Progressive Couscous's House", "Progressive Couscous's House", "Progressive Couscous's House",
                 "Progressive Couscous's House", "Progressive Couscous's House"]
 
 # House has a fruit, house reward is a weapon for goro so marking the whole thing useful except for MCs
@@ -101,15 +100,14 @@ mc_useful = ["Progressive Bunbuku's House", "Progressive Bunbuku's House",
              "Progressive Baron's House", "Progressive Pao's House", "Progressive Pao's House", ]
 mc_filler = ["Progressive Watermill 1", ]
 
-mc_useful_2 = ["Progressive Kye's House", "Progressive Kye's House", "Progressive Kye's House",
-               "Progressive Couscous's House", "Progressive Gob's House",
+mc_useful_2 = ["Progressive Kye's House", "Progressive Kye's House", "Progressive Kye's House", "Progressive Gob's House",
                "Progressive Watermill 2", "Progressive Watermill 3", ]
 # mc_filler_2 = [,]  Bunbuku's chest accessed by the cabin is not shuffled right now
 
 # Always required/useful/filler items
-required = river_ids
+required = river_ids + couscous_ids
 useful = pao_ids + baron_ids + gob_ids
-filler = ["Earth A", "Earth B"] + other_ids + bunbuku_ids + couscous_ids + kye_ids + watermill_ids + well_ids
+filler = ["Earth A", "Earth B"] + other_ids + bunbuku_ids + kye_ids + watermill_ids + well_ids
 
 
 def create_matataki_atla(options: DarkCloudOptions, player: int) -> list["DarkCloudItem"]:
